@@ -1,4 +1,6 @@
-# 🚀 ShuttleX - Ecommerce Website
+#  ShuttleX - Ecommerce Website
+
+ShuttleX is a full-stack e-commerce platform for badminton accessories, featuring product management, order handling, shopping cart, and secure user authentication using Django and React.
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)
 ![Django](https://img.shields.io/badge/Django-4.2+-darkgreen?style=flat-square&logo=django)
@@ -6,14 +8,13 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?style=flat-square&logo=mysql)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
-ShuttleX là một nền tảng thương mại điện tử hiện đại được xây dựng với Django (Backend) và React (Frontend). Nền tảng hỗ trợ quản lý sản phẩm, đơn hàng, giỏ hàng và xác thực người dùng.
-
 ## 📋 Yêu cầu hệ thống
 
 - **Python**: 3.8 hoặc cao hơn
 - **Node.js**: 16.x hoặc cao hơn
 - **npm**: 8.x hoặc cao hơn
 - **pip**: Phiên bản mới nhất
+- **MySQL**: 8.0 hoặc cao hơn
 
 ---
 
@@ -269,116 +270,7 @@ shuttlex-ecommerce-website/
 
 ---
 
-## 🔐 Security & Environment Variables
-
-⚠️ **Không bao giờ commit file `.env` lên repository!**
-
-File `.env` đã được thêm vào `.gitignore`, nên nó sẽ không được theo dõi bởi Git. Điều này rất quan trọng để bảo vệ:
-- Database credentials
-- Email password
-- Secret keys
-- JWT tokens
-
----
-
-## 🛠️ Các lệnh hữu ích
-
-### Backend
-
-```bash
-# Tạo migration mới
-python manage.py makemigrations
-
-# Áp dụng migrations
-python manage.py migrate
-
-# Tạo superuser
-python manage.py createsuperuser
-
-# Chạy tests
-python manage.py test
-
-# Shell interactif
-python manage.py shell
-```
-
-### Frontend
-
-```bash
-# Chạy development server
-npm run dev
-
-# Build production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Chạy linter
-npm run lint
-```
-
----
-
-## 🔑 Các tài khoản mặc định
-
-Sau khi chạy `python manage.py createsuperuser`, bạn có thể đăng nhập vào:
-
-- **Django Admin**: http://localhost:8000/admin
-- **Dashboard Admin** (nếu frontend chạy): http://localhost:5173/dashboard
-
----
-
-## 🐛 Troubleshooting
-
-### ❌ Lỗi: "ModuleNotFoundError: No module named 'django'"
-
-**Giải pháp:** Đảm bảo virtual environment đã được kích hoạt:
-```bash
-# Windows
-venv\Scripts\activate
-
-# macOS/Linux
-source venv/bin/activate
-```
-
-### ❌ Lỗi: "CORS error" khi gọi API
-
-**Giải pháp:** Kiểm tra `ALLOWED_HOSTS` và `CORS_ALLOWED_ORIGINS` trong `backend/config/settings.py`:
-```python
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-]
-```
-
-### ❌ Lỗi: "Email not sent" hoặc "SMTP error"
-
-**Giải pháp:** 
-1. Kiểm tra `EMAIL_HOST_USER` và `EMAIL_HOST_PASSWORD` trong `.env` có chính xác không
-2. Đảm bảo bật **2-Factor Authentication** trên Gmail
-3. Sử dụng **App Password** (16 ký tự), không phải mật khẩu Gmail thường
-4. Kiểm tra port: Gmail SMTP sử dụng port `587` với `EMAIL_USE_TLS=True`
-
-### ❌ Lỗi: "Port 8000 already in use"
-
-**Giải pháp:** Dùng port khác:
-```bash
-python manage.py runserver 8001
-```
-
-### ❌ Lỗi: npm dependency conflicts
-
-**Giải pháp:** Xóa `node_modules` và cài lại:
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
----
-
-## 📚 Công nghệ sử dụng
+##  Công nghệ sử dụng
 
 ### Backend
 - **Django 4.x** - Web framework
@@ -397,29 +289,9 @@ npm install
 - **Axios** - HTTP client
 
 ---
-
-## 🤝 Đóng góp
-
-Nếu bạn muốn đóng góp vào dự án:
-
-1. Fork repository này
-2. Tạo branch mới (`git checkout -b feature/your-feature`)
-3. Commit thay đổi (`git commit -m 'Add your feature'`)
-4. Push lên branch (`git push origin feature/your-feature`)
-5. Tạo Pull Request
-
----
-
 ## 📄 Giấy phép
 
 Dự án này được sử dụng cho mục đích giáo dục.
 
 ---
 
-## 📞 Liên hệ
-
-Nếu có bất kỳ câu hỏi nào, vui lòng tạo issue trên GitHub.
-
----
-
-**Chúc bạn phát triển vui vẻ! 🎉**
