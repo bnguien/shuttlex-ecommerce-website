@@ -1,0 +1,67 @@
+/* Container bao toàn bộ trang login */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card login */
+.login-card-shadow {
+    background: #ffffff;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Title */
+.login-title {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+/* Subtitle */
+.login-subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 1.5rem;
+}
+
+/* Input focus đẹp hơn */
+.login-card-shadow .form-control:focus {
+    border-color: #0c7beb;
+    box-shadow: 0 0 0 0.2rem rgba(12, 123, 235, 0.25);
+}
+
+/* Button login */
+.login-card-shadow .btn-primary {
+    background-color: #0c7beb;
+    border: none;
+    padding: 0.6rem;
+    font-weight: 600;
+}
+
+.login-card-shadow .btn-primary:hover {
+    background-color: #0a5bb8;
+}
+
+/* Footer */
+.login-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.login-footer a {
+    color: #0c7beb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}

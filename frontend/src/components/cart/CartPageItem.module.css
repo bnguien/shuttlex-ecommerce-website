@@ -1,0 +1,14 @@
+.cardImgWrapper {
+  height: 80px;             
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 12px;
+}
+
+.cardImgWrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;         
+}
