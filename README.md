@@ -56,6 +56,16 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+Các packages sẽ được cài đặt:
+- **Django** - Web framework
+- **djangorestframework** - API development
+- **djangorestframework-simplejwt** - JWT authentication
+- **django-cors-headers** - CORS support
+- **dj-rest-auth** - Authentication API
+- **python-dotenv** - Environment variables
+- **django-allauth** - User authentication & registration
+- **mysqlclient** - MySQL database driver
+
 ### Bước 3: Tạo file `.env`
 
 Tạo file `.env` trong thư mục `backend/`:
@@ -171,6 +181,15 @@ cd frontend
 ```bash
 npm install
 ```
+
+Các packages sẽ được cài đặt:
+- **React** - UI library
+- **Vite** - Build tool & dev server
+- **React Router DOM** - Client-side routing
+- **Bootstrap** - CSS framework
+- **Recharts** - Data visualization library
+- **React Icons** - Icon library (Feather icons)
+- **Axios** - HTTP client for API calls
 
 ### Bước 3: Tạo file `.env`
 
