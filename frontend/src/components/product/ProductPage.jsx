@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { BASE_URL } from '../../api'
 import api from '../../api'
+import { formatCurrencyVND } from '../../utils/format'
 function ProductPage({ setNumCartItems }) {
     const { slug } = useParams()
     const [product, setProduct] = useState({})
@@ -83,7 +84,7 @@ function ProductPage({ setNumCartItems }) {
                             <div className="small mb-1">SKU: BST-498</div>
                             <h1 className="display-5 fw-bolder">{product.name}</h1>
                             <div className="fs-5 mb-5">
-                                <span>{product.price} VND</span>
+                                <span>{formatCurrencyVND(product.price)}</span>
                             </div>
                             <p className="lead">
                                 {product.description}

@@ -4,3 +4,20 @@
 backend/.env
 frontend/.env
 
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django
+*.sqlite3
+media/
+staticfiles/
+
+# Node
+node_modules/
+
+# OS / Editor
+.vscode/
+.DS_Store

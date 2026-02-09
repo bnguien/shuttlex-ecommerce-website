@@ -47,6 +47,7 @@ urlpatterns = [
     path("auth/jwt/create/", EmailOrUsernameTokenObtainPairView.as_view(), name="jwt-create"),
     path("auth/jwt/refresh/", TokenRefreshView.as_view(), name="jwt-refresh"),
     path("auth/jwt/verify/", TokenVerifyView.as_view(), name="jwt-verify"),
+    path("", include("apps.catalog.urls")),
 ]
 
 

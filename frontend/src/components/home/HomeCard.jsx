@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import styles from './HomeCard.module.css'
 import { BASE_URL } from '../../api'
+import { formatCurrencyVND } from '../../utils/format'
 function HomeCard({ product }) {
     return (
         <div className={`col-md-3 ${styles.col}`}>
@@ -14,7 +15,7 @@ function HomeCard({ product }) {
                     </div>
                     <div className={styles.cardBody}>
                         <h5 className={`${styles.cardTitle} mb-1`}>{product.name}</h5>
-                        <h6 className={styles.cardText}>{product.price} VND</h6>
+                        <h6 className={styles.cardText}>{formatCurrencyVND(product.price)}</h6>
                     </div>
                 </div>
             </Link>

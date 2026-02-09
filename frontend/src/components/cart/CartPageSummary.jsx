@@ -1,8 +1,5 @@
 
-// Hàm format tiền tệ với dấu phân cách
-function formatCurrency(amount) {
-    return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-}
+import { formatCurrencyVND } from '../../utils/format'
 
 function CartPageSummary({ cartItems }) {
     function calculateSubtotal() {
@@ -19,15 +16,15 @@ function CartPageSummary({ cartItems }) {
             <div className="d-flex flex-column gap-2">
                 <div className="d-flex justify-content-between">
                     <span>Subtotal:</span>
-                    <span>{formatCurrency(calculateSubtotal())} VND</span>
+                    <span>{formatCurrencyVND(calculateSubtotal())}</span>
                 </div>
                 <div className="d-flex justify-content-between">
                     <span>Tax:</span>
-                    <span>{formatCurrency(100000)} VND</span>
+                    <span>{formatCurrencyVND(100000)}</span>
                 </div>
                 <div className="d-flex justify-content-between">
                     <span>Total:</span>
-                    <strong>{formatCurrency(calculateSubtotal() + 100000)} VND</strong>
+                    <strong>{formatCurrencyVND(calculateSubtotal() + 100000)}</strong>
                 </div>
             </div>
             <div className="mb-5 mt-4">

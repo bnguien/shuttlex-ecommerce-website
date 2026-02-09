@@ -1,24 +1,22 @@
+import { useEffect, useState } from 'react'
 import CategoryCard from './CategoryCard'
 import { useScrollAnimation } from '../../utils/useScrollAnimation'
-import racket from '../../imgs/racket.jpg'
-import shoes from '../../imgs/shoes.jpg'
-import apparel from '../../imgs/apparel.jpg'
-import accessories from '../../imgs/accessories.jpg'
-import shuttlecock from '../../imgs/shuttlecock.jpg'
-import bag from '../../imgs/bags.jpg'
 import categoryBg from '../../imgs/category-bg.jpg'
-
-const categories = [
-    { image: racket, name: 'Rackets', slug: 'rackets' },
-    { image: shoes, name: 'Shoes', slug: 'shoes' },
-    { image: apparel, name: 'Apparel', slug: 'apparel' },
-    { image: accessories, name: 'Accessories', slug: 'accessories' },
-    { image: shuttlecock, name: 'Shuttlecocks', slug: 'shuttlecocks' },
-    { image: bag, name: 'Bags', slug: 'bags' },
-]
+import api, { BASE_URL } from '../../api'
 
 function Categories() {
     const [ref, isVisible] = useScrollAnimation()
+    const [categories, setCategories] = useState([])
+
+    useEffect(() => {
+        api.get('categories/')
+            .then((res) => {
+                setCategories(res.data)
+            })
+            .catch((err) => {
+                console.log(err.message)
+            })
+    }, [])
 
     return (
         <div className="py-5" style={{ backgroundImage: `url(${categoryBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
@@ -44,7 +42,7 @@ function Categories() {
                     {categories.map((item, index) => (
                         <CategoryCard
                             key={index}
-                            image={item.image}
+                            image={item.image ? `${BASE_URL}${item.image}` : ''}
                             name={item.name}
                             slug={item.slug}
                         />

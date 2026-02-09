@@ -1,6 +1,7 @@
 import api, { BASE_URL } from '../../api'
 import styles from './CartPageItem.module.css'
 import { useState } from 'react'
+import { formatCurrencyVND } from '../../utils/format'
 
 function CartPageItem({ item, onRemove, onUpdate }) {
     const [quantity, setQuantity] = useState(item?.quantity || 1)
@@ -43,7 +44,7 @@ function CartPageItem({ item, onRemove, onUpdate }) {
             </div>
             <div className="flex-grow-1 mx-3">
                 <h6 className="mb-1">{item.product?.name}</h6>
-                <p className="mb-0 text-muted">{item.product?.price} VND</p>
+                <p className="mb-0 text-muted">{formatCurrencyVND(item.product?.price)}</p>
             </div>
             <div className="mx-3" style={{ width: "90px" }}>
                 <input
