@@ -1,12 +1,6 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from .models import Product, Category
-from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer
-# Create your views here.
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .models import Product, Category
@@ -16,7 +10,7 @@ from .serializers import ProductSerializer, ProductDetailSerializer, CategorySer
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def products(request):
-    qs = Product.objects.filter(is_active=True).select_related("category")
+    qs = Product.objects.filter(is_active=True).select_related("category", "brand")
 
     category_slug = request.GET.get("category")
     if category_slug:
@@ -29,7 +23,9 @@ def products(request):
 @permission_classes([AllowAny])
 def product_detail(request, slug):
     product = get_object_or_404(
-        Product.objects.select_related("category").filter(is_active=True),
+        Product.objects.select_related("category", "brand")
+                       .prefetch_related("variants__size")
+                       .filter(is_active=True),
         slug=slug
     )
     serializer = ProductDetailSerializer(product)
@@ -39,6 +35,6 @@ def product_detail(request, slug):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def categories(request):
-    qs = Category.objects.all().order_by("name")
+    qs = Category.objects.filter(is_active=True).order_by("name")
     serializer = CategorySerializer(qs, many=True)
     return Response(serializer.data)
