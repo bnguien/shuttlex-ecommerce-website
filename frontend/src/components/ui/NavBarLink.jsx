@@ -1,11 +1,31 @@
 import { NavLink, useNavigate, Link, useLocation } from "react-router-dom"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
+import { FaChevronDown } from "react-icons/fa6"
 import { AuthContext } from "../context/AuthContext.jsx"
+import api from "../../api"
+import styles from "./NavBarLink.module.css"
 
 const NavBarLink = () => {
     const { isAuthenticated, username, logout } = useContext(AuthContext)
     const navigate = useNavigate()
     const location = useLocation()
+    const [categories, setCategories] = useState([])
+    const [isProductsOpen, setIsProductsOpen] = useState(false)
+
+    useEffect(() => {
+        let isMounted = true
+        api.get('categories/')
+            .then((res) => {
+                if (isMounted) {
+                    setCategories(Array.isArray(res.data) ? res.data : [])
+                }
+            })
+            .catch(() => {})
+
+        return () => {
+            isMounted = false
+        }
+    }, [])
 
     const handleLogout = async () => {
         await logout()
@@ -63,15 +83,43 @@ const NavBarLink = () => {
                         About
                     </NavLink>
                 </li>
-                 <li className="nav-item">
+                <li
+                    className={`nav-item ${styles.productsMenu} ${isProductsOpen ? styles.dropdownOpen : ""}`}
+                    onMouseEnter={() => setIsProductsOpen(true)}
+                    onMouseLeave={() => setIsProductsOpen(false)}
+                >
                     <NavLink
                         to="/products"
                         className={({ isActive }) =>
                             isActive ? "nav-link active fw-semibold" : "nav-link fw-semibold"
                         }
+                        onClick={() => setIsProductsOpen(false)}
                     >
                         Products
+                        <span
+                            className={`${styles.productsArrow} ${isProductsOpen ? styles.productsArrowOpen : ""}`}
+                            aria-hidden="true"
+                        >
+                            <FaChevronDown />
+                        </span>
                     </NavLink>
+                    <div className={styles.dropdown}>
+                        <div className={styles.dropdownGrid}>
+                            {categories.length === 0 && (
+                                <span className={styles.dropdownEmpty}>No categories</span>
+                            )}
+                            {categories.map((category) => (
+                                <Link
+                                    key={category.id}
+                                    to={`/products?category=${category.slug}`}
+                                    className={styles.dropdownItem}
+                                    onClick={() => setIsProductsOpen(false)}
+                                >
+                                    {category.name}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
                 </li>
                 <li className="nav-item">
                     <NavLink
