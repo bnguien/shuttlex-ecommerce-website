@@ -1,8 +1,157 @@
-import React from 'react'
-
+import { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
+import FilterSideBar from "./FilterSideBar"
+import HomeCard from "../home/HomeCard"
+import api from "../../api"
 function ProductPage() {
+  const [products, setProducts] = useState([])
+  const [searchParams] = useSearchParams()
+  const category = searchParams.get("category")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [loaded, setLoaded] = useState(false)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const pageSize = 12
+
+  useEffect(() => {
+    setPage(1)
+  }, [category])
+
+  useEffect(() => {
+    setLoading(true)
+    setLoaded(false)
+    setError("")
+    const params = {
+      page,
+      page_size: pageSize,
+      ...(category ? { category } : {})
+    }
+    api.get("products", { params })
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setProducts(res.data)
+          setTotalCount(res.data.length)
+          setTotalPages(1)
+        } else {
+          setProducts(res.data.results || [])
+          setTotalCount(res.data.count || 0)
+          setTotalPages(res.data.total_pages || 0)
+        }
+        setLoading(false)
+        setLoaded(true)
+      })
+      .catch(err => {
+        console.error(err)
+        setLoading(false)
+        setError(err.message)
+      }
+    )
+  }, [category, page])
+
+  const getPageNumbers = () => {
+    if (totalPages <= 1) return []
+    const maxButtons = 5
+    let start = Math.max(1, page - Math.floor(maxButtons / 2))
+    let end = Math.min(totalPages, start + maxButtons - 1)
+    if (end - start + 1 < maxButtons) {
+      start = Math.max(1, end - maxButtons + 1)
+    }
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+  }
+
+  const pageNumbers = getPageNumbers()
   return (
-    <div>ProductPage</div>
+    <div className="container-fluid p-0" style={{backgroundColor: "#f8f9fa"}}>
+      <div className="row h-100 g-0">
+        <div className='col-2' >
+          <FilterSideBar category={category} />
+        </div>
+        <div className="col-10 d-flex flex-column p-3">
+          <div className="p-4 d-flex flex-row ">
+            <h3 className="fw-semibold">
+              {category && category.charAt(0).toUpperCase() + category.slice(1)}
+            </h3>
+            <div className="ms-auto d-flex align-items-center gap-2">
+              <span className="fw-medium">Sort by:</span>
+              <select className="form-select form-select-sm w-auto">
+                <option value="popularity">Popularity</option>
+                <option value="price_low_high">Price: Low to High</option>
+                <option value="price_high_low">Price: High to Low</option>
+                <option value="newest">Newest Arrivals</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex-grow-1 overflow-auto p-4">
+            {!loading && !error && (
+              <>
+                <div
+                  className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"
+                  style={{
+                    opacity: loaded ? 1 : 0,
+                    transform: loaded ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'opacity 600ms ease-out 200ms, transform 600ms ease-out 200ms'
+                  }}
+                >
+                  {products.map(product => (
+                    <HomeCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                <div
+                  className="text-center mt-5"
+                  style={{
+                    opacity: loaded ? 1 : 0,
+                    transform: loaded ? 'translateY(0)' : 'translateY(20px)',
+                    transition: 'opacity 600ms ease-out 400ms, transform 600ms ease-out 400ms'
+                  }}
+                >
+                </div>
+              </>
+            )}
+          </div>
+          <div className="p-4">
+            {totalPages > 1 && (
+              <nav aria-label="Products pagination" className="d-flex justify-content-center">
+                <ul className="pagination mb-0">
+                  <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                      disabled={page === 1}
+                    >
+                      Prev
+                    </button>
+                  </li>
+                  {pageNumbers.map(pageNum => (
+                    <li key={pageNum} className={`page-item ${pageNum === page ? "active" : ""}`}>
+                      <button className="page-link" onClick={() => setPage(pageNum)}>
+                        {pageNum}
+                      </button>
+                    </li>
+                  ))}
+                  <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={page === totalPages}
+                    >
+                      Next
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            )}
+            {totalCount > 0 && (
+              <div className="text-center mt-2 text-muted">
+                Page {page} of {totalPages} ({totalCount} items)
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
