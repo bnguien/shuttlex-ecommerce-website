@@ -71,7 +71,7 @@ function ProductPage() {
         <div className="col-10 d-flex flex-column p-3">
           <div className="p-4 d-flex flex-row ">
             <h3 className="fw-semibold">
-              {category && category.charAt(0).toUpperCase() + category.slice(1)}
+              {category ? category.charAt(0).toUpperCase() + category.slice(1) : "All Products"}
             </h3>
             <div className="ms-auto d-flex align-items-center gap-2">
               <span className="fw-medium">Sort by:</span>
