@@ -62,7 +62,13 @@ def products(request):
 
     qs = qs.distinct()
 
-    qs = qs.order_by("-created_at")
+    sort = request.GET.get("sort")
+    if sort == "price_asc":
+        qs = qs.order_by("effective_price", "-created_at")
+    elif sort == "price_desc":
+        qs = qs.order_by("-effective_price", "-created_at")
+    else:
+        qs = qs.order_by("-created_at")
 
     page = request.GET.get("page")
     page_size = request.GET.get("page_size")

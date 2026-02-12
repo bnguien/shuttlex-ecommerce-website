@@ -114,10 +114,8 @@ function ProductPage() {
                   }))
                 }
               >
-                <option value="popularity">Popularity</option>
                 <option value="price_low_high">Price: Low to High</option>
                 <option value="price_high_low">Price: High to Low</option>
-                <option value="newest">Newest Arrivals</option>
               </select>
             </div>
           </div>
