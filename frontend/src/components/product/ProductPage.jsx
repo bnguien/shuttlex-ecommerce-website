@@ -13,20 +13,45 @@ function ProductPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
+  const [filters, setFilters] = useState({
+    brands: [],
+    sizes: [],
+    minPrice: "",
+    maxPrice: "",
+    sort: "newest"
+  })
   const pageSize = 12
 
   useEffect(() => {
     setPage(1)
+    setFilters(prev => ({
+      ...prev,
+      sizes: []
+    }))
   }, [category])
+
+  useEffect(() => {
+    setPage(1)
+  }, [filters])
 
   useEffect(() => {
     setLoading(true)
     setLoaded(false)
     setError("")
+    const sortMap = {
+      price_low_high: "price_asc",
+      price_high_low: "price_desc"
+    }
+    const apiSort = sortMap[filters.sort]
     const params = {
       page,
       page_size: pageSize,
-      ...(category ? { category } : {})
+      ...(category ? { category } : {}),
+      ...(filters.brands.length > 0 ? { brands: filters.brands.join(",") } : {}),
+      ...(filters.sizes.length > 0 ? { sizes: filters.sizes.join(",") } : {}),
+      ...(filters.minPrice ? { min_price: filters.minPrice } : {}),
+      ...(filters.maxPrice ? { max_price: filters.maxPrice } : {}),
+      ...(apiSort ? { sort: apiSort } : {})
     }
     api.get("products", { params })
       .then(res => {
@@ -48,7 +73,7 @@ function ProductPage() {
         setError(err.message)
       }
     )
-  }, [category, page])
+  }, [category, page, filters])
 
   const getPageNumbers = () => {
     if (totalPages <= 1) return []
@@ -66,7 +91,11 @@ function ProductPage() {
     <div className="container-fluid p-0" style={{backgroundColor: "#f8f9fa"}}>
       <div className="row h-100 g-0">
         <div className='col-2' >
-          <FilterSideBar category={category} />
+          <FilterSideBar
+            category={category}
+            filters={filters}
+            onChange={setFilters}
+          />
         </div>
         <div className="col-10 d-flex flex-column p-3">
           <div className="p-4 d-flex flex-row ">
@@ -75,7 +104,16 @@ function ProductPage() {
             </h3>
             <div className="ms-auto d-flex align-items-center gap-2">
               <span className="fw-medium">Sort by:</span>
-              <select className="form-select form-select-sm w-auto">
+              <select
+                className="form-select form-select-sm w-auto"
+                value={filters.sort}
+                onChange={(event) =>
+                  setFilters(prev => ({
+                    ...prev,
+                    sort: event.target.value
+                  }))
+                }
+              >
                 <option value="popularity">Popularity</option>
                 <option value="price_low_high">Price: Low to High</option>
                 <option value="price_high_low">Price: High to Low</option>

@@ -1,21 +1,66 @@
 from django.core.paginator import EmptyPage, Paginator
+from django.db.models import Case, DecimalField, F, Min, Q, When
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
+from django.db import models
 from .models import Product, Category, Brand, Size
 from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer
-
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def products(request):
     qs = Product.objects.filter(is_active=True).select_related("category", "brand")
-
+    #Lọc category
     category_slug = request.GET.get("category")
     if category_slug:
         qs = qs.filter(category__slug=category_slug)
+
+    #Lọc brand
+    brands_param = request.GET.get("brands")
+    if brands_param:
+        brand_items = [item.strip() for item in brands_param.split(",") if item.strip()]
+        if brand_items:
+            qs = qs.filter(brand__slug__in=brand_items)
+
+    #Lọc size
+    size_param = request.GET.get("sizes")
+    if size_param:
+        size_items = [item.strip() for item in size_param.split(",") if item.strip()]
+        size_ids = [int(item) for item in size_items if item.isdigit()]
+        size_names = [item for item in size_items if not item.isdigit()]
+        size_filter = Q()
+        if size_ids:
+            size_filter |= Q(variants__size__id__in=size_ids) #(Django ORM : __in là nằm trong list)
+        if size_names:
+            size_filter |= Q(variants__size__name__in=size_names)
+        if size_filter:
+            qs = qs.filter(size_filter)
+        
+    #Lọc price range
+    qs = qs.annotate(
+        min_variant_price=Min(
+            Case(
+                When(
+                    variants__is_active=True,
+                    then=Coalesce("variants__price", "base_price"),
+                ),
+                default=None,
+                output_field=DecimalField(max_digits=10, decimal_places=2),
+            )
+        ),
+        effective_price=Coalesce("min_variant_price", F("base_price")),
+    )
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
+    if min_price:
+        qs = qs.filter(effective_price__gte=min_price) #(__gte >= , __lte <=)
+    if max_price:
+        qs = qs.filter(effective_price__lte=max_price)
+
+    qs = qs.distinct()
 
     qs = qs.order_by("-created_at")
 
