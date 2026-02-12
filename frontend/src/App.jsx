@@ -13,6 +13,7 @@ import ForgotPasswordPage from "./components/user/ForgotPasswordPage"
 import ResetPasswordPage from "./components/user/ResetPasswordPage"
 import DashBoardPage from "./components/dashboard/DashBoardPage"
 import ProductsPage from "./components/admin/products/ProductsPage"
+import CategoriesPage from "./components/admin/categories/CategoriesPage"
 import AdminLayout from "./components/dashboard/AdminLayout"
 import { AuthProvider } from "./components/context/AuthContext"
 import "bootstrap/dist/css/bootstrap.min.css"
@@ -69,6 +70,7 @@ const App = () => {
           >
             <Route path="dashboard" element={<DashBoardPage />} />
             <Route path="products" element={<ProductsPage />} />
+            <Route path="categories" element={<CategoriesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
