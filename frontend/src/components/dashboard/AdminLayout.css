@@ -1,0 +1,73 @@
+.admin-layout {
+  --admin-green: #048e3d;
+  --admin-green-dark: #037a33;
+  --admin-orange: #f28c28;
+  --admin-orange-dark: #e07a16;
+}
+
+.admin-layout .btn-primary {
+  background-color: var(--admin-green);
+  border-color: var(--admin-green);
+}
+
+.admin-layout .btn-primary:hover,
+.admin-layout .btn-primary:focus {
+  background-color: var(--admin-green-dark);
+  border-color: var(--admin-green-dark);
+}
+
+.admin-layout .btn-outline-primary {
+  color: var(--admin-green);
+  border-color: var(--admin-green);
+}
+
+.admin-layout .btn-outline-primary:hover,
+.admin-layout .btn-outline-primary:focus {
+  background-color: var(--admin-green);
+  border-color: var(--admin-green);
+  color: #ffffff;
+}
+
+.admin-layout .btn-link {
+  color: var(--admin-green);
+}
+
+.admin-layout .btn-link:hover,
+.admin-layout .btn-link:focus {
+  color: var(--admin-green-dark);
+}
+
+.admin-layout .btn-danger {
+  background-color: var(--admin-orange);
+  border-color: var(--admin-orange);
+}
+
+.admin-layout .btn-danger:hover,
+.admin-layout .btn-danger:focus {
+  background-color: var(--admin-orange-dark);
+  border-color: var(--admin-orange-dark);
+}
+
+.admin-layout .text-danger {
+  color: var(--admin-orange) !important;
+}
+
+.admin-layout .page-link {
+  color: var(--admin-green);
+}
+
+.admin-layout .page-item.active .page-link {
+  background-color: var(--admin-green);
+  border-color: var(--admin-green);
+  color: #ffffff;
+}
+
+.admin-layout .col-10 .nav-link {
+  color: #0b4f2a;
+}
+
+.admin-layout .col-10 .nav-link.active,
+.admin-layout .col-10 .nav-link:hover,
+.admin-layout .col-10 .nav-link:focus {
+  color: var(--admin-green);
+}

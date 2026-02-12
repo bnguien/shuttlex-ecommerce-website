@@ -57,7 +57,7 @@ function LoginPage() {
       }
       
       if (isAdmin) {
-        navigate("/dashboard", { replace: true });
+        navigate("/admin/dashboard", { replace: true });
       } else {
         const from = location?.state?.from?.pathname || "/";
         navigate(from, { replace: true });

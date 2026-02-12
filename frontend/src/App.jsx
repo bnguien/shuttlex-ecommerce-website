@@ -12,6 +12,8 @@ import VerifyEmailPage from "./components/user/VerifyEmailPage"
 import ForgotPasswordPage from "./components/user/ForgotPasswordPage"
 import ResetPasswordPage from "./components/user/ResetPasswordPage"
 import DashBoardPage from "./components/dashboard/DashBoardPage"
+import ProductsPage from "./components/admin/products/ProductsPage"
+import AdminLayout from "./components/dashboard/AdminLayout"
 import { AuthProvider } from "./components/context/AuthContext"
 import "bootstrap/dist/css/bootstrap.min.css"
 import NotFoundPage from "./components/ui/NotFoundPage"
@@ -61,7 +63,13 @@ const App = () => {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password/:uid/:token" element={<ResetPasswordPage />} />
           </Route>
-          <Route path="/dashboard" element={<AdminRoute><DashBoardPage /></AdminRoute>} />
+          <Route
+            path="/admin"
+            element={<AdminRoute><AdminLayout /></AdminRoute>}
+          >
+            <Route path="dashboard" element={<DashBoardPage />} />
+            <Route path="products" element={<ProductsPage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
