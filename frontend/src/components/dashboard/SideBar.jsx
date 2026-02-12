@@ -1,33 +1,58 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { FiHome, FiGrid, FiBox, FiShoppingBag, FiUsers } from 'react-icons/fi'
 import styles from './SideBar.module.css'
 
 function SideBar() {
   return (
     <div className={`d-flex flex-column p-4 h-100 ${styles.sidebar}`}>
-      <Link className="navbar-brand fw-bold fs-4 text-dark mb-0 text-center" to="/">
+      <Link className="navbar-brand fw-bold fs-4 text-white mb-0 text-center" to="/">
         ShuttleX
       </Link>
       <hr/>
       <nav className="nav flex-column gap-2">
-        <Link to="/admin/dashboard" className="nav-link d-flex align-items-center gap-2">
+        <NavLink
+          to="/admin/dashboard"
+          className={({ isActive }) =>
+            `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
+          }
+        >
           <FiHome /> Dashboard
-        </Link>
-        <Link to="/admin/categories" className="nav-link d-flex align-items-center gap-2">
+        </NavLink>
+        <NavLink
+          to="/admin/categories"
+          className={({ isActive }) =>
+            `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
+          }
+        >
           <FiGrid /> Categories
-        </Link>
-        <Link to="/admin/products" className="nav-link d-flex align-items-center gap-2">
+        </NavLink>
+        <NavLink
+          to="/admin/products"
+          className={({ isActive }) =>
+            `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
+          }
+        >
           <FiBox /> Products
-        </Link>
-        <Link to="/admin/orders" className="nav-link d-flex align-items-center gap-2">
+        </NavLink>
+        <NavLink
+          to="/admin/orders"
+          className={({ isActive }) =>
+            `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
+          }
+        >
           <FiShoppingBag /> Orders
-        </Link>
-        <Link to="/admin/users" className="nav-link d-flex align-items-center gap-2">
+        </NavLink>
+        <NavLink
+          to="/admin/users"
+          className={({ isActive }) =>
+            `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
+          }
+        >
           <FiUsers /> Users
-        </Link>
+        </NavLink>
       </nav>
 
-      <div className="mt-auto pt-3 border-top text-muted small text-center">
+      <div className={`mt-auto pt-3 border-top small text-center ${styles.sidebarFooter}`}>
         ShuttleX Admin<br />
         2026 ShuttleX Inc.
       </div>

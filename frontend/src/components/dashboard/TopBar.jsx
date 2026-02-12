@@ -20,11 +20,24 @@ function TopBar() {
   }
 
   return (
-    <div className="d-flex align-items-center w-100 py-3 px-4 border-bottom bg-white"style={{backgroundColor: '#ffffff'}}>
+    <div
+      className="d-flex align-items-center w-100 py-3 px-4 border-bottom"
+      style={{
+        background: `linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0.05)
+  )`,
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.4)",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)"
+      }}
+    >
       <div className="fs-5 fw-semibold text-dark">
         {getGreeting()}
       </div>
-      
+
       <ul className="navbar-nav d-flex flex-row align-items-center gap-4 ms-auto mb-0">
         {isAuthenticated && (
           <>
@@ -48,9 +61,9 @@ function TopBar() {
                 Logout
               </button>
             </li>
-        </>
-      )}
-    </ul>
+          </>
+        )}
+      </ul>
     </div>
   )
 }
