@@ -1,0 +1,6 @@
+export { default as SizesPage } from "./SizesPage"
+export { default as SizesTable } from "./SizesTable"
+export { default as SizeForm } from "./SizeForm"
+export { default as SizeModal } from "./SizeModal"
+export { default as SizeFilters } from "./SizeFilters"
+export { default as SizeDeleteDialog } from "./SizeDeleteDialog"

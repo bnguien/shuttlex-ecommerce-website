@@ -1,0 +1,22 @@
+.pagination :global(.page-link) {
+  color: #048e3d;
+  border-color: #dee2e6;
+}
+
+.pagination :global(.page-link:hover) {
+  color: #037a33;
+  background-color: #e8f5e9;
+  border-color: #dee2e6;
+}
+
+.pagination :global(.page-item.active .page-link) {
+  background-color: #048e3d;
+  border-color: #048e3d;
+  color: #ffffff;
+}
+
+.pagination :global(.page-item.disabled .page-link) {
+  color: #6c757d;
+  background-color: #fff;
+  border-color: #dee2e6;
+}

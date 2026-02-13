@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styles from './FilterSideBar.module.css'
 import api from '../../api'
-
 function FilterSideBar({ category, filters, onChange }) {
   const [brands, setBrands] = useState([])
   const [sizes, setSizes] = useState([])
@@ -20,8 +19,9 @@ function FilterSideBar({ category, filters, onChange }) {
       .catch(err => console.error(err))
   }, [])
 
+  const sizeType = getCategoryType(category)
+
   useEffect(() => {
-    const sizeType = getCategoryType(category)
     if (sizeType) {
       api.get("sizes/", { params: { type: sizeType } })
         .then(res => setSizes(res.data))
@@ -29,7 +29,7 @@ function FilterSideBar({ category, filters, onChange }) {
     } else {
       setSizes([])
     }
-  }, [category])
+  }, [category, sizeType])
 
   useEffect(() => {
     if (!filters || !onChange) return
@@ -56,7 +56,7 @@ function FilterSideBar({ category, filters, onChange }) {
     list.includes(value) ? list.filter(item => item !== value) : [...list, value]
 
   return (
-    <div className={`d-flex flex-column p-4 h-100 ${styles.filterSidebar}`} style={{backgroundColor: "#f8f9fa"}}>
+    <div className={`d-flex flex-column p-4 h-100 ${styles.filterSidebar}`}>
       <div className="mb-4">
         <h5 className="">Price Range</h5>
         <div className="d-flex align-items-center gap-2">
@@ -118,29 +118,71 @@ function FilterSideBar({ category, filters, onChange }) {
       {sizes.length > 0 && (
         <div className="mb-4">
           <h5 className="">Size</h5>
-          {sizes.map((size, index) => {
-            const sizeValue = String(size.id ?? size.name)
-            return (
-              <div className="form-check" key={size.id || index}>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value={sizeValue}
-                  id={`size${index}`}
-                  checked={filters.sizes.includes(sizeValue)}
-                  onChange={() =>
-                    onChange(prev => ({
-                      ...prev,
-                      sizes: toggleListValue(prev.sizes, sizeValue)
-                    }))
-                  }
-                />
-                <label className="form-check-label" htmlFor={`size${index}`}>
-                  {size.name}
-                </label>
-              </div>
-            )
-          })}
+          {sizeType === "racket" ? (
+            sizes.map((size, index) => {
+              const sizeValue = String(size.id ?? size.name)
+              return (
+                <div className="form-check" key={size.id || index}>
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value={sizeValue}
+                    id={`size${index}`}
+                    checked={filters.sizes.includes(sizeValue)}
+                    onChange={() =>
+                      onChange(prev => ({
+                        ...prev,
+                        sizes: toggleListValue(prev.sizes, sizeValue)
+                      }))
+                    }
+                  />
+                  <label className="form-check-label" htmlFor={`size${index}`}>
+                    {size.name}
+                  </label>
+                </div>
+              )
+            })
+          ) : (
+            <div className={styles.sizesGrid}>
+              {sizes
+                .slice()
+                .sort((a, b) => {
+                  if (sizeType !== "clothes" && sizeType !== "apparel") return 0
+                  const order = ["S", "M", "L", "XL", "XXL", "XXXL"]
+                  const aName = String(a.name || "").trim().toUpperCase()
+                  const bName = String(b.name || "").trim().toUpperCase()
+                  const aIndex = order.indexOf(aName)
+                  const bIndex = order.indexOf(bName)
+                  if (aIndex === -1 && bIndex === -1) return aName.localeCompare(bName)
+                  if (aIndex === -1) return 1
+                  if (bIndex === -1) return -1
+                  return aIndex - bIndex
+                })
+                .map((size, index) => {
+                const sizeValue = String(size.id ?? size.name)
+                return (
+                  <div className={styles.sizeItem} key={size.id || index}>
+                    <input
+                      className={styles.sizeInput}
+                      type="checkbox"
+                      value={sizeValue}
+                      id={`size${index}`}
+                      checked={filters.sizes.includes(sizeValue)}
+                      onChange={() =>
+                        onChange(prev => ({
+                          ...prev,
+                          sizes: toggleListValue(prev.sizes, sizeValue)
+                        }))
+                      }
+                    />
+                    <label className={styles.sizeLabel} htmlFor={`size${index}`}>
+                      {size.name}
+                    </label>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -21,6 +21,66 @@
   cursor: default;
 }
 
+.sidebarGroupWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebarGroupToggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+  cursor: default;
+}
+
+.sidebarGroupToggleInner {
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.sidebarGroupTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-transform: none;
+}
+
+.catalogChevron {
+  transition: transform 0.2s ease;
+}
+
+.catalogChevronOpen {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
+.sidebarGroup {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 12px;
+}
+
+.sidebarGroupOpen {
+  display: flex;
+}
+
+.sidebarSubLink {
+  padding-left: 12px;
+}
+
 .sidebarLink:hover {
   background-color: transparent;
   color: #b6d985 !important;

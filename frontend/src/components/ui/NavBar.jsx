@@ -11,11 +11,14 @@ const NavBar = ({numCartItems, transparent = false}) => {
     
     return (
         <nav
-            className={`navbar navbar-expand-lg ${transparent ? 'navbar-dark' : 'navbar-light bg-white shadow-sm'} py-3 ${transparent ? '' : styles.stickyNavbar}`}
-            style={transparent ? {position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, backgroundColor: 'rgba(0,0,0,0)'} : {}}
+            className={`navbar navbar-expand-lg navbar-dark py-3 ${transparent ? '' : `${styles.stickyNavbar} ${styles.greenNavbar}`}`}
+            style={transparent 
+                ? {position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, backgroundColor: 'rgba(0,0,0,0)'} 
+                : {background: 'radial-gradient(circle, #66c064 0%, #429241 40%, #2f6f2e 100%)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'}
+            }
         >
             <div className="container">
-                <Link className="navbar-brand fw-bold fs-4" to="/" style={transparent ? {color: '#ffffff'} : {}}>
+                <Link className="navbar-brand fw-bold fs-4" to="/" style={transparent ? {color: '#ffffff'} : {color: '#b6d985'}}>
                     ShuttleX
                 </Link>
                 {/* hamburger button dùng cho màn hình nhỏ (mobile,tablet) */}
@@ -32,7 +35,7 @@ const NavBar = ({numCartItems, transparent = false}) => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarContent">
                     <NavLink />
-                    <Link to="/cart" className={`btn ${transparent ? 'btn-outline-light' : 'btn-dark'} ms-3 rounded-pill position-relative ${styles.responsiveCart}`}>
+                    <Link to="/cart" className={`btn btn-outline-light ms-3 rounded-pill position-relative ${styles.responsiveCart}`}>
                         <FaCartShopping />
                         {numCartItems == 0 || <span
                             className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
