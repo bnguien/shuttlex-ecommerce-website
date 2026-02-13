@@ -1,9 +1,57 @@
 .filterSidebar {
-  width: 255px;              
-  min-height: 100vh;        
-  background-color: #ffffff;
+  margin: 38px auto;
+  width: 255px;
+  max-height: fit-content;
+  background: #ffffff;
+  color: #000;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-sizing: border-box;
 }
+
+.sizesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sizeItem {
+  position: relative;
+}
+
+.sizeInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sizeLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid #d8e6d8;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: #ffffff;
+  color: #2f6f2e;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.sizeInput:checked + .sizeLabel {
+  background: #e8f5e9;
+  border-color: #66c064;
+  color: #1f5c1e;
+}
+
+.sizeLabel:hover {
+  border-color: #66c064;
+}
+
 /*
 .filterSidebar .nav-link {
   color: #000;

@@ -9,3 +9,24 @@
     top: 0;
     z-index: 1030;
     }
+
+    .greenNavbar :global(.nav-link) {
+        color: #e8f5e9 !important;
+    }
+
+    .greenNavbar :global(.nav-link.active) {
+        color: #ffffff !important;
+        font-weight: bold;
+    }
+
+    .greenNavbar :global(.nav-link:hover) {
+        color: #ffffff !important;
+    }
+
+    .greenNavbar :global(button.nav-link) {
+        color: #e8f5e9 !important;
+    }
+
+    .greenNavbar :global(button.nav-link:hover) {
+        color: #ffffff !important;
+    }

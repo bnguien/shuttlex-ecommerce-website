@@ -1,0 +1,6 @@
+export { default as BrandsPage } from "./BrandsPage"
+export { default as BrandsTable } from "./BrandsTable"
+export { default as BrandForm } from "./BrandForm"
+export { default as BrandModal } from "./BrandModal"
+export { default as BrandFilters } from "./BrandFilters"
+export { default as BrandDeleteDialog } from "./BrandDeleteDialog"

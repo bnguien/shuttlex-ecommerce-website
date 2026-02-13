@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom"
 import FilterSideBar from "./FilterSideBar"
 import HomeCard from "../home/HomeCard"
 import api from "../../api"
+import styles from "./ProductPage.module.css"
 function ProductPage() {
   const [products, setProducts] = useState([])
   const [searchParams] = useSearchParams()
@@ -88,17 +89,17 @@ function ProductPage() {
 
   const pageNumbers = getPageNumbers()
   return (
-    <div className="container-fluid p-0" style={{backgroundColor: "#f8f9fa"}}>
-      <div className="row h-100 g-0">
-        <div className='col-2' >
+    <div className="p-0" style={{backgroundColor: "#f8f9fa", maxWidth: "100%", overflow: "hidden", boxSizing: "border-box"}}>
+      <div className="d-flex flex-row h-100" style={{maxWidth: "100%"}}>
+        <div className='d-flex justify-content-center flex-shrink-0' style={{padding: "0 8px"}} >
           <FilterSideBar
             category={category}
             filters={filters}
             onChange={setFilters}
           />
         </div>
-        <div className="col-10 d-flex flex-column p-3">
-          <div className="p-4 d-flex flex-row ">
+        <div className="flex-grow-1 d-flex flex-column p-3 ps-0" style={{minWidth: 0, maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden"}}>
+          <div className="p-3 d-flex flex-row ">
             <h3 className="fw-semibold">
               {category ? category.charAt(0).toUpperCase() + category.slice(1) : "All Products"}
             </h3>
@@ -119,15 +120,16 @@ function ProductPage() {
               </select>
             </div>
           </div>
-          <div className="flex-grow-1 overflow-auto p-4">
+          <div className="flex-grow-1 overflow-auto p-2" style={{overflowX: "hidden"}}>
             {!loading && !error && (
               <>
                 <div
-                  className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"
+                  className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3"
                   style={{
                     opacity: loaded ? 1 : 0,
                     transform: loaded ? 'translateY(0)' : 'translateY(30px)',
-                    transition: 'opacity 600ms ease-out 200ms, transform 600ms ease-out 200ms'
+                    transition: 'opacity 600ms ease-out 200ms, transform 600ms ease-out 200ms',
+                    margin: 0
                   }}
                 >
                   {products.map(product => (
@@ -150,7 +152,7 @@ function ProductPage() {
           <div className="p-4">
             {totalPages > 1 && (
               <nav aria-label="Products pagination" className="d-flex justify-content-center">
-                <ul className="pagination mb-0">
+                <ul className={`pagination mb-0 ${styles.pagination}`}>
                   <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
                     <button
                       className="page-link"
