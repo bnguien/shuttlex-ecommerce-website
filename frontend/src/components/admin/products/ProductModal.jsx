@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import ProductForm from "./ProductForm"
 
 const emptyProduct = {
@@ -13,6 +13,10 @@ const emptyProduct = {
 function ProductModal({ open, product, brands, categories, onClose, onSave }) {
   const initialValues = useMemo(() => product || emptyProduct, [product])
   const [values, setValues] = useState(initialValues)
+
+  useEffect(() => {
+    setValues(initialValues)
+  }, [initialValues, open])
 
   if (!open) return null
 
