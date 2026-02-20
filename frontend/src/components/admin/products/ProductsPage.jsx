@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import ProductsTable from "./ProductsTable"
 import ProductFilters from "./ProductFilters"
 import ProductModal from "./ProductModal"
@@ -25,10 +25,10 @@ function ProductsPage() {
   const [totalCount, setTotalCount] = useState(0)
   const pageSize = 12
 
-  useEffect(() => {
+  const loadProducts = useCallback(() => {
     setLoading(true)
     setError("")
-    api.get("products", { params: { page, page_size: pageSize } })
+    return api.get("products", { params: { page, page_size: pageSize } })
       .then(res => {
         if (Array.isArray(res.data)) {
           setProducts(res.data)
@@ -45,7 +45,11 @@ function ProductsPage() {
         setError("Failed to load products.")
       })
       .finally(() => setLoading(false))
-  }, [page])
+  }, [page, pageSize])
+
+  useEffect(() => {
+    loadProducts()
+  }, [loadProducts])
 
   useEffect(() => {
     api.get("brands/")
@@ -81,8 +85,59 @@ function ProductsPage() {
     setDeletingProduct(null)
   }
 
-  const handleSave = (data) => {
-    setIsModalOpen(false)
+  const handleSave = async (data) => {
+    setLoading(true)
+    setError("")
+
+    const formData = new FormData()
+    const appendIfPresent = (key, value) => {
+      if (value === undefined || value === null) return
+      if (typeof value === "string" && value.trim() === "") return
+      formData.append(key, value)
+    }
+
+    appendIfPresent("name", data.name)
+    appendIfPresent("slug", data.slug)
+    appendIfPresent("description", data.description)
+    appendIfPresent("base_price", data.base_price)
+    appendIfPresent("base_stock", data.base_stock)
+    formData.append("is_active", data.is_active ? "true" : "false")
+
+    const categoryId = data.category_id || data.category?.id
+    if (categoryId) {
+      formData.append("category", categoryId)
+    }
+
+    const brandId = data.brand_id || data.brand?.id
+    if (brandId) {
+      formData.append("brand", brandId)
+    }
+
+    if (data.image instanceof File) {
+      formData.append("image", data.image)
+    }
+
+    try {
+      if (data.id) {
+        await api.patch(`update_product/${data.id}/`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        })
+      } else {
+        await api.post("create_product/", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        })
+      }
+
+      setIsModalOpen(false)
+      setEditingProduct(null)
+      await loadProducts()
+    } catch (err) {
+      console.error(err)
+      const message = err?.response?.data || "Failed to save product."
+      setError(typeof message === "string" ? message : "Failed to save product.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleConfirmDelete = () => {

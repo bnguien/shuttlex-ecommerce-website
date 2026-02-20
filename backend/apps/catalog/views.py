@@ -3,11 +3,11 @@ from django.db.models import Case, DecimalField, F, Min, Q, When
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from django.db import models
 from .models import Product, Category, Brand, Size
-from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer
+from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -147,3 +147,21 @@ def sizes(request):
     serializer = SizeSerializer(qs, many=True)
     return Response(serializer.data)
 
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_product(request):
+    serializer = ProductWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        product = serializer.save()
+        return Response(ProductDetailSerializer(product).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    serializer = ProductWriteSerializer(product, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_product = serializer.save()
+        return Response(ProductDetailSerializer(updated_product).data)
+    return Response(serializer.errors, status=400)
