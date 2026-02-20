@@ -7,7 +7,7 @@ function AdminLayout() {
   return (
     <div className="container-fluid vh-100 p-0 admin-layout">
       <div className="row h-100 g-0">
-        <div className="col-2" style={{ backgroundColor: "#048e3d" }}>
+        <div className="col-2" >
           <SideBar />
         </div>
         <div className="col-10 d-flex flex-column">
