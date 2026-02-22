@@ -26,14 +26,14 @@ function SizesPage() {
   const loadSizes = useCallback(() => {
     setLoading(true)
     setError("")
-    return api.get("sizes")
+    return api.get("sizes", { params: { search: filters.search, type: filters.type } })
       .then(res => setSizes(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
         setError("Failed to load sizes.")
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [filters.search, filters.type])
 
   useEffect(() => {
     loadSizes()
