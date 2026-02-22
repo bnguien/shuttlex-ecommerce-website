@@ -147,8 +147,45 @@ function ProductsPage() {
     }
   }
 
-  const handleConfirmDelete = () => {
-    setDeletingProduct(null)
+  const handleConfirmDelete = async () => {
+    if (!deletingProduct?.id) {
+      setDeletingProduct(null)
+      return
+    }
+
+    setLoading(true)
+    setError("")
+    try {
+      await api.delete(`delete_product/${deletingProduct.id}/`)
+      setDeletingProduct(null)
+      await loadProducts()
+    } catch (err) {
+      console.error(err)
+      const payload = err?.response?.data
+      const fallback = "Failed to delete product."
+
+      let message = payload?.detail || payload?.message
+      if (!message && typeof payload === "string") {
+        message = payload
+      }
+      if (!message && payload && typeof payload === "object") {
+        const firstValue = Object.values(payload)[0]
+        if (Array.isArray(firstValue)) {
+          message = firstValue[0]
+        } else if (typeof firstValue === "string") {
+          message = firstValue
+        }
+      }
+      if (!message) {
+        message = err?.response?.status
+          ? `${fallback} (HTTP ${err.response.status})`
+          : fallback
+      }
+
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getPageNumbers = () => {

@@ -1,6 +1,7 @@
 from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Case, DecimalField, F, Min, Q, When
 from django.db.models.functions import Coalesce
+from django.db.models.deletion import ProtectedError
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -165,3 +166,26 @@ def update_product(request, product_id):
         updated_product = serializer.save()
         return Response(ProductDetailSerializer(updated_product).data)
     return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    try:
+        product.delete()
+        return Response({"detail": "Product deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not product.is_active:
+            return Response({"detail": "Product is already inactive.", "deleted": False}, status=200)
+
+        product.is_active = False
+        product.save(update_fields=["is_active", "updated_at"])
+        product.variants.update(is_active=False)
+        return Response(
+            {
+                "detail": "Product is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
