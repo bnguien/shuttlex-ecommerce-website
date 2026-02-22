@@ -147,7 +147,66 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         return str(max_price)
 
     def get_similar_products(self, obj):
-        qs = Product.objects.filter(
-            category=obj.category, is_active=True
-        ).exclude(id=obj.id)[:4]
+        qs = Product.objects.filter(category=obj.category, is_active=True).exclude(id=obj.id)[:4]
         return ProductSerializer(qs, many=True).data
+    
+class ProductWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            'id', 
+            'name', 
+            'slug', 
+            'image', 
+            'description', 
+            'base_price',
+            'base_stock',
+            'is_active',
+            'category',
+            'brand',
+        ]
+
+    def validate_name(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Name is required.")
+        return cleaned
+
+    def validate_slug(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Slug is required.")
+        qs = Product.objects.filter(slug=cleaned)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Slug already exists.")
+        return cleaned
+
+    def validate_base_price(self, value):
+        if value is None:
+            raise serializers.ValidationError("Base price is required.")
+        if value < 0:
+            raise serializers.ValidationError("Base price must be >= 0.")
+        return value
+
+    def validate_base_stock(self, value):
+        if value is None:
+            raise serializers.ValidationError("Base stock is required.")
+        if value < 0:
+            raise serializers.ValidationError("Base stock must be >= 0.")
+        return value
+
+    def validate_category(self, value):
+        if value is None:
+            raise serializers.ValidationError("Category is required.")
+        if not value.is_active:
+            raise serializers.ValidationError("Category is inactive.")
+        return value
+
+    def validate_brand(self, value):
+        if value is None:
+            return value
+        if not value.is_active:
+            raise serializers.ValidationError("Brand is inactive.")
+        return value

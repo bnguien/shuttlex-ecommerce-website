@@ -11,7 +11,7 @@ function SideBar() {
   const toggleCatalog = () => setIsCatalogOpen(prev => !prev)
 
   return (
-    <div className={`d-flex flex-column p-4 h-100 ${styles.sidebar}`}>
+    <div className={`d-flex flex-column p-4 h-100 w-100 ${styles.sidebar}`}>
       <Link className="navbar-brand fw-bold fs-4 text-white mb-0 text-center" to="/">
         ShuttleX
       </Link>
