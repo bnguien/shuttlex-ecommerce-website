@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from django.db import models
 from .models import Product, Category, Brand, Size
-from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer
+from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer, BrandWriteSerializer
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -218,6 +218,47 @@ def brands(request):
     qs = Brand.objects.filter(is_active=True).order_by("name")
     serializer = BrandSerializer(qs, many=True)
     return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_brand(request):
+    serializer = BrandWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        brand = serializer.save()
+        return Response(BrandSerializer(brand).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_brand(request, brand_id):
+    brand = get_object_or_404(Brand, id=brand_id)
+    serializer = BrandWriteSerializer(brand, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_brand = serializer.save()
+        return Response(BrandSerializer(updated_brand).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_brand(request, brand_id):
+    brand = get_object_or_404(Brand, id=brand_id)
+    try:
+        brand.delete()
+        return Response({"detail": "Brand deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not brand.is_active:
+            return Response({"detail": "Brand is already inactive.", "deleted": False}, status=200)
+
+        brand.is_active = False
+        brand.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Brand is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
