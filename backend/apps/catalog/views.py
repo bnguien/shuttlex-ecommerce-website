@@ -215,7 +215,24 @@ def delete_category(request, category_id):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def brands(request):
-    qs = Brand.objects.filter(is_active=True).order_by("name")
+    qs = Brand.objects.all().order_by("name")
+    
+    # Search Brand by name
+    search_query = request.GET.get("search")
+    if search_query:
+        qs = qs.filter(name__icontains=search_query)
+    
+    # Filter by status    
+    status_filter = request.GET.get("status")
+    if status_filter == "active":
+        qs = qs.filter(is_active=True)
+    elif status_filter == "inactive":
+        qs = qs.filter(is_active=False)
+    else:
+        # Default: show only active
+        qs = qs.filter(is_active=True)
+    
+    qs = qs.order_by("name")
     serializer = BrandSerializer(qs, many=True)
     return Response(serializer.data)
 

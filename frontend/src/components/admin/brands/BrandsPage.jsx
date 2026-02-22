@@ -20,14 +20,14 @@ function BrandsPage() {
   const loadBrands = useCallback(() => {
     setLoading(true)
     setError("")
-    return api.get("brands")
+    return api.get("brands", { params: { search: filters.search, status: filters.status } })
       .then(res => setBrands(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
         setError("Failed to load brands.")
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [filters.search, filters.status])
 
   useEffect(() => {
     loadBrands()
