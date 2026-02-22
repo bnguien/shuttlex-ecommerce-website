@@ -8,6 +8,28 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug', 'image', 'is_active', 'created_at', 'updated_at']
 
 
+class CategoryWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug', 'image', 'is_active', 'created_at', 'updated_at']
+
+    def validate_name(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Name is required.")
+        return cleaned
+
+    def validate_slug(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Slug is required.")
+        qs = Category.objects.filter(slug=cleaned)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Slug already exists.")
+        return cleaned
+
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
@@ -149,7 +171,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     def get_similar_products(self, obj):
         qs = Product.objects.filter(category=obj.category, is_active=True).exclude(id=obj.id)[:4]
         return ProductSerializer(qs, many=True).data
-    
+
 class ProductWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -210,3 +232,4 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         if not value.is_active:
             raise serializers.ValidationError("Brand is inactive.")
         return value
+

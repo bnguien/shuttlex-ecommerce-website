@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from django.db import models
 from .models import Product, Category, Brand, Size
-from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer
+from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -121,33 +121,6 @@ def product_detail(request, slug):
     serializer = ProductDetailSerializer(product)
     return Response(serializer.data)
 
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def categories(request):
-    qs = Category.objects.filter(is_active=True).order_by("name")
-    serializer = CategorySerializer(qs, many=True)
-    return Response(serializer.data)
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def brands(request):
-    qs = Brand.objects.filter(is_active=True).order_by("name")
-    serializer = BrandSerializer(qs, many=True)
-    return Response(serializer.data)
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def sizes(request):
-    size_type = request.GET.get("type")
-    qs = Size.objects.all().order_by("name")
-    
-    if size_type:
-        qs = qs.filter(type=size_type)
-    
-    serializer = SizeSerializer(qs, many=True)
-    return Response(serializer.data)
-
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
 def create_product(request):
@@ -189,3 +162,72 @@ def delete_product(request, product_id):
             },
             status=200,
         )
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def categories(request):
+    qs = Category.objects.filter(is_active=True).order_by("name")
+    serializer = CategorySerializer(qs, many=True)
+    return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_category(request):
+    serializer = CategoryWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        category = serializer.save()
+        return Response(CategorySerializer(category).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    serializer = CategoryWriteSerializer(category, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_category = serializer.save()
+        return Response(CategorySerializer(updated_category).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    try:
+        category.delete()
+        return Response({"detail": "Category deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not category.is_active:
+            return Response({"detail": "Category is already inactive.", "deleted": False}, status=200)
+
+        category.is_active = False
+        category.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Category is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def brands(request):
+    qs = Brand.objects.filter(is_active=True).order_by("name")
+    serializer = BrandSerializer(qs, many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def sizes(request):
+    size_type = request.GET.get("type")
+    qs = Size.objects.all().order_by("name")
+    
+    if size_type:
+        qs = qs.filter(type=size_type)
+    
+    serializer = SizeSerializer(qs, many=True)
+    return Response(serializer.data)
+
