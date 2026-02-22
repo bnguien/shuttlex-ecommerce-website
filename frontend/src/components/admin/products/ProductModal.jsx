@@ -10,8 +10,17 @@ const emptyProduct = {
   is_active: true
 }
 
+const normalizeProductForForm = (product) => {
+  if (!product) return emptyProduct
+  return {
+    ...product,
+    base_price: product.base_price ?? product.price ?? "",
+    base_stock: product.base_stock ?? product.stock ?? "",
+  }
+}
+
 function ProductModal({ open, product, brands, categories, sizes, onClose, onSave }) {
-  const initialValues = useMemo(() => product || emptyProduct, [product])
+  const initialValues = useMemo(() => normalizeProductForForm(product), [product])
   const [values, setValues] = useState(initialValues)
 
   useEffect(() => {
