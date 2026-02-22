@@ -296,12 +296,18 @@ def delete_brand(request, brand_id):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def sizes(request):
-    size_type = request.GET.get("type")
     qs = Size.objects.all().order_by("name")
-    
+
+    # Search by name
+    search_query = request.GET.get("search")
+    if search_query:
+        qs = qs.filter(name__icontains=search_query)
+
+    # Filter by type
+    size_type = request.GET.get("type")
     if size_type:
         qs = qs.filter(type=size_type)
-    
+
     serializer = SizeSerializer(qs, many=True)
     return Response(serializer.data)
 
