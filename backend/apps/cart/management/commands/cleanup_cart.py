@@ -4,7 +4,7 @@ import logging
 from django.core.management import BaseCommand
 from django.utils import timezone
 
-from backend.apps.cart.models import Cart
+from apps.cart.models import Cart
 
 logger = logging.getLogger(__name__)
 
