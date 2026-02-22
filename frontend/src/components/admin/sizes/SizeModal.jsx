@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import SizeForm from "./SizeForm"
 
 const emptySize = {
@@ -10,6 +10,12 @@ function SizeModal({ open, size, onClose, onSave, sizeTypes }) {
   const initialValues = useMemo(() => size || emptySize, [size])
   const [values, setValues] = useState(initialValues)
 
+   useEffect(() => {
+      if (open) {
+        setValues(initialValues)
+      }
+    }, [open, initialValues])
+  
   if (!open) return null
 
   const handleSubmit = (event) => {
