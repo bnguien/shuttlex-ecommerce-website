@@ -37,7 +37,7 @@ const NavBar = ({numCartItems, transparent = false}) => {
                     <NavLink />
                     <Link to="/cart" className={`btn btn-outline-light ms-3 rounded-pill position-relative ${styles.responsiveCart}`}>
                         <FaCartShopping />
-                        {numCartItems == 0 || <span
+                        {numCartItems > 0 && <span
                             className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
                             style={{ fontSize: "0.85rem", padding: "0.5em 0.65em", backgroundColor: "#1b0f4a" }}
                         >

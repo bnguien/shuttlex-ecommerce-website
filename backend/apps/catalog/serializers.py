@@ -23,6 +23,7 @@ class SizeSerializer(serializers.ModelSerializer):
 class ProductVariantSerializer(serializers.ModelSerializer):
     size = SizeSerializer(read_only=True)
     display_price = serializers.SerializerMethodField()
+    is_on_sale = serializers.SerializerMethodField()
     
     class Meta:
         model = ProductVariant
@@ -33,14 +34,20 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             'sku', 
             'stock', 
             'price', 
+            'sale_price', 
+            'sale_ends_at',
             'display_price',
+            'is_on_sale',
             'is_active',
             'created_at',
             'updated_at'
         ]
     
     def get_display_price(self, obj):
-        return str(obj.get_price())
+        return str(obj.get_effective_price())
+
+    def get_is_on_sale(self, obj):
+        return obj.is_on_sale()
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -48,6 +55,8 @@ class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     price = serializers.SerializerMethodField()
     stock = serializers.SerializerMethodField()
+    price_min = serializers.SerializerMethodField()
+    price_max = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -58,6 +67,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'image', 
             'description', 
             'price', 
+            'price_min',
+            'price_max',
             'stock', 
             'is_active',
             'category',
@@ -67,10 +78,18 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_price(self, obj):
-        return str(obj.get_price())
+        return str(obj.get_effective_price())
 
     def get_stock(self, obj):
         return obj.get_stock()
+
+    def get_price_min(self, obj):
+        min_price, _ = obj.get_price_range()
+        return str(min_price)
+
+    def get_price_max(self, obj):
+        _, max_price = obj.get_price_range()
+        return str(max_price)
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -81,6 +100,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     has_variants = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
     stock = serializers.SerializerMethodField()
+    price_min = serializers.SerializerMethodField()
+    price_max = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -91,6 +112,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'image',
             'description',
             'price',
+            'price_min',
+            'price_max',
             'stock',
             'is_active',
             'category',
@@ -99,7 +122,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'has_variants',
             'similar_products',
             'created_at',
-            'updated_at'
+            'updated_at',
         ]
 
     def get_has_variants(self, obj):
@@ -110,10 +133,18 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         return ProductVariantSerializer(qs, many=True).data
 
     def get_price(self, obj):
-        return str(obj.get_price())
+        return str(obj.get_effective_price())
 
     def get_stock(self, obj):
         return obj.get_stock()
+
+    def get_price_min(self, obj):
+        min_price, _ = obj.get_price_range()
+        return str(min_price)
+
+    def get_price_max(self, obj):
+        _, max_price = obj.get_price_range()
+        return str(max_price)
 
     def get_similar_products(self, obj):
         qs = Product.objects.filter(category=obj.category, is_active=True).exclude(id=obj.id)[:4]

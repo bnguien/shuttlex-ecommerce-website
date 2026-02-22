@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.db.models import Sum
-
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -62,8 +62,16 @@ class Product(models.Model):
     )
     base_stock = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
-    category = models.ForeignKey(Category, related_name="products", on_delete=models.PROTECT)
-    brand = models.ForeignKey(Brand, related_name="products", on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey(
+        Category, related_name="products", on_delete=models.PROTECT
+    )
+    brand = models.ForeignKey(
+        Brand, 
+        related_name="products", 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -82,22 +90,29 @@ class Product(models.Model):
     def has_variants(self):
         return self.variants.filter(is_active=True).exists()
 
-    def get_price(self):
-        if self.has_variants():
-            v = (
-                self.variants.filter(is_active=True)
-                .annotate(
-                    effective_price=models.Case(
-                        models.When(price__isnull=False, then="price"),
-                        default="product__base_price",
-                        output_field=models.DecimalField(max_digits=10, decimal_places=2),
-                    )
-                )
-                .order_by("effective_price")
-                .first()
-            )
-            return v.get_price() if v else self.base_price
+    def get_effective_price(self):
+        """
+        Giá “thấp nhất có thể mua” hiện tại:
+        - Nếu có variant active: min(get_effective_price() của variant)
+        - Nếu không: base_price
+        """
+        active_variants = self.variants.filter(is_active=True)
+        if active_variants.exists():
+            prices = [v.get_effective_price() for v in active_variants]
+            return min(prices) if prices else self.base_price
         return self.base_price
+
+    def get_price_range(self):
+        """
+        Trả khoảng giá (min, max) dựa trên tất cả variants active.
+        Nếu không có variants → (base_price, base_price).
+        """
+        active_variants = self.variants.filter(is_active=True)
+        if not active_variants.exists():
+            return (self.base_price, self.base_price)
+
+        prices = [v.get_effective_price() for v in active_variants]
+        return (min(prices), max(prices))
 
     def get_stock(self):
         if self.has_variants():
@@ -107,18 +122,44 @@ class Product(models.Model):
 
 
 class ProductVariant(models.Model):
-    product = models.ForeignKey(Product, related_name="variants", on_delete=models.CASCADE)
-    size = models.ForeignKey(Size, related_name="variants", on_delete=models.PROTECT, null=True, blank=True)
+    product = models.ForeignKey(
+        Product, 
+        related_name="variants", on_delete=models.CASCADE
+    )
+    size = models.ForeignKey(
+        Size, 
+        related_name="variants", 
+        on_delete=models.PROTECT, 
+        null=True, 
+        blank=True
+    )
     color = models.CharField(max_length=50, blank=True, default="")
     sku = models.CharField(max_length=64, unique=True, blank=True, null=True)
+
     stock = models.PositiveIntegerField(default=0)
+
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,
         blank=True,
         validators=[MinValueValidator(0)],
+        help_text="Giá gốc của loại sản phẩm. Nếu để trống sẽ fallback về base_price của Product.",
     )
+    sale_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0)],
+        help_text="Giá khuyến mãi; nếu null hoặc hết hạn sẽ không dùng.",
+    )
+    sale_ends_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Thời hạn sale; nếu null thì sale không giới hạn theo thời gian.",
+    )
+
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -145,8 +186,30 @@ class ProductVariant(models.Model):
             parts.append(self.color)
         return " - ".join(parts)
 
+    def is_on_sale(self):
+        """
+        Trả True nếu sale_price hợp lệ và chưa hết hạn.
+        """
+        if self.sale_price is None:
+            return False
+        if self.sale_ends_at is None:
+            return True
+        return timezone.now() <= self.sale_ends_at
+    
+    def get_effective_price(self):
+        """
+        Giá dùng để bán:
+        - Nếu sale_price còn hiệu lực → sale_price
+        - Ngược lại: price nếu có, else product.base_price
+        """
+        if self.is_on_sale():
+            return self.sale_price
+        if self.price is not None:
+            return self.price
+        return self.product.base_price
+
     def get_price(self):
-        return self.price if self.price is not None else self.product.base_price
+        return self.get_effective_price()
 
     def save(self, *args, **kwargs):
         if not self.sku:
