@@ -43,6 +43,7 @@ Kích hoạt virtual environment:
 **Trên Windows:**
 ```bash
 venv\Scripts\activate
+.\venv\Scripts\Activata.ps1
 ```
 
 **Trên macOS/Linux:**

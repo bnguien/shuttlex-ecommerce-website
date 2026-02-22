@@ -1,8 +1,113 @@
 function ProductForm({ values, brands = [], categories = [], onChange, onSubmit, onCancel }) {
   const variants = Array.isArray(values.variants) ? values.variants : []
+  
+  const generateSlug = (text) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD') //tách dấu
+      .replace(/[\u0300-\u036f]/g, '') //xóa dấu
+      .replace(/[^\w\s-]/g, '') // Xóa ký tự đặc biệt
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const variants = values.variants || [];
+    
+    if (!values.name?.trim()) {
+      alert("Tên sản phẩm không được để trống!");
+      return;
+    }
+    
+    if (!values.category_id && !values.category?.id) {
+      alert("Vui lòng chọn Danh mục cho sản phẩm!");
+      return;
+    }
+    
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    if (values.slug && !slugRegex.test(values.slug)) {
+      alert("Slug không hợp lệ! Chỉ dùng chữ thường, số và dấu gạch ngang (vd: vot-cau-long-yonex).");
+      return;
+    }
+
+    if (Number(values.base_price) < 0 || Number(values.base_stock) < 0) {
+      alert("Giá gốc và tồn kho không được là số âm!");
+      return;
+    }
+
+    const skuSet = new Set();
+    const variantComboSet = new Set();
+
+    for (let i = 0; i < variants.length; i++) {
+      const v = variants[i];
+      const rowIndex = i + 1;
+
+      const vPrice = Number(v.Price || 0);
+      const vSale = Number(v.sale_price || 0);
+      const vStock = Number(v.stock || 0);
+      const basePrice = Number(values.base_price || 0);
+
+      if (vPrice < 0 || vStock < 0 || vSale < 0) {
+        alert(`Biến thể hàng ${rowIndex} có giá trị âm. Vui lòng kiểm tra lại!`);
+        return;
+      }
+
+      const sizeId = v.size_id || v.size?.id || "";
+      const color = v.color?.trim().toLowerCase() || "";
+      const comboKey = `${sizeId}-${color}`;
+
+      if (variantComboSet.has(comboKey)) {
+        alert(`Biến thể hàng ${rowIndex} bị trùng lặp Size và Màu với một hàng khác!`);
+        return;
+      }
+      variantComboSet.add(comboKey);
+      
+      if (v.sku?.trim()) {
+        if (skuSet.has(v.sku.trim())) {
+          alert(`Mã SKU "${v.sku}" bị trùng lặp ở hàng ${rowIndex}. SKU phải là duy nhất!`);
+          return;
+        }
+        skuSet.add(v.sku.trim());
+      }
+
+      if (!v.price && !values.base_price) {
+        alert(`Biến thể hàng ${rowIndex} chưa có giá và sản phẩm cũng không có Giá gốc!`);
+        return;
+      }
+
+      if (!sizeId && !color) {
+        alert(`Biến thể hàng ${rowIndex} phải có ít nhất Size hoặc Màu sắc!`);
+        return;
+      }
+
+      if (v.sale_price && vSale >= (vPrice || basePrice)) {
+        alert(`Hàng ${rowIndex}: Giá Sale phải nhỏ hơn giá gốc!`);
+        return;
+      }
+    }
+
+    if (variants.length === 0 && !values.base_price) {
+      alert("Sản phẩm không có biến thể phải có giá gốc (Base Price)!");
+      return;
+    }
+
+    onSubmit(event);
+  }
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
+    
+    if (name === "name" && !values.slug) {
+      onChange({
+        ...values,
+        name: value,
+        slug: generateSlug(value)
+      });
+      return;
+    }
     onChange({
       ...values,
       [name]: type === "checkbox" ? checked : value
@@ -43,7 +148,7 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit}>
       <div className="row g-3">
         <div className="col-md-6">
           <label className="form-label">Name</label>
@@ -167,6 +272,7 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
                   <th>Color</th>
                   <th>SKU</th>
                   <th>Price</th>
+                  <th>Sale Price</th>
                   <th>Stock</th>
                   <th>Active</th>
                   <th className="text-end">Actions</th>
@@ -175,30 +281,31 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
               <tbody>
                 {variants.map((variant, index) => (
                   <tr key={index}>
-                    <td>
+                    <td> 
+                      {/*Sửa lại để Django nhận lại ID cho size thay vì text, nên dùng select ở đây */}
                       <input
-                        className="form-control"
-                        value={variant.size || ""}
-                        onChange={(event) => handleVariantChange(index, "size", event.target.value)}
+                        className="form-control form-control-sm"
+                        value={variant.size_id || variant.size?.id || ""}
+                        onChange={(event) => handleVariantChange(index, "size_id", event.target.value)}
                       />
                     </td>
                     <td>
                       <input
-                        className="form-control"
+                        className="form-control form-control-sm"
                         value={variant.color || ""}
                         onChange={(event) => handleVariantChange(index, "color", event.target.value)}
                       />
                     </td>
                     <td>
                       <input
-                        className="form-control"
+                        className="form-control form-control-sm"
                         value={variant.sku || ""}
                         onChange={(event) => handleVariantChange(index, "sku", event.target.value)}
                       />
                     </td>
                     <td>
                       <input
-                        className="form-control"
+                        className="form-control form-control-sm"
                         type="number"
                         value={variant.price || ""}
                         onChange={(event) => handleVariantChange(index, "price", event.target.value)}
@@ -206,9 +313,18 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
                     </td>
                     <td>
                       <input
-                        className="form-control"
+                        className="form-control form-control-sm border-danger"
                         type="number"
-                        value={variant.stock || ""}
+                        placeholder="Giá sale"
+                        value={variant.sale_price || ""}
+                        onChange={(event) => handleVariantChange(index, "sale_price", event.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="form-control form-control-sm"
+                        type="number"
+                        value={variant.stock || 0}
                         onChange={(event) => handleVariantChange(index, "stock", event.target.value)}
                       />
                     </td>
@@ -216,7 +332,7 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
                       <input
                         className="form-check-input"
                         type="checkbox"
-                        checked={variant.is_active !== false}
+                        checked={Boolean(variant.is_active)}
                         onChange={(event) =>
                           handleVariantChange(index, "is_active", event.target.checked)
                         }

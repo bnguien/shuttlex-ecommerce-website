@@ -48,6 +48,8 @@ urlpatterns = [
     path("auth/jwt/refresh/", TokenRefreshView.as_view(), name="jwt-refresh"),
     path("auth/jwt/verify/", TokenVerifyView.as_view(), name="jwt-verify"),
     path("", include("apps.catalog.urls")),
+    path("", include("apps.cart.urls")),
+    path("", include("apps.orders.urls")),
 ]
 
 
