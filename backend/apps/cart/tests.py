@@ -5,8 +5,8 @@ from datetime import timedelta
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from backend.apps.catalog.models import Category, Product, ProductVariant, Brand, Size
-from backend.apps.cart.models import Cart, CartItem
+from apps.catalog.models import Category, Product, ProductVariant, Brand, Size
+from apps.cart.models import Cart, CartItem
 
 class CartAPITestCase(APITestCase):
      def setUp(self):

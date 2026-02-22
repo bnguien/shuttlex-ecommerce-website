@@ -7,7 +7,7 @@ import styles from "./NavBar.module.css"
 import NavLink from "./NavBarLink.jsx"
 
 const NavBar = ({numCartItems, transparent = false}) => {
-    const { isAuthenticated } = useContext(AuthContext)
+    useContext(AuthContext)
     
     return (
         <nav

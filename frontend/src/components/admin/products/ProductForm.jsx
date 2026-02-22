@@ -271,13 +271,9 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
                   <th>Size</th>
                   <th>Color</th>
                   <th>SKU</th>
-<<<<<<< HEAD
-=======
                   <th>Price</th>
                   <th>Sale Price</th>
->>>>>>> 6fa8bce77dd4adacdac70bb5f03a02bb2d2650b1
                   <th>Stock</th>
-                  <th>Price</th>
                   <th>Active</th>
                   <th className="text-end">Actions</th>
                 </tr>
@@ -285,7 +281,6 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
               <tbody>
                 {variants.map((variant, index) => (
                   <tr key={index}>
-<<<<<<< HEAD
                     <td>
                       <select
                         className="form-select"
@@ -299,15 +294,6 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
                           </option>
                         ))}
                       </select>
-=======
-                    <td> 
-                      {/*Sửa lại để Django nhận lại ID cho size thay vì text, nên dùng select ở đây */}
-                      <input
-                        className="form-control form-control-sm"
-                        value={variant.size_id || variant.size?.id || ""}
-                        onChange={(event) => handleVariantChange(index, "size_id", event.target.value)}
-                      />
->>>>>>> 6fa8bce77dd4adacdac70bb5f03a02bb2d2650b1
                     </td>
                     <td>
                       <input
@@ -386,5 +372,6 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
     </form>
   )
 }
+
 
 export default ProductForm
