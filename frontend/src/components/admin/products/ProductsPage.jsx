@@ -20,6 +20,7 @@ function ProductsPage() {
   const [error, setError] = useState("")
   const [brands, setBrands] = useState([])
   const [categories, setCategories] = useState([])
+  const [sizes, setSizes] = useState([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
@@ -60,6 +61,12 @@ function ProductsPage() {
   useEffect(() => {
     api.get("categories/")
       .then(res => setCategories(Array.isArray(res.data) ? res.data : []))
+      .catch(err => console.error(err))
+  }, [])
+
+  useEffect(() => {
+    api.get("sizes/")
+      .then(res => setSizes(Array.isArray(res.data) ? res.data : []))
       .catch(err => console.error(err))
   }, [])
 
@@ -219,6 +226,7 @@ function ProductsPage() {
         product={editingProduct}
         brands={brands}
         categories={categories}
+        sizes={sizes}
         onClose={handleModalClose}
         onSave={handleSave}
       />

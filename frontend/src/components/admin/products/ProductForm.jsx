@@ -1,4 +1,4 @@
-function ProductForm({ values, brands = [], categories = [], onChange, onSubmit, onCancel }) {
+function ProductForm({ values, brands = [], categories = [], sizes = [], onChange, onSubmit, onCancel }) {
   const variants = Array.isArray(values.variants) ? values.variants : []
 
   const handleChange = (event) => {
@@ -34,7 +34,7 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
   const addVariant = () => {
     updateVariants([
       ...variants,
-      { size: "", color: "", sku: "", price: "", stock: "", is_active: true }
+      { size_id: "", color: "", sku: "", price: "", stock: "", is_active: true }
     ])
   }
 
@@ -166,8 +166,8 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
                   <th>Size</th>
                   <th>Color</th>
                   <th>SKU</th>
-                  <th>Price</th>
                   <th>Stock</th>
+                  <th>Price</th>
                   <th>Active</th>
                   <th className="text-end">Actions</th>
                 </tr>
@@ -176,11 +176,18 @@ function ProductForm({ values, brands = [], categories = [], onChange, onSubmit,
                 {variants.map((variant, index) => (
                   <tr key={index}>
                     <td>
-                      <input
-                        className="form-control"
-                        value={variant.size || ""}
-                        onChange={(event) => handleVariantChange(index, "size", event.target.value)}
-                      />
+                      <select
+                        className="form-select"
+                        value={variant.size_id || variant.size?.id || ""}
+                        onChange={(event) => handleVariantChange(index, "size_id", event.target.value)}
+                      >
+                        <option value="">Select size</option>
+                        {sizes.map((size) => (
+                          <option key={size.id} value={size.id}>
+                            {size.name}
+                          </option>
+                        ))}
+                      </select>
                     </td>
                     <td>
                       <input

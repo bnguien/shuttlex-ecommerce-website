@@ -10,7 +10,7 @@ const emptyProduct = {
   is_active: true
 }
 
-function ProductModal({ open, product, brands, categories, onClose, onSave }) {
+function ProductModal({ open, product, brands, categories, sizes, onClose, onSave }) {
   const initialValues = useMemo(() => product || emptyProduct, [product])
   const [values, setValues] = useState(initialValues)
 
@@ -39,6 +39,7 @@ function ProductModal({ open, product, brands, categories, onClose, onSave }) {
                 values={values}
                 brands={brands}
                 categories={categories}
+                sizes={sizes}
                 onChange={setValues}
                 onSubmit={handleSubmit}
                 onCancel={onClose}
