@@ -18,6 +18,7 @@ import BrandsPage from "./components/admin/brands/BrandsPage"
 import SizesPage from "./components/admin/sizes/SizesPage"
 import AdminLayout from "./components/dashboard/AdminLayout"
 import { AuthProvider } from "./components/context/AuthContext"
+import { ToastProvider } from "./components/ui/Toast"
 import "bootstrap/dist/css/bootstrap.min.css"
 import NotFoundPage from "./components/ui/NotFoundPage"
 import AboutPage from './components/about/AboutPage'
@@ -27,26 +28,22 @@ import api from "./api"
 import ProtectedRoute from "./components/ui/ProtectedRoute"
 import AdminRoute from "./components/ui/AdminRoute"
 
+const CART_CODE_KEY = "cart_code"
+
 const App = () => {
-  const [numCartItems, setNumCartItems] = useState(0);
-  const card_code = localStorage.getItem("cart_code");
+  const [numCartItems, setNumCartItems] = useState(0)
 
   useEffect(() => {
-    if (card_code) {
-      api.get(`get_cart_stat?cart_code=${card_code}`)
-        .then(res => {
-          console.log(res.data)
-          setNumCartItems(res.data.num_of_items)
-        })
-
-        .catch((err) => {
-          console.log(err.message)
-        })
-    }
-  })
+    const cartCode = localStorage.getItem(CART_CODE_KEY)
+    if (!cartCode) return
+    api.get(`get_cart_stat?cart_code=${cartCode}`)
+      .then((res) => setNumCartItems(res.data.num_of_items ?? 0))
+      .catch(() => {})
+  }, [])
 
   return (
     <AuthProvider>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout numCartItems={numCartItems} />}>
@@ -78,6 +75,7 @@ const App = () => {
           </Route>
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   )
 }
