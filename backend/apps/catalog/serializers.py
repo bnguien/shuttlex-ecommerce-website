@@ -35,12 +35,54 @@ class BrandSerializer(serializers.ModelSerializer):
         model = Brand
         fields = ['id', 'name', 'slug', 'logo', 'is_active', 'created_at', 'updated_at']
 
+class BrandWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ['id', 'name', 'slug', 'logo', 'is_active', 'created_at', 'updated_at']
+
+    def validate_name(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Name is required.")
+        return cleaned
+    
+    def validate_slug(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Slug is required.")
+        qs = Brand.objects.filter(slug=cleaned)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Slug already exists.")
+        return cleaned
+    
+    def validate_logo(self, value):
+        if value and not value.url.lower().endswith(('.jpg', '.jpeg', '.png')):
+            raise serializers.ValidationError("Logo must be an image file (jpg, jpeg, png).")
+        return value
 
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Size
         fields = ['id', 'name', 'type']
 
+class SizeWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Size
+        fields = ['id', 'name', 'type']
+
+    def validate_name(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Name is required.")
+        return cleaned
+    
+    def validate_type(self, value):
+        cleaned = value.strip()
+        if not cleaned:
+            raise serializers.ValidationError("Type is required.")
+        return cleaned
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     size = SizeSerializer(read_only=True)

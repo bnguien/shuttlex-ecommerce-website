@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from django.db import models
 from .models import Product, Category, Brand, Size
-from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer
+from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -231,3 +231,43 @@ def sizes(request):
     serializer = SizeSerializer(qs, many=True)
     return Response(serializer.data)
 
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_size(request):
+    serializer = SizeWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        size = serializer.save()
+        return Response(SizeSerializer(size).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_size(request, size_id):
+    size = get_object_or_404(Size, id=size_id)
+    serializer = SizeWriteSerializer(size, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_size = serializer.save()
+        return Response(SizeSerializer(updated_size).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_size(request, size_id):
+    size = get_object_or_404(Size, id=size_id)
+    try:
+        size.delete()
+        return Response({"detail": "Size deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not size.is_active:
+            return Response({"detail": "Size is already inactive.", "deleted": False}, status=200)
+
+        size.is_active = False
+        size.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Size is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
