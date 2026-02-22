@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import BrandsTable from "./BrandsTable"
 import BrandFilters from "./BrandFilters"
 import BrandModal from "./BrandModal"
@@ -17,10 +17,10 @@ function BrandsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  useEffect(() => {
+  const loadBrands = useCallback(() => {
     setLoading(true)
     setError("")
-    api.get("brands")
+    return api.get("brands")
       .then(res => setBrands(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
@@ -28,6 +28,10 @@ function BrandsPage() {
       })
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    loadBrands()
+  }, [loadBrands])
 
   const handleCreate = () => {
     setEditingBrand(null)
@@ -51,12 +55,64 @@ function BrandsPage() {
     setDeletingBrand(null)
   }
 
-  const handleSave = () => {
-    setIsModalOpen(false)
+  const handleSave = async(data) => {
+    setLoading(true)
+    setError("")
+
+    const formData = new FormData()
+    const appendIfPresent = (key, value) => {
+      if (value === undefined || value === null) return
+      formData.append(key, value)
+    }
+    appendIfPresent("name", data.name)
+    appendIfPresent("slug", data.slug)
+    formData.append("is_active", data.is_active ? "true" : "false")
+
+    if (data.logo instanceof File) {
+      formData.append("logo", data.logo)
+    }
+
+    try{
+     if(editingBrand){
+         await api.patch(`update_brand/${editingBrand.id}/`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        })
+     }else {
+        await api.post("create_brand/", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        })
+      }
+      setIsModalOpen(false)
+      setEditingBrand(null)
+      await loadBrands()
+    }catch(err){
+      console.error(err)
+      const message = err?.response?.data?.detail || err?.response?.data || "Failed to save brand."
+      setError(typeof message === "string" ? message : JSON.stringify(message))
+    }finally{
+      setLoading(false)
+    }
   }
 
-  const handleConfirmDelete = () => {
-    setDeletingBrand(null)
+  const handleConfirmDelete = async () => {
+    if(!deletingBrand) {
+      setDeletingBrand(null)
+      return
+    }
+    setLoading(true)
+    setError("")
+    try{
+      await api.delete(`delete_brand/${deletingBrand.id}/`)
+      setDeletingBrand(null)
+      await loadBrands()
+    }catch(err){
+       console.error(err)
+      const message = err?.response?.data?.detail || err?.response?.data || "Failed to delete brand."
+      setError(typeof message === "string" ? message : JSON.stringify(message))
+    }finally{
+      setLoading(false)
+      setDeletingBrand(null)
+    }
   }
 
   return (

@@ -1,15 +1,22 @@
-import { useMemo, useState } from "react"
+import {useEffect, useMemo, useState } from "react"
 import BrandForm from "./BrandForm"
 
 const emptyBrand = {
   name: "",
   slug: "",
+  logo: null,
   is_active: true
 }
 
 function BrandModal({ open, brand, onClose, onSave }) {
   const initialValues = useMemo(() => brand || emptyBrand, [brand])
   const [values, setValues] = useState(initialValues)
+
+  useEffect(() => {
+    if (open) {
+      setValues(initialValues)
+    }
+  }, [open, initialValues])
 
   if (!open) return null
 
