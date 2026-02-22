@@ -20,14 +20,14 @@ function CategoriesPage() {
   const loadCategories = useCallback(() => {
     setLoading(true)
     setError("")
-    return api.get("categories")
+    return api.get("categories", { params: { search: filters.search, status: filters.status } })
       .then(res => setCategories(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
         setError("Failed to load categories.")
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [filters.search, filters.status])
 
   useEffect(() => {
     loadCategories()
