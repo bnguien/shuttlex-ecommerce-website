@@ -7,8 +7,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from django.db import models
-from .models import Product, Category, Brand, Size
-from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer, BrandWriteSerializer
+from .models import Product, Category, Brand, ProductVariant, Size
+from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, ProductVariantSerializer, ProductVariantWriteSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer, BrandWriteSerializer
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -356,6 +356,56 @@ def delete_size(request, size_id):
         return Response(
             {
                 "detail": "Size is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def product_variants(request, product_id):
+    product = get_object_or_404(Product, id=product_id, is_active=True)
+    variants = product.variants.filter(is_active=True).select_related("size")
+    serializer = ProductVariantSerializer(variants, many=True)
+    return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_variant_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    serializer = ProductVariantWriteSerializer(data=request.data, context={"product": product})
+    if serializer.is_valid():
+        variant = serializer.save(product=product)
+        return Response(ProductVariantSerializer(variant).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_variant_product(request, variant_id):
+    variant = get_object_or_404(ProductVariant, id=variant_id)
+    serializer = ProductVariantWriteSerializer(variant, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_variant = serializer.save()
+        return Response(ProductVariantSerializer(updated_variant).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_variant_product(request, variant_id):
+    variant = get_object_or_404(ProductVariant, id=variant_id)
+    try:
+        variant.delete()
+        return Response({"detail": "Product variant deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not variant.is_active:
+            return Response({"detail": "Product variant is already inactive.", "deleted": False}, status=200)
+
+        variant.is_active = False
+        variant.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Product variant is referenced by other records, so it was archived instead of deleted.",
                 "deleted": False,
                 "archived": True,
             },

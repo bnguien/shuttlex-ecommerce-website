@@ -1,4 +1,4 @@
-function VariantForm({ values, onChange, onSubmit, onCancel }) {
+function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
     onChange({
@@ -12,12 +12,19 @@ function VariantForm({ values, onChange, onSubmit, onCancel }) {
       <div className="row g-3">
         <div className="col-md-6">
           <label className="form-label">Size</label>
-          <input
-            className="form-control"
-            name="size"
-            value={values.size || ""}
+          <select
+            className="form-select"
+            name="size_id"
+            value={values.size_id || values.size?.id || ""}
             onChange={handleChange}
-          />
+          >
+            <option value="">Select size</option>
+            {sizes.map((size) => (
+              <option key={size.id} value={size.id}>
+                {size.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="col-md-6">
           <label className="form-label">Color</label>
@@ -48,12 +55,32 @@ function VariantForm({ values, onChange, onSubmit, onCancel }) {
           />
         </div>
         <div className="col-md-3">
+          <label className="form-label">Sale Price</label>
+          <input
+            className="form-control"
+            name="sale_price"
+            type="number"
+            value={values.sale_price || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-md-3">
           <label className="form-label">Stock</label>
           <input
             className="form-control"
             name="stock"
             type="number"
             value={values.stock || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-md-6">
+          <label className="form-label">Sale Ends At</label>
+          <input
+            className="form-control"
+            name="sale_ends_at"
+            type="datetime-local"
+            value={values.sale_ends_at || ""}
             onChange={handleChange}
           />
         </div>

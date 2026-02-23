@@ -19,4 +19,7 @@ urlpatterns = [
     path("create_size/", views.create_size, name="create_size"),
     path("update_size/<int:size_id>/", views.update_size, name="update_size"),
     path("delete_size/<int:size_id>/", views.delete_size, name="delete_size"),
+    path("create_variant/<int:product_id>/", views.create_variant_product, name="create_variant_product"),
+    path("update_variant/<int:variant_id>/", views.update_variant_product, name="update_variant_product"),
+    path("delete_variant/<int:variant_id>/", views.delete_variant_product, name="delete_variant_product"),
 ]

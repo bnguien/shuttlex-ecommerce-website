@@ -113,6 +113,112 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     def get_is_on_sale(self, obj):
         return obj.is_on_sale()
 
+class ProductVariantWriteSerializer(serializers.ModelSerializer):
+    size_id = serializers.PrimaryKeyRelatedField(
+        source='size',
+        queryset=Size.objects.all(),
+        allow_null=True,
+        required=False,
+    )
+    
+    class Meta:
+        model = ProductVariant
+        fields = [
+            'id', 
+            'size_id', 
+            'color', 
+            'sku', 
+            'stock', 
+            'price', 
+            'sale_price', 
+            'sale_ends_at',
+            'is_active',
+            'created_at',
+            'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def validate_color(self, value):
+        return (value or '').strip()
+
+    def validate_sku(self, value):
+        cleaned = (value or '').strip()
+        if not cleaned:
+            return None
+        qs = ProductVariant.objects.filter(sku=cleaned)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("SKU already exists.")
+        return cleaned
+    
+    def validate_price(self, value):
+        if value is None:
+            return value
+        if value < 0:
+            raise serializers.ValidationError("Price must be >= 0.")
+        return value
+    
+    def validate_sale_price(self, value):
+        if value is not None and value < 0:
+            raise serializers.ValidationError("Sale price must be >= 0.")
+        return value
+    
+    def validate_stock(self, value):
+        if value is None:
+            raise serializers.ValidationError("Stock is required.")
+        if value < 0:
+            raise serializers.ValidationError("Stock must be >= 0.")
+        return value
+
+    def validate(self, attrs):
+        size = attrs.get('size')
+        color = attrs.get('color')
+        price = attrs.get('price')
+        sale_price = attrs.get('sale_price')
+
+        if self.instance:
+            size = size if 'size' in attrs else self.instance.size
+            color = color if 'color' in attrs else self.instance.color
+            price = price if 'price' in attrs else self.instance.price
+            sale_price = sale_price if 'sale_price' in attrs else self.instance.sale_price
+
+        normalized_color = (color or '').strip()
+        if not size and not normalized_color:
+            raise serializers.ValidationError({
+                'non_field_errors': ['Variant must have at least size or color.']
+            })
+
+        product = attrs.get('product') or getattr(self.instance, 'product', None) or self.context.get('product')
+
+        if self.instance:
+            effective_base_price = price if 'price' in attrs else self.instance.price
+        else:
+            effective_base_price = price
+        if effective_base_price is None and product:
+            effective_base_price = product.base_price
+
+        if sale_price is not None and effective_base_price is not None and sale_price >= effective_base_price:
+            raise serializers.ValidationError({
+                'sale_price': ['Sale price must be less than effective base price.']
+            })
+
+        if product is not None:
+            combo_qs = ProductVariant.objects.filter(
+                product=product,
+                size=size,
+                color__iexact=normalized_color,
+            )
+
+            if self.instance:
+                combo_qs = combo_qs.exclude(pk=self.instance.pk)
+            if combo_qs.exists():
+                raise serializers.ValidationError({
+                    'non_field_errors': ['Variant with this size and color already exists for this product.']
+                })
+
+        return attrs
+    
 
 class ProductSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only=True)
@@ -275,3 +381,5 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Brand is inactive.")
         return value
 
+
+    
