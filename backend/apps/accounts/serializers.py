@@ -118,3 +118,87 @@ class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
                 attrs["username"] = user.username
 
         return super().validate(attrs)
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'full_name', 
+                  'phone', 'address', 'is_active', 'is_staff', 'is_superuser', 
+                  'date_joined', 'last_login']
+        read_only_fields = ['id', 'date_joined', 'last_login']
+    
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}".strip() or obj.username
+
+
+class UserWriteSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name', 
+                  'phone', 'address', 'is_active', 'is_staff', 'is_superuser']
+        extra_kwargs = {
+            'username': {'required': True},
+            'email': {'required': True},
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'phone': {'required': False},
+            'address': {'required': False},
+        }
+    
+    def validate_email(self, value):
+        value = (value or "").strip().lower()
+        if not value:
+            raise serializers.ValidationError("Email is required.")
+        
+        qs = CustomUser.objects.filter(email__iexact=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Email already exists.")
+        return value
+    
+    def validate_username(self, value):
+        value = (value or "").strip()
+        if not value:
+            raise serializers.ValidationError("Username is required.")
+        
+        qs = CustomUser.objects.filter(username__iexact=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Username already exists.")
+        return value
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        email = validated_data.get('email', '')
+        if email:
+            validated_data['email'] = email.strip().lower()
+        
+        user = CustomUser(**validated_data)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+        user.save()
+        return user
+    
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        email = validated_data.get('email', instance.email)
+        if email:
+            validated_data['email'] = email.strip().lower()
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        if password:
+            instance.set_password(password)
+        
+        instance.save()
+        return instance

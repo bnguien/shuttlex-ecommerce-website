@@ -12,7 +12,7 @@ function SideBar() {
 
   return (
     <div className={`d-flex flex-column p-4 h-100 w-100 ${styles.sidebar}`}>
-      <Link className="navbar-brand fw-bold fs-4 text-white mb-0 text-center" to="/">
+      <Link className="navbar-brand fw-bold fs-4 text-white mb-0 text-center" to="/admin/dashboard">
         ShuttleX
       </Link>
       <hr/>
