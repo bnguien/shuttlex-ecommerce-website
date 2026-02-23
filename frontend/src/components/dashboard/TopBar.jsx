@@ -41,7 +41,7 @@ function TopBar() {
           <>
             <li className="nav-item">
               <NavLink
-                to="/profile"
+                to="/admin/profile"
                 className={({ isActive }) =>
                   isActive ? "nav-link active fw-semibold" : "nav-link fw-semibold"
                 }

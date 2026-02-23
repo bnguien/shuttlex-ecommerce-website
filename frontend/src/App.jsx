@@ -17,6 +17,7 @@ import CategoriesPage from "./components/admin/categories/CategoriesPage"
 import BrandsPage from "./components/admin/brands/BrandsPage"
 import SizesPage from "./components/admin/sizes/SizesPage"
 import UsersPage from "./components/admin/users/UsersPage"
+import AdminProfilePage from "./components/admin/AdminProfilePage"
 import AdminLayout from "./components/dashboard/AdminLayout"
 import { AuthProvider } from "./components/context/AuthContext"
 import { ToastProvider } from "./components/ui/Toast"
@@ -74,6 +75,8 @@ const App = () => {
             <Route path="brands" element={<BrandsPage />} />
             <Route path="sizes" element={<SizesPage />} />
             <Route path="users" element={<UsersPage />} />
+            <Route path="profile" element={<AdminProfilePage />} />
+            <Route path="change-password" element={<ChangePasswordPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
