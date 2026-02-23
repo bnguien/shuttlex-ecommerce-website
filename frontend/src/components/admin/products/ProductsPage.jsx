@@ -29,7 +29,7 @@ function ProductsPage() {
   const loadProducts = useCallback(() => {
     setLoading(true)
     setError("")
-    return api.get("products", { params: { page, page_size: pageSize } })
+    return api.get("products", { params: { page, page_size: pageSize, search: filters.search, category: filters.category, brands: filters.brand, status: filters.status } })
       .then(res => {
         if (Array.isArray(res.data)) {
           setProducts(res.data)
@@ -46,7 +46,7 @@ function ProductsPage() {
         setError("Failed to load products.")
       })
       .finally(() => setLoading(false))
-  }, [page, pageSize])
+  }, [page, pageSize, filters.search, filters.category, filters.brand, filters.status])
 
   useEffect(() => {
     loadProducts()
