@@ -13,18 +13,16 @@ from .serializers import ProductSerializer, ProductDetailSerializer, CategorySer
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def products(request):
-    qs = Product.objects.filter(is_active=True).select_related("category", "brand")
-    #Lọc category
-    category_slug = request.GET.get("category")
-    if category_slug:
-        qs = qs.filter(category__slug=category_slug)
+    qs = Product.objects.select_related("category", "brand")
+    #Lọc category theo tên
+    category_query = request.GET.get("category")
+    if category_query:
+        qs = qs.filter(category__name__istartswith=category_query)
 
-    #Lọc brand
-    brands_param = request.GET.get("brands")
-    if brands_param:
-        brand_items = [item.strip() for item in brands_param.split(",") if item.strip()]
-        if brand_items:
-            qs = qs.filter(brand__slug__in=brand_items)
+    #Lọc brand theo tên
+    brands_query = request.GET.get("brands")
+    if brands_query:
+        qs = qs.filter(brand__name__istartswith=brands_query)
 
     #Lọc size
     size_param = request.GET.get("sizes")
@@ -60,6 +58,18 @@ def products(request):
         qs = qs.filter(effective_price__gte=min_price) #(__gte >= , __lte <=)
     if max_price:
         qs = qs.filter(effective_price__lte=max_price)
+
+    #Search by name 
+    search_query = request.GET.get("search")
+    if search_query:
+        qs = qs.filter(name__icontains=search_query)
+
+    #Search by status 
+    status_filter = request.GET.get("status")
+    if status_filter == "active":
+        qs = qs.filter(is_active=True)
+    elif status_filter == "inactive":
+        qs = qs.filter(is_active=False)
 
     qs = qs.distinct()
 
