@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import ProductsTable from "./ProductsTable"
 import ProductFilters from "./ProductFilters"
 import ProductModal from "./ProductModal"
 import ProductDeleteDialog from "./ProductDeleteDialog"
+import VariantModal from "./VariantModal"
 import api from "../../../api"
 
 function ProductsPage() {
@@ -14,8 +15,10 @@ function ProductsPage() {
     status: ""
   })
   const [editingProduct, setEditingProduct] = useState(null)
+  const [editingVariant, setEditingVariant] = useState(null)
   const [deletingProduct, setDeletingProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isVariantModalOpen, setIsVariantModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [brands, setBrands] = useState([])
@@ -25,6 +28,7 @@ function ProductsPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const pageSize = 12
+  const tableRef = useRef()
 
   const loadProducts = useCallback(() => {
     setLoading(true)
@@ -84,8 +88,64 @@ function ProductsPage() {
     setDeletingProduct(product)
   }
 
+  const handleEditVariant = (variant) => {
+    setEditingVariant(variant)
+    setIsVariantModalOpen(true)
+  }
+
+  const handleAddVariant = (product) => {
+    // Create empty variant with product reference
+    setEditingVariant({
+      product: product.id,
+      size_id: "",
+      color: "",
+      sku: "",
+      price: "",
+      stock: 0,
+      sale_price: "",
+      sale_ends_at: "",
+      is_active: true
+    })
+    setIsVariantModalOpen(true)
+  }
+
+  const handleDeleteVariant = async (variant) => {
+    if (!variant?.id) return
+
+    const confirmed = window.confirm("Delete this variant?")
+    if (!confirmed) return
+
+    setLoading(true)
+    setError("")
+    try {
+      // Find product before API call
+      const product = variant.product ? products.find(p => p.id === variant.product) : null
+      
+      await api.delete(`delete_variant/${variant.id}/`)
+      
+      // Clear cache and refetch variants for this product
+      if (product && tableRef.current) {
+        tableRef.current.clearVariantCache(product.id)
+        await tableRef.current.refetchVariants(product)
+      }
+      
+      // Reload products to update stock in main table
+      await loadProducts()
+    } catch (err) {
+      console.error(err)
+      setError("Failed to delete variant.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleModalClose = () => {
     setIsModalOpen(false)
+  }
+
+  const handleVariantModalClose = () => {
+    setIsVariantModalOpen(false)
+    setEditingVariant(null)
   }
 
   const handleDeleteClose = () => {
@@ -142,6 +202,69 @@ function ProductsPage() {
       console.error(err)
       const message = err?.response?.data || "Failed to save product."
       setError(typeof message === "string" ? message : "Failed to save product.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveVariant = async (data) => {
+    const toNumberOrNull = (value) => {
+      if (value === "" || value === null || value === undefined) return null
+      const parsed = Number(value)
+      return Number.isNaN(parsed) ? null : parsed
+    }
+
+    const stockValue = Number(data.stock)
+    if (Number.isNaN(stockValue) || stockValue < 0) {
+      setError("Variant stock must be a number >= 0.")
+      return
+    }
+
+    const payload = {
+      size_id: data.size_id || null,
+      color: data.color || "",
+      sku: data.sku || "",
+      stock: stockValue,
+      price: toNumberOrNull(data.price),
+      sale_price: toNumberOrNull(data.sale_price),
+      sale_ends_at: data.sale_ends_at || null,
+      is_active: Boolean(data.is_active),
+    }
+
+    setLoading(true)
+    setError("")
+    try {
+      // Find product before API call
+      const product = data.product ? products.find(p => p.id === data.product) : null
+      
+      if (data.id) {
+        // Update existing variant
+        await api.patch(`update_variant/${data.id}/`, payload)
+      } else {
+        // Create new variant
+        if (!data.product) {
+          setError("Product ID is required to create variant.")
+          setLoading(false)
+          return
+        }
+        await api.post(`create_variant/${data.product}/`, payload)
+      }
+      
+      setIsVariantModalOpen(false)
+      setEditingVariant(null)
+      
+      // Clear cache and refetch variants immediately
+      if (product && tableRef.current) {
+        tableRef.current.clearVariantCache(product.id)
+        await tableRef.current.refetchVariants(product)
+      }
+      
+      // Reload products to update stock in main table
+      await loadProducts()
+    } catch (err) {
+      console.error(err)
+      const action = data.id ? "update" : "create"
+      setError(`Failed to ${action} variant.`)
     } finally {
       setLoading(false)
     }
@@ -215,9 +338,13 @@ function ProductsPage() {
           {loading && <div className="text-muted">Loading products...</div>}
           {error && <div className="text-danger mb-3">{error}</div>}
           <ProductsTable
+            ref={tableRef}
             products={products}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onAddVariant={handleAddVariant}
+            onEditVariant={handleEditVariant}
+            onDeleteVariant={handleDeleteVariant}
           />
           {totalPages > 1 && (
             <nav aria-label="Products pagination" className="d-flex justify-content-center mt-4">
@@ -266,6 +393,14 @@ function ProductsPage() {
         sizes={sizes}
         onClose={handleModalClose}
         onSave={handleSave}
+      />
+
+      <VariantModal
+        open={isVariantModalOpen}
+        variant={editingVariant}
+        sizes={sizes}
+        onClose={handleVariantModalClose}
+        onSave={handleSaveVariant}
       />
 
       <ProductDeleteDialog

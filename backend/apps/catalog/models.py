@@ -60,7 +60,10 @@ class Product(models.Model):
     base_price = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(0)]
     )
-    base_stock = models.PositiveIntegerField(default=0)
+    base_stock = models.PositiveIntegerField(
+        default=0,
+        help_text="Stock quantity used when product has no variants. Ignored if variants exist."
+    )
     is_active = models.BooleanField(default=True)
     category = models.ForeignKey(
         Category, related_name="products", on_delete=models.PROTECT
@@ -115,6 +118,13 @@ class Product(models.Model):
         return (min(prices), max(prices))
 
     def get_stock(self):
+        """
+        Returns the effective stock quantity:
+        - If product has active variants: sum of all active variant stocks
+        - If product has no variants: returns base_stock
+        
+        This ensures variants are the source of truth for inventory when they exist.
+        """
         if self.has_variants():
             total = self.variants.filter(is_active=True).aggregate(total=Sum("stock"))["total"]
             return int(total or 0)

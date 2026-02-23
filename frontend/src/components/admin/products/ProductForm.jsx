@@ -219,6 +219,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
             value={values.base_price || ""}
             onChange={handleChange}
           />
+          <small className="text-muted">Used when product has no variants</small>
         </div>
         <div className="col-md-6">
           <label className="form-label">Base Stock</label>
@@ -229,6 +230,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
             value={values.base_stock || ""}
             onChange={handleChange}
           />
+          <small className="text-muted">Used when product has no variants. Total stock = sum of variants if variants exist.</small>
         </div>
         <div className="col-12">
           <label className="form-label">Description</label>
@@ -254,112 +256,130 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
         </div>
       </div>
 
-      <div className="mt-4">
-        <div className="d-flex align-items-center justify-content-between mb-2">
-          <h6 className="fw-semibold mb-0">Product Variants</h6>
-          <button type="button" className="btn btn-outline-primary btn-sm" onClick={addVariant}>
-            Add Variant
-          </button>
-        </div>
-        {variants.length === 0 ? (
-          <div className="text-muted">No variants added.</div>
-        ) : (
-          <div className="table-responsive">
-            <table className="table align-middle">
-              <thead>
-                <tr>
-                  <th>Size</th>
-                  <th>Color</th>
-                  <th>SKU</th>
-                  <th>Price</th>
-                  <th>Sale Price</th>
-                  <th>Stock</th>
-                  <th>Active</th>
-                  <th className="text-end">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {variants.map((variant, index) => (
-                  <tr key={index}>
-                    <td>
-                      <select
-                        className="form-select"
-                        value={variant.size_id || variant.size?.id || ""}
-                        onChange={(event) => handleVariantChange(index, "size_id", event.target.value)}
-                      >
-                        <option value="">Select size</option>
-                        {sizes.map((size) => (
-                          <option key={size.id} value={size.id}>
-                            {size.name}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        className="form-control form-control-sm"
-                        value={variant.color || ""}
-                        onChange={(event) => handleVariantChange(index, "color", event.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-control form-control-sm"
-                        value={variant.sku || ""}
-                        onChange={(event) => handleVariantChange(index, "sku", event.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-control form-control-sm"
-                        type="number"
-                        value={variant.price || ""}
-                        onChange={(event) => handleVariantChange(index, "price", event.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-control form-control-sm border-danger"
-                        type="number"
-                        placeholder="Giá sale"
-                        value={variant.sale_price || ""}
-                        onChange={(event) => handleVariantChange(index, "sale_price", event.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-control form-control-sm"
-                        type="number"
-                        value={variant.stock || 0}
-                        onChange={(event) => handleVariantChange(index, "stock", event.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={Boolean(variant.is_active)}
-                        onChange={(event) =>
-                          handleVariantChange(index, "is_active", event.target.checked)
-                        }
-                      />
-                    </td>
-                    <td className="text-end">
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={() => removeVariant(index)}
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {!values.id && (
+        <div className="mt-4">
+          <div className="d-flex align-items-center justify-content-between mb-2">
+            <div>
+              <h6 className="fw-semibold mb-0">Product Variants</h6>
+              {variants.length > 0 && (
+                <small className="text-muted">
+                  Total Stock: {variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)}
+                </small>
+              )}
+            </div>
+            <button type="button" className="btn btn-outline-primary btn-sm" onClick={addVariant}>
+              Add Variant
+            </button>
           </div>
-        )}
-      </div>
+          {variants.length === 0 ? (
+            <div className="text-muted">No variants added.</div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Size</th>
+                    <th>Color</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>Sale Price</th>
+                    <th>Stock</th>
+                    <th>Active</th>
+                    <th className="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {variants.map((variant, index) => (
+                    <tr key={index}>
+                      <td>
+                        <select
+                          className="form-select"
+                          value={variant.size_id || variant.size?.id || ""}
+                          onChange={(event) => handleVariantChange(index, "size_id", event.target.value)}
+                        >
+                          <option value="">Select size</option>
+                          {sizes.map((size) => (
+                            <option key={size.id} value={size.id}>
+                              {size.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          className="form-control form-control-sm"
+                          value={variant.color || ""}
+                          onChange={(event) => handleVariantChange(index, "color", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-control form-control-sm"
+                          value={variant.sku || ""}
+                          onChange={(event) => handleVariantChange(index, "sku", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-control form-control-sm"
+                          type="number"
+                          value={variant.price || ""}
+                          onChange={(event) => handleVariantChange(index, "price", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-control form-control-sm border-danger"
+                          type="number"
+                          placeholder="Giá sale"
+                          value={variant.sale_price || ""}
+                          onChange={(event) => handleVariantChange(index, "sale_price", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-control form-control-sm"
+                          type="number"
+                          value={variant.stock || 0}
+                          onChange={(event) => handleVariantChange(index, "stock", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={Boolean(variant.is_active)}
+                          onChange={(event) =>
+                            handleVariantChange(index, "is_active", event.target.checked)
+                          }
+                        />
+                      </td>
+                      <td className="text-end">
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => removeVariant(index)}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {values.id && (
+        <div className="mt-4">
+          <div className="alert alert-info mb-0">
+            <i className="bi bi-info-circle me-2"></i>
+            To manage variants for this product, expand the product row in the products table.
+          </div>
+        </div>
+      )}
 
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>
