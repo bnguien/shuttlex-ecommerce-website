@@ -4,8 +4,23 @@ import { AuthContext } from '../context/AuthContext.jsx'
 import { FiUser, FiMail, FiShield, FiLock } from 'react-icons/fi'
 
 function AdminProfilePage() {
-  const { username, last_name, first_name, email, isStaff } = useContext(AuthContext)
+  const { username, last_name, first_name, email, isStaff, isLoading } = useContext(AuthContext)
   const navigate = useNavigate()
+
+  if (isLoading) {
+    return (
+      <div className="container-fluid p-4">
+        <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
+          <div className="text-center">
+            <div className="spinner-border text-success" role="status" style={{width: '3rem', height: '3rem'}}>
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3 text-muted">Loading your profile...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container-fluid p-4">
@@ -20,7 +35,6 @@ function AdminProfilePage() {
           </div>
 
           <div className="row g-4">
-            {/* Profile Information Card */}
             <div className="col-lg-8">
               <div className="card shadow-sm border-0">
                 <div className="card-header bg-white border-bottom">
@@ -82,7 +96,6 @@ function AdminProfilePage() {
               </div>
             </div>
 
-            {/* Quick Actions Card */}
             <div className="col-lg-4">
               <div className="card shadow-sm border-0">
                 <div className="card-header bg-white border-bottom">
@@ -108,7 +121,6 @@ function AdminProfilePage() {
                 </div>
               </div>
 
-              {/* Info Card */}
               <div className="card shadow-sm border-0 mt-3">
                 <div className="card-body">
                   <h6 className="card-subtitle mb-2 text-muted">Account Type</h6>
