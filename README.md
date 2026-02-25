@@ -166,6 +166,39 @@ Backend sẽ chạy tại: **http://localhost:8000**
 
 Admin panel: **http://localhost:8000/admin**
 
+### Bước 7: Cấu hình Task tự động (Celery & Redis)
+
+Hệ thống sử dụng **Celery** và **Celery Beat** để thực hiện các tác vụ ngầm như: tự động hủy đơn hàng quá hạn sau 30 phút, giải phóng kho hàng và gửi email thông báo.
+
+#### **1. Cài đặt và chạy Redis**
+Redis đóng vai trò là "Broker" (người đưa thư) cho Celery. Hệ thống yêu cầu Redis chạy tại port `6379`.
+- **Windows:** Tải và chạy [Redis-x64.zip](https://github.com/microsoftarchive/redis/releases).
+- **macOS (Homebrew):** `brew install redis` sau đó chạy `brew services start redis`.
+- **Docker (Khuyên dùng):** ```bash
+  docker run -d -p 6379:6379 redis
+
+#### **2. Chạy Celery Workers**
+Để các tác vụ tự động hoạt động, bạn cần mở thêm **2 Terminal mới** (ngoài Terminal đang chạy `runserver` và `npm dev`) và kích hoạt `venv` ở cả hai:
+
+**Terminal 3 - Celery Worker (Thực thi tác vụ):**
+Nhiệm vụ: Lắng nghe và xử lý các công việc được giao (như gửi email, cập nhật database).
+
+* **Windows** (Yêu cầu cài đặt thêm: `pip install eventlet`):
+    ```bash
+    celery -A config worker --loglevel=info -P eventlet
+    ```
+* **macOS / Linux:**
+    ```bash
+    celery -A config worker --loglevel=info
+    ```
+
+**Terminal 4 - Celery Beat (Bộ lập lịch):**
+Nhiệm vụ: Đóng vai trò là "đồng hồ báo thức", cứ mỗi 10 phút sẽ ra lệnh cho Worker đi kiểm tra và hủy các đơn hàng hết hạn.
+
+```bash
+celery -A config beat --loglevel=info
+```
+
 ---
 
 ## 🎨 Cài đặt Frontend (React)

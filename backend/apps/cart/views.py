@@ -8,10 +8,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-from backend.apps import cart
-from backend.apps.cart.models import Cart, CartItem
-from backend.apps.cart.serializers import CartItemSerializer
-from backend.apps.catalog.models import Product, ProductVariant
+from .models import Cart, CartItem
+from .serializers import CartItemSerializer
+from apps.catalog.models import Product, ProductVariant
 
 CART_ITEM_LIMIT = 50
 
