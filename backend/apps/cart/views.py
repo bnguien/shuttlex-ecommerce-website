@@ -8,9 +8,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-'''hãy dùng import theo apps..., không dùng backend.apps....'''
-from apps.cart.models import Cart, CartItem
-from apps.cart.serializers import CartItemSerializer
+from .models import Cart, CartItem
+from .serializers import CartItemSerializer
 from apps.catalog.models import Product, ProductVariant
 
 CART_ITEM_LIMIT = 50

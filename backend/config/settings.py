@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+from celery.schedules import crontab
 from pathlib import Path
 from datetime import timedelta
 import os
@@ -65,6 +65,10 @@ INSTALLED_APPS = [
     "apps.cart",
     "apps.catalog",
     "apps.orders",
+    "apps.promotions",
+    "apps.notifications",
+
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -124,10 +128,6 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = os.getenv("ACCOUNT_DEFAULT_HTTP_PROTOCOL", "http")
 ACCOUNT_EMAIL_SUBJECT_PREFIX = os.getenv("ACCOUNT_EMAIL_SUBJECT_PREFIX", "[Shuttlex] ")
-
-AUTH_USER_MODEL = "accounts.CustomUser"
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-ROOT_URLCONF = "config.urls"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -221,3 +221,17 @@ USE_TZ = True
 STATIC_URL = "static/"
 MEDIA_URL = "img/"
 MEDIA_ROOT = BASE_DIR / "media"
+# Cấu hình Celery
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0") 
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = "Asia/Ho_Chi_Minh" 
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler' 
+
+CELERY_BEAT_SCHEDULE = {
+    'cancel-expired-orders-every-10-min': {
+        'task': 'apps.orders.tasks.run_cancel_expired_orders',
+        'schedule': crontab(minute='*/10'),
+    }
+}
