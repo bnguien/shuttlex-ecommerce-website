@@ -9,6 +9,12 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py[cod]
+*$py.class
+.env
+.venv/
+media/
+db.sqlite3
 
 # Django
 *.sqlite3
