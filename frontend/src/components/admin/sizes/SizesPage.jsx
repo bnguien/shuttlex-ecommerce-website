@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import SizesTable from "./SizesTable"
 import SizeFilters from "./SizeFilters"
 import SizeModal from "./SizeModal"
@@ -23,17 +23,21 @@ function SizesPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  useEffect(() => {
+  const loadSizes = useCallback(() => {
     setLoading(true)
     setError("")
-    api.get("sizes")
+    return api.get("sizes", { params: { search: filters.search, type: filters.type } })
       .then(res => setSizes(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
         setError("Failed to load sizes.")
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [filters.search, filters.type])
+
+  useEffect(() => {
+    loadSizes()
+  }, [loadSizes])
 
   const handleCreate = () => {
     setEditingSize(null)
@@ -57,12 +61,54 @@ function SizesPage() {
     setDeletingSize(null)
   }
 
-  const handleSave = () => {
-    setIsModalOpen(false)
+  const handleSave = async (data) => {
+    setLoading(true)
+    setError("")
+
+    const formData = new FormData()
+    const appendIfPresent = (key, value) => {
+      if (value === undefined || value === null) return
+      formData.append(key, value)
+    }
+    appendIfPresent("name", data.name)
+    appendIfPresent("type", data.type)
+    try {
+      if (editingSize) {
+        await api.patch(`update_size/${editingSize.id}/`, formData)
+      } else {
+        await api.post("create_size/", formData)
+      }
+      setIsModalOpen(false)
+      setEditingSize(null)
+      await loadSizes()
+    } catch (err) {
+      console.error(err)
+      const message = err?.response?.data?.detail || err?.response?.data || "Failed to save size."
+      setError(typeof message === "string" ? message : JSON.stringify(message))
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleConfirmDelete = () => {
-    setDeletingSize(null)
+  const handleConfirmDelete = async () => {
+    if (!deletingSize) {
+      setDeletingSize(null)
+      return
+    }
+    setLoading(true)
+    setError("")
+    try {
+      await api.delete(`delete_size/${deletingSize.id}/`)
+      setDeletingSize(null)
+      await loadSizes()
+    } catch (err) {
+      console.error(err)
+      const message = err?.response?.data?.detail || err?.response?.data || "Failed to delete size."
+      setError(typeof message === "string" ? message : JSON.stringify(message))
+    } finally {
+      setLoading(false)
+      setDeletingSize(null)
+    }
   }
 
   return (

@@ -1,29 +1,28 @@
 from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Case, DecimalField, F, Min, Q, When
 from django.db.models.functions import Coalesce
+from django.db.models.deletion import ProtectedError
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from django.db import models
-from .models import Product, Category, Brand, Size
-from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, SizeSerializer, ProductWriteSerializer
+from .models import Product, Category, Brand, ProductVariant, Size
+from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, ProductVariantSerializer, ProductVariantWriteSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer, BrandWriteSerializer
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def products(request):
-    qs = Product.objects.filter(is_active=True).select_related("category", "brand")
-    #Lọc category
-    category_slug = request.GET.get("category")
-    if category_slug:
-        qs = qs.filter(category__slug=category_slug)
+    qs = Product.objects.select_related("category", "brand")
+    #Lọc category theo tên
+    category_query = request.GET.get("category")
+    if category_query:
+        qs = qs.filter(category__name__istartswith=category_query)
 
-    #Lọc brand
-    brands_param = request.GET.get("brands")
-    if brands_param:
-        brand_items = [item.strip() for item in brands_param.split(",") if item.strip()]
-        if brand_items:
-            qs = qs.filter(brand__slug__in=brand_items)
+    #Lọc brand theo tên
+    brands_query = request.GET.get("brands")
+    if brands_query:
+        qs = qs.filter(brand__name__istartswith=brands_query)
 
     #Lọc size
     size_param = request.GET.get("sizes")
@@ -59,6 +58,18 @@ def products(request):
         qs = qs.filter(effective_price__gte=min_price) #(__gte >= , __lte <=)
     if max_price:
         qs = qs.filter(effective_price__lte=max_price)
+
+    #Search by name 
+    search_query = request.GET.get("search")
+    if search_query:
+        qs = qs.filter(name__icontains=search_query)
+
+    #Search by status 
+    status_filter = request.GET.get("status")
+    if status_filter == "active":
+        qs = qs.filter(is_active=True)
+    elif status_filter == "inactive":
+        qs = qs.filter(is_active=False)
 
     qs = qs.distinct()
 
@@ -120,33 +131,6 @@ def product_detail(request, slug):
     serializer = ProductDetailSerializer(product)
     return Response(serializer.data)
 
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def categories(request):
-    qs = Category.objects.filter(is_active=True).order_by("name")
-    serializer = CategorySerializer(qs, many=True)
-    return Response(serializer.data)
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def brands(request):
-    qs = Brand.objects.filter(is_active=True).order_by("name")
-    serializer = BrandSerializer(qs, many=True)
-    return Response(serializer.data)
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def sizes(request):
-    size_type = request.GET.get("type")
-    qs = Size.objects.all().order_by("name")
-    
-    if size_type:
-        qs = qs.filter(type=size_type)
-    
-    serializer = SizeSerializer(qs, many=True)
-    return Response(serializer.data)
-
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
 def create_product(request):
@@ -165,3 +149,265 @@ def update_product(request, product_id):
         updated_product = serializer.save()
         return Response(ProductDetailSerializer(updated_product).data)
     return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    try:
+        product.delete()
+        return Response({"detail": "Product deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not product.is_active:
+            return Response({"detail": "Product is already inactive.", "deleted": False}, status=200)
+
+        product.is_active = False
+        product.save(update_fields=["is_active", "updated_at"])
+        product.variants.update(is_active=False)
+        return Response(
+            {
+                "detail": "Product is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def categories(request):
+    qs = Category.objects.all().order_by("name")
+    # Search Category by name
+    search_query = request.GET.get("search")
+    if search_query:
+        qs = qs.filter(name__icontains=search_query)
+
+    # Filter by status
+    status_filter = request.GET.get("status")
+    if status_filter == "active":
+        qs = qs.filter(is_active=True)
+    elif status_filter == "inactive":
+        qs = qs.filter(is_active=False)
+    else:
+        # Default: show only active
+        qs = qs.filter(is_active=True)
+
+    qs = qs.order_by("name")
+    serializer = CategorySerializer(qs, many=True)
+    return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_category(request):
+    serializer = CategoryWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        category = serializer.save()
+        return Response(CategorySerializer(category).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    serializer = CategoryWriteSerializer(category, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_category = serializer.save()
+        return Response(CategorySerializer(updated_category).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    try:
+        category.delete()
+        return Response({"detail": "Category deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not category.is_active:
+            return Response({"detail": "Category is already inactive.", "deleted": False}, status=200)
+
+        category.is_active = False
+        category.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Category is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def brands(request):
+    qs = Brand.objects.all().order_by("name")
+    
+    # Search Brand by name
+    search_query = request.GET.get("search")
+    if search_query:
+        qs = qs.filter(name__icontains=search_query)
+    
+    # Filter by status    
+    status_filter = request.GET.get("status")
+    if status_filter == "active":
+        qs = qs.filter(is_active=True)
+    elif status_filter == "inactive":
+        qs = qs.filter(is_active=False)
+    else:
+        # Default: show only active
+        qs = qs.filter(is_active=True)
+    
+    qs = qs.order_by("name")
+    serializer = BrandSerializer(qs, many=True)
+    return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_brand(request):
+    serializer = BrandWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        brand = serializer.save()
+        return Response(BrandSerializer(brand).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_brand(request, brand_id):
+    brand = get_object_or_404(Brand, id=brand_id)
+    serializer = BrandWriteSerializer(brand, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_brand = serializer.save()
+        return Response(BrandSerializer(updated_brand).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_brand(request, brand_id):
+    brand = get_object_or_404(Brand, id=brand_id)
+    try:
+        brand.delete()
+        return Response({"detail": "Brand deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not brand.is_active:
+            return Response({"detail": "Brand is already inactive.", "deleted": False}, status=200)
+
+        brand.is_active = False
+        brand.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Brand is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def sizes(request):
+    qs = Size.objects.all().order_by("name")
+
+    # Search by name
+    search_query = request.GET.get("search")
+    if search_query:
+        qs = qs.filter(name__icontains=search_query)
+
+    # Filter by type
+    size_type = request.GET.get("type")
+    if size_type:
+        qs = qs.filter(type=size_type)
+
+    serializer = SizeSerializer(qs, many=True)
+    return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_size(request):
+    serializer = SizeWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        size = serializer.save()
+        return Response(SizeSerializer(size).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_size(request, size_id):
+    size = get_object_or_404(Size, id=size_id)
+    serializer = SizeWriteSerializer(size, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_size = serializer.save()
+        return Response(SizeSerializer(updated_size).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_size(request, size_id):
+    size = get_object_or_404(Size, id=size_id)
+    try:
+        size.delete()
+        return Response({"detail": "Size deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not size.is_active:
+            return Response({"detail": "Size is already inactive.", "deleted": False}, status=200)
+
+        size.is_active = False
+        size.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Size is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def product_variants(request, product_id):
+    product = get_object_or_404(Product, id=product_id, is_active=True)
+    variants = product.variants.filter(is_active=True).select_related("size")
+    serializer = ProductVariantSerializer(variants, many=True)
+    return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def create_variant_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    serializer = ProductVariantWriteSerializer(data=request.data, context={"product": product})
+    if serializer.is_valid():
+        variant = serializer.save(product=product)
+        return Response(ProductVariantSerializer(variant).data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAdminUser])
+def update_variant_product(request, variant_id):
+    variant = get_object_or_404(ProductVariant, id=variant_id)
+    serializer = ProductVariantWriteSerializer(variant, data=request.data, partial=True)
+    if serializer.is_valid():
+        updated_variant = serializer.save()
+        return Response(ProductVariantSerializer(updated_variant).data)
+    return Response(serializer.errors, status=400)
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_variant_product(request, variant_id):
+    variant = get_object_or_404(ProductVariant, id=variant_id)
+    try:
+        variant.delete()
+        return Response({"detail": "Product variant deleted successfully.", "deleted": True}, status=200)
+    except ProtectedError:
+        if not variant.is_active:
+            return Response({"detail": "Product variant is already inactive.", "deleted": False}, status=200)
+
+        variant.is_active = False
+        variant.save(update_fields=["is_active", "updated_at"])
+        return Response(
+            {
+                "detail": "Product variant is referenced by other records, so it was archived instead of deleted.",
+                "deleted": False,
+                "archived": True,
+            },
+            status=200,
+        )

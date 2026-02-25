@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import CategoryForm from "./CategoryForm"
 
 const emptyCategory = {
@@ -11,6 +11,12 @@ const emptyCategory = {
 function CategoryModal({ open, category, onClose, onSave }) {
   const initialValues = useMemo(() => category || emptyCategory, [category])
   const [values, setValues] = useState(initialValues)
+
+  useEffect(() => {
+    if (open) {
+      setValues(initialValues)
+    }
+  }, [open, initialValues])
 
   if (!open) return null
 

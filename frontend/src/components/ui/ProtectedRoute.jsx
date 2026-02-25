@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import { jwtDecode } from 'jwt-decode'
 import api from '../../api'
 import { Navigate , useLocation} from 'react-router-dom'
@@ -6,10 +6,7 @@ import Spinner from './Spinner.jsx'
 function ProtectedRoute({children}) {
     const [isAuthorised, setIsAuthorised] = useState(null)
     const location = useLocation()
-    useEffect(()=>{
-        auth().catch(()=> setIsAuthorised(true))
-    },[])
-    async function refreshToken(){
+    const refreshToken = useCallback(async () => {
         const refreshToken = localStorage.getItem("refresh")
         try{
             const res = await api.post("/token/refresh/", {
@@ -27,9 +24,9 @@ function ProtectedRoute({children}) {
             console.log("Refresh token error:", error)
             setIsAuthorised(false)
         }
-    }
+    }, [])
 
-    async function auth(){
+    const auth = useCallback(async () => {
         const token = localStorage.getItem("access")
         if(!token){
             setIsAuthorised(false)
@@ -45,7 +42,12 @@ function ProtectedRoute({children}) {
         else{
             setIsAuthorised(true)
         }
-    }
+    }, [refreshToken])
+
+    useEffect(()=>{
+        auth().catch(()=> setIsAuthorised(true))
+    },[auth])
+
     if(isAuthorised === null){
         return <Spinner/>
     }

@@ -2,11 +2,14 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, EmailOrUsernameTokenObtainPairSerializer
+from .serializers import UserSerializer, EmailOrUsernameTokenObtainPairSerializer, UserListSerializer, UserWriteSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+from django.core.paginator import Paginator
+from .models import CustomUser
+from django.db.models import Q
 
 class EmailOrUsernameTokenObtainPairView(TokenObtainPairView):
     """
@@ -73,3 +76,98 @@ def get_user_role(request):
         "is_staff": user.is_staff,
         "is_superuser": user.is_superuser
     })
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_users(request):
+    if not request.user.is_staff:
+        return Response({"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
+    
+    search = request.GET.get('search', '').strip()
+    page = int(request.GET.get('page', 1))
+    page_size = int(request.GET.get('page_size', 10))
+    
+    users = CustomUser.objects.all().order_by('-date_joined')
+    
+    if search:
+        users = users.filter(
+            Q(username__icontains=search) |
+            Q(email__icontains=search) |
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search)
+        )
+    
+    paginator = Paginator(users, page_size)
+    page_obj = paginator.get_page(page)
+    
+    serializer = UserListSerializer(page_obj.object_list, many=True)
+    
+    return Response({
+        'count': paginator.count,
+        'total_pages': paginator.num_pages,
+        'current_page': page,
+        'results': serializer.data
+    })
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user(request, user_id):
+    if not request.user.is_staff:
+        return Response({"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        user = CustomUser.objects.get(id=user_id)
+        serializer = UserListSerializer(user)
+        return Response(serializer.data)
+    except CustomUser.DoesNotExist:
+        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_user(request):
+    if not request.user.is_staff:
+        return Response({"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
+    
+    serializer = UserWriteSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response(UserListSerializer(user).data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["PUT", "PATCH"])
+@permission_classes([IsAuthenticated])
+def update_user(request, user_id):
+    if not request.user.is_staff:
+        return Response({"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        user = CustomUser.objects.get(id=user_id)
+    except CustomUser.DoesNotExist:
+        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = UserWriteSerializer(user, data=request.data, partial=(request.method == "PATCH"))
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response(UserListSerializer(user).data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_user(request, user_id):
+    if not request.user.is_staff:
+        return Response({"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        user = CustomUser.objects.get(id=user_id)
+        # Prevent deleting yourself
+        if user.id == request.user.id:
+            return Response({"detail": "Cannot delete yourself."}, status=status.HTTP_400_BAD_REQUEST)
+        user.delete()
+        return Response({"detail": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    except CustomUser.DoesNotExist:
+        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)

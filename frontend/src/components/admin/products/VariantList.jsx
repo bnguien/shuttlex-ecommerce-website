@@ -8,7 +8,7 @@ function VariantList({ variants, onEdit, onDelete }) {
     return <div className="text-muted p-3">No variants yet.</div>
   }
 
-  // Logic lọc dữ liệu
+  // Filter data logic
   const filteredVariants = variants.filter(variant => {
     const searchLower = searchTerm.toLowerCase();
     return (
@@ -20,11 +20,11 @@ function VariantList({ variants, onEdit, onDelete }) {
 
   return (
     <div className="card shadow-sm">
-      {/* Header với ô Search */}
+      {/* Header with search input */}
       <div className="card-header bg-white py-3">
         <div className="row align-items-center">
           <div className="col-md-4">
-            <h6 className="mb-0 fw-bold">Danh sách biến thể ({filteredVariants.length})</h6>
+            <h6 className="mb-0 fw-bold">Variant List ({filteredVariants.length})</h6>
           </div>
           <div className="col-md-8">
             <div className="input-group">
@@ -34,7 +34,7 @@ function VariantList({ variants, onEdit, onDelete }) {
               <input
                 type="text"
                 className="form-control border-start-0 bg-light"
-                placeholder="Tìm kiếm theo SKU, Size hoặc Màu..."
+                placeholder="Search by SKU, Size, or Color..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -43,7 +43,7 @@ function VariantList({ variants, onEdit, onDelete }) {
                   className="btn btn-outline-secondary" 
                   onClick={() => setSearchTerm('')}
                 >
-                  Xóa
+                  Clear
                 </button>
               )}
             </div>
@@ -51,7 +51,7 @@ function VariantList({ variants, onEdit, onDelete }) {
         </div>
       </div>
 
-      {/* Bảng dữ liệu */}
+      {/* Data table */}
       <div className="table-responsive">
         <table className="table align-middle table-hover mb-0">
           <thead className="table-light">
@@ -76,7 +76,7 @@ function VariantList({ variants, onEdit, onDelete }) {
                   <td>
                     {variant.price 
                       ? formatCurrencyVND(variant.price) 
-                      : <span className="text-muted small">(Giá gốc)</span>}
+                      : <span className="text-muted small">(Base price)</span>}
                   </td>
                   <td>
                     {variant.sale_price ? (
@@ -118,14 +118,14 @@ function VariantList({ variants, onEdit, onDelete }) {
             ) : (
               <tr>
                 <td colSpan="8" className="text-center py-4 text-muted">
-                  Không tìm thấy biến thể nào khớp với "{searchTerm}"
+                  No variants found matching "{searchTerm}"
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-    </div> // Đóng thẻ card shadow-sm
+    </div> // Close card container
   );
 }
 

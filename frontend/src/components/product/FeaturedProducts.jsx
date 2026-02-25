@@ -4,7 +4,6 @@ import HomeCard from '../home/HomeCard'
 import PlaceHolderContainer from '../ui/PlaceHolder'
 import Error from '../ui/Error'
 import api from '../../api'
-import { useScrollAnimation } from '../../utils/useScrollAnimation'
 
 function FeaturedProducts({ limit = 4 }) {
   const [products, setProducts] = useState([])

@@ -1,22 +1,34 @@
-import {useEffect, useMemo, useState } from "react"
-import BrandForm from "./BrandForm"
+import { useEffect, useMemo, useState } from "react"
+import UserForm from "./UserForm"
 
-const emptyBrand = {
-  name: "",
-  slug: "",
-  logo: null,
-  is_active: true
+const emptyUser = {
+  username: "",
+  email: "",
+  password: "",
+  first_name: "",
+  last_name: "",
+  phone: "",
+  address: "",
+  is_active: true,
+  is_staff: false,
+  is_superuser: false
 }
 
-function BrandModal({ open, brand, onClose, onSave }) {
-  const initialValues = useMemo(() => brand || emptyBrand, [brand])
+const normalizeUserForForm = (user) => {
+  if (!user) return emptyUser
+  return {
+    ...user,
+    password: "" // Never show password
+  }
+}
+
+function UserModal({ open, user, onClose, onSave }) {
+  const initialValues = useMemo(() => normalizeUserForForm(user), [user])
   const [values, setValues] = useState(initialValues)
 
   useEffect(() => {
-    if (open) {
-      setValues(initialValues)
-    }
-  }, [open, initialValues])
+    setValues(initialValues)
+  }, [initialValues, open])
 
   if (!open) return null
 
@@ -31,11 +43,11 @@ function BrandModal({ open, brand, onClose, onSave }) {
         <div className="modal-dialog modal-lg" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{brand ? "Edit Brand" : "New Brand"}</h5>
+              <h5 className="modal-title">{user?.id ? "Edit User" : "New User"}</h5>
               <button type="button" className="btn-close" onClick={onClose} />
             </div>
             <div className="modal-body">
-              <BrandForm
+              <UserForm
                 values={values}
                 onChange={setValues}
                 onSubmit={handleSubmit}
@@ -50,4 +62,4 @@ function BrandModal({ open, brand, onClose, onSave }) {
   )
 }
 
-export default BrandModal
+export default UserModal

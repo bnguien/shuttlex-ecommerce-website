@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import ProductsTable from "./ProductsTable"
 import ProductFilters from "./ProductFilters"
 import ProductModal from "./ProductModal"
 import ProductDeleteDialog from "./ProductDeleteDialog"
+import VariantModal from "./VariantModal"
 import api from "../../../api"
 
 function ProductsPage() {
@@ -14,21 +15,25 @@ function ProductsPage() {
     status: ""
   })
   const [editingProduct, setEditingProduct] = useState(null)
+  const [editingVariant, setEditingVariant] = useState(null)
   const [deletingProduct, setDeletingProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isVariantModalOpen, setIsVariantModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [brands, setBrands] = useState([])
   const [categories, setCategories] = useState([])
+  const [sizes, setSizes] = useState([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const pageSize = 12
+  const tableRef = useRef()
 
   const loadProducts = useCallback(() => {
     setLoading(true)
     setError("")
-    return api.get("products", { params: { page, page_size: pageSize } })
+    return api.get("products", { params: { page, page_size: pageSize, search: filters.search, category: filters.category, brands: filters.brand, status: filters.status } })
       .then(res => {
         if (Array.isArray(res.data)) {
           setProducts(res.data)
@@ -45,7 +50,7 @@ function ProductsPage() {
         setError("Failed to load products.")
       })
       .finally(() => setLoading(false))
-  }, [page, pageSize])
+  }, [page, pageSize, filters.search, filters.category, filters.brand, filters.status])
 
   useEffect(() => {
     loadProducts()
@@ -63,6 +68,12 @@ function ProductsPage() {
       .catch(err => console.error(err))
   }, [])
 
+  useEffect(() => {
+    api.get("sizes/")
+      .then(res => setSizes(Array.isArray(res.data) ? res.data : []))
+      .catch(err => console.error(err))
+  }, [])
+
   const handleCreate = () => {
     setEditingProduct(null)
     setIsModalOpen(true)
@@ -77,8 +88,64 @@ function ProductsPage() {
     setDeletingProduct(product)
   }
 
+  const handleEditVariant = (variant) => {
+    setEditingVariant(variant)
+    setIsVariantModalOpen(true)
+  }
+
+  const handleAddVariant = (product) => {
+    // Create empty variant with product reference
+    setEditingVariant({
+      product: product.id,
+      size_id: "",
+      color: "",
+      sku: "",
+      price: "",
+      stock: 0,
+      sale_price: "",
+      sale_ends_at: "",
+      is_active: true
+    })
+    setIsVariantModalOpen(true)
+  }
+
+  const handleDeleteVariant = async (variant) => {
+    if (!variant?.id) return
+
+    const confirmed = window.confirm("Delete this variant?")
+    if (!confirmed) return
+
+    setLoading(true)
+    setError("")
+    try {
+      // Find product before API call
+      const product = variant.product ? products.find(p => p.id === variant.product) : null
+      
+      await api.delete(`delete_variant/${variant.id}/`)
+      
+      // Clear cache and refetch variants for this product
+      if (product && tableRef.current) {
+        tableRef.current.clearVariantCache(product.id)
+        await tableRef.current.refetchVariants(product)
+      }
+      
+      // Reload products to update stock in main table
+      await loadProducts()
+    } catch (err) {
+      console.error(err)
+      setError("Failed to delete variant.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleModalClose = () => {
     setIsModalOpen(false)
+  }
+
+  const handleVariantModalClose = () => {
+    setIsVariantModalOpen(false)
+    setEditingVariant(null)
   }
 
   const handleDeleteClose = () => {
@@ -140,8 +207,108 @@ function ProductsPage() {
     }
   }
 
-  const handleConfirmDelete = () => {
-    setDeletingProduct(null)
+  const handleSaveVariant = async (data) => {
+    const toNumberOrNull = (value) => {
+      if (value === "" || value === null || value === undefined) return null
+      const parsed = Number(value)
+      return Number.isNaN(parsed) ? null : parsed
+    }
+
+    const stockValue = Number(data.stock)
+    if (Number.isNaN(stockValue) || stockValue < 0) {
+      setError("Variant stock must be a number >= 0.")
+      return
+    }
+
+    const payload = {
+      size_id: data.size_id || null,
+      color: data.color || "",
+      sku: data.sku || "",
+      stock: stockValue,
+      price: toNumberOrNull(data.price),
+      sale_price: toNumberOrNull(data.sale_price),
+      sale_ends_at: data.sale_ends_at || null,
+      is_active: Boolean(data.is_active),
+    }
+
+    setLoading(true)
+    setError("")
+    try {
+      // Find product before API call
+      const product = data.product ? products.find(p => p.id === data.product) : null
+      
+      if (data.id) {
+        // Update existing variant
+        await api.patch(`update_variant/${data.id}/`, payload)
+      } else {
+        // Create new variant
+        if (!data.product) {
+          setError("Product ID is required to create variant.")
+          setLoading(false)
+          return
+        }
+        await api.post(`create_variant/${data.product}/`, payload)
+      }
+      
+      setIsVariantModalOpen(false)
+      setEditingVariant(null)
+      
+      // Clear cache and refetch variants immediately
+      if (product && tableRef.current) {
+        tableRef.current.clearVariantCache(product.id)
+        await tableRef.current.refetchVariants(product)
+      }
+      
+      // Reload products to update stock in main table
+      await loadProducts()
+    } catch (err) {
+      console.error(err)
+      const action = data.id ? "update" : "create"
+      setError(`Failed to ${action} variant.`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deletingProduct?.id) {
+      setDeletingProduct(null)
+      return
+    }
+
+    setLoading(true)
+    setError("")
+    try {
+      await api.delete(`delete_product/${deletingProduct.id}/`)
+      setDeletingProduct(null)
+      await loadProducts()
+    } catch (err) {
+      console.error(err)
+      const payload = err?.response?.data
+      const fallback = "Failed to delete product."
+
+      let message = payload?.detail || payload?.message
+      if (!message && typeof payload === "string") {
+        message = payload
+      }
+      if (!message && payload && typeof payload === "object") {
+        const firstValue = Object.values(payload)[0]
+        if (Array.isArray(firstValue)) {
+          message = firstValue[0]
+        } else if (typeof firstValue === "string") {
+          message = firstValue
+        }
+      }
+      if (!message) {
+        message = err?.response?.status
+          ? `${fallback} (HTTP ${err.response.status})`
+          : fallback
+      }
+
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getPageNumbers = () => {
@@ -171,9 +338,13 @@ function ProductsPage() {
           {loading && <div className="text-muted">Loading products...</div>}
           {error && <div className="text-danger mb-3">{error}</div>}
           <ProductsTable
+            ref={tableRef}
             products={products}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onAddVariant={handleAddVariant}
+            onEditVariant={handleEditVariant}
+            onDeleteVariant={handleDeleteVariant}
           />
           {totalPages > 1 && (
             <nav aria-label="Products pagination" className="d-flex justify-content-center mt-4">
@@ -219,8 +390,17 @@ function ProductsPage() {
         product={editingProduct}
         brands={brands}
         categories={categories}
+        sizes={sizes}
         onClose={handleModalClose}
         onSave={handleSave}
+      />
+
+      <VariantModal
+        open={isVariantModalOpen}
+        variant={editingVariant}
+        sizes={sizes}
+        onClose={handleVariantModalClose}
+        onSave={handleSaveVariant}
       />
 
       <ProductDeleteDialog

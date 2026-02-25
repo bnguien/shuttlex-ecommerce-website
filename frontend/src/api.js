@@ -25,7 +25,7 @@ api.interceptors.request.use(
         } else {
           localStorage.removeItem("access");
         }
-      } catch (e) {
+      } catch {
         localStorage.removeItem("access");
       }
     }
