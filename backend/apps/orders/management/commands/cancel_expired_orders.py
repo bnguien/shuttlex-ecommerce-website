@@ -3,7 +3,7 @@ import logging
 from django.core.management import BaseCommand
 from django.utils import timezone
 from django.db import transaction
-from django.db import F
+from django.db.models import F
 
 from apps.orders.models import Order, OrderStatus, PaymentStatus, OrderHistory
 from apps.catalog.models import Product, ProductVariant
