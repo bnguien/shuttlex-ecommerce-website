@@ -5,6 +5,7 @@ ShuttleX is a full-stack e-commerce platform for badminton accessories, featurin
 [![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-5.2.10-darkgreen?style=flat-square&logo=django)](https://www.djangoproject.com/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb?style=flat-square&logo=react)](https://react.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?style=flat-square&logo=mysql)](https://www.mysql.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
