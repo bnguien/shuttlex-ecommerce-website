@@ -15,6 +15,7 @@ ShuttleX is a full-stack e-commerce platform for badminton accessories, featurin
 - **npm**: 8.x hoặc cao hơn
 - **pip**: Phiên bản mới nhất
 - **MySQL**: 8.0 hoặc cao hơn
+- **Docker Desktop**: Khuyên dùng để chạy Backend + Redis + Celery nhanh
 
 ---
 
@@ -29,7 +30,68 @@ cd shuttlex-ecommerce-website
 
 ---
 
-## 📦 Cài đặt Backend (Django)
+## ⚡ Chạy nhanh bằng Docker (Khuyên dùng)
+
+### 1) Chuẩn bị file môi trường
+
+Tạo file `backend/.env` (nếu chưa có), tối thiểu cần các biến DB, SECRET và Celery:
+
+```env
+SECRET_KEY=your_secret_key
+DEBUG=True
+
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=shuttlex
+DB_USER=root
+DB_PASSWORD=your_db_password
+DB_HOST=host.docker.internal
+DB_PORT=3306
+
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+CELERY_ACCEPT_CONTENT=json
+CELERY_TASK_SERIALIZER=json
+```
+
+### 2) Chạy backend + redis + celery worker + celery beat
+
+Trong thư mục gốc project:
+
+```bash
+docker compose up --build
+```
+
+Nếu terminal chưa nhận lệnh `docker` trên Windows, dùng full path:
+
+```powershell
+"C:\Program Files\Docker\Docker\resources\bin\docker.exe" compose up --build
+```
+
+### 3) Chạy frontend
+
+Mở terminal khác:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 4) Truy cập
+
+- Backend: **http://localhost:8000**
+- Admin: **http://localhost:8000/admin**
+- Frontend: **http://localhost:5173**
+
+### 5) Dừng hệ thống
+
+```bash
+docker compose down
+```
+
+---
+
+## 📦 Cài đặt Backend (Django - Local, không Docker)
 
 ### Bước 1: Tạo Virtual Environment
 
@@ -174,8 +236,11 @@ Hệ thống sử dụng **Celery** và **Celery Beat** để thực hiện các
 Redis đóng vai trò là "Broker" (người đưa thư) cho Celery. Hệ thống yêu cầu Redis chạy tại port `6379`.
 - **Windows:** Tải và chạy [Redis-x64.zip](https://github.com/microsoftarchive/redis/releases).
 - **macOS (Homebrew):** `brew install redis` sau đó chạy `brew services start redis`.
-- **Docker (Khuyên dùng):** ```bash
+- **Docker:**
+
+  ```bash
   docker run -d -p 6379:6379 redis
+  ```
 
 #### **2. Chạy Celery Workers**
 Để các tác vụ tự động hoạt động, bạn cần mở thêm **2 Terminal mới** (ngoài Terminal đang chạy `runserver` và `npm dev`) và kích hoạt `venv` ở cả hai:
@@ -183,9 +248,9 @@ Redis đóng vai trò là "Broker" (người đưa thư) cho Celery. Hệ thốn
 **Terminal 3 - Celery Worker (Thực thi tác vụ):**
 Nhiệm vụ: Lắng nghe và xử lý các công việc được giao (như gửi email, cập nhật database).
 
-* **Windows** (Yêu cầu cài đặt thêm: `pip install eventlet`):
+* **Windows (Khuyên dùng `solo`, không cần eventlet):**
     ```bash
-    celery -A config worker --loglevel=info -P eventlet
+  celery -A config worker --loglevel=info -P solo
     ```
 * **macOS / Linux:**
     ```bash

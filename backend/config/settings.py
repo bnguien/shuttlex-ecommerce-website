@@ -222,10 +222,10 @@ STATIC_URL = "static/"
 MEDIA_URL = "img/"
 MEDIA_ROOT = BASE_DIR / "media"
 # Cấu hình Celery
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0") 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", CELERY_BROKER_URL)
+CELERY_ACCEPT_CONTENT = os.getenv("CELERY_ACCEPT_CONTENT", "json").split(",")
+CELERY_TASK_SERIALIZER = os.getenv("CELERY_TASK_SERIALIZER", "json")
 CELERY_TIMEZONE = "Asia/Ho_Chi_Minh" 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler' 
 
