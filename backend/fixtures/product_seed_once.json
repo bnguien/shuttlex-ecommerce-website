@@ -1,0 +1,601 @@
+[
+{
+  "model": "catalog.brand",
+  "pk": 1,
+  "fields": {
+    "name": "Yonex",
+    "slug": "yonex",
+    "logo": "",
+    "is_active": true,
+    "created_at": "2026-02-10T14:12:08.808Z",
+    "updated_at": "2026-02-10T14:12:08.808Z"
+  }
+},
+{
+  "model": "catalog.brand",
+  "pk": 2,
+  "fields": {
+    "name": "Lining",
+    "slug": "lining",
+    "logo": "",
+    "is_active": true,
+    "created_at": "2026-02-10T14:12:15.212Z",
+    "updated_at": "2026-02-10T14:12:15.212Z"
+  }
+},
+{
+  "model": "catalog.brand",
+  "pk": 3,
+  "fields": {
+    "name": "Victor",
+    "slug": "victor",
+    "logo": "",
+    "is_active": true,
+    "created_at": "2026-02-10T14:12:21.769Z",
+    "updated_at": "2026-02-10T14:12:21.769Z"
+  }
+},
+{
+  "model": "catalog.brand",
+  "pk": 4,
+  "fields": {
+    "name": "Mizuno",
+    "slug": "mizuno",
+    "logo": "",
+    "is_active": true,
+    "created_at": "2026-02-10T14:12:38.877Z",
+    "updated_at": "2026-02-10T14:12:38.877Z"
+  }
+},
+{
+  "model": "catalog.brand",
+  "pk": 5,
+  "fields": {
+    "name": "VS",
+    "slug": "vs",
+    "logo": "",
+    "is_active": true,
+    "created_at": "2026-02-11T14:32:44.514Z",
+    "updated_at": "2026-02-11T14:32:44.514Z"
+  }
+},
+{
+  "model": "catalog.brand",
+  "pk": 6,
+  "fields": {
+    "name": "Other",
+    "slug": "other",
+    "logo": "",
+    "is_active": true,
+    "created_at": "2026-02-11T15:05:30.115Z",
+    "updated_at": "2026-02-11T15:05:30.115Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 1,
+  "fields": {
+    "name": "Yonex Astrox 22 Badminton Racket",
+    "slug": "yonex-astrox-22",
+    "image": "products/yonex-astrox-22.jpg",
+    "description": "Yonex Astrox 22 is a lightweight badminton racket weighing approximately 78g (5U), featuring a head-light balance and medium flex shaft for fast swing speed and excellent control. Constructed from high-quality graphite for both frame and shaft, it supports string tension of up to 30 lbs, making it suitable for intermediate to advanced players who prefer quick handling, defensive play, and precise shot placement.",
+    "base_price": "2818000.00",
+    "base_stock": 30,
+    "is_active": true,
+    "category": 1,
+    "brand": 1,
+    "created_at": "2026-02-09T15:25:02.319Z",
+    "updated_at": "2026-02-10T14:15:49.168Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 2,
+  "fields": {
+    "name": "Yonex Nanoflare Junior Cyan Badminton Racket",
+    "slug": "yonex-nanoflare-junior-cyan",
+    "image": "products/yonex-nanoflare-junior-cyan.jpg",
+    "description": "Yonex Nanoflare Junior Cyan is a lightweight badminton racket specially designed for junior players and beginners. Featuring a head-light balance and flexible shaft, it offers easy handling, smooth swings, and better control. The durable graphite construction ensures stability and comfort, helping young players develop proper technique and confidence on the court.",
+    "base_price": "1719000.00",
+    "base_stock": 25,
+    "is_active": true,
+    "category": 1,
+    "brand": 1,
+    "created_at": "2026-02-09T15:28:22.802Z",
+    "updated_at": "2026-02-10T14:15:40.971Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 3,
+  "fields": {
+    "name": "Victor P8500 NitroLite ZSW/DX Badminton Shoes",
+    "slug": "victor-p8500-nitrolite-zsw-dx",
+    "image": "products/victor-p8500-nitrolite-zsw-dx.jpg",
+    "description": "Victor P8500 NitroLite ZSW/DX Badminton Shoes are designed for high-performance badminton players who demand stability, comfort, and explosive movement on court. Featuring NitroLite cushioning technology, these shoes provide excellent shock absorption and energy return. The reinforced upper and stable sole structure enhance foot support during fast lateral movements, while the non-marking rubber outsole ensures strong grip and durability on indoor courts.",
+    "base_price": "2680000.00",
+    "base_stock": 15,
+    "is_active": true,
+    "category": 2,
+    "brand": 3,
+    "created_at": "2026-02-09T15:31:46.672Z",
+    "updated_at": "2026-02-10T14:15:34.893Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 4,
+  "fields": {
+    "name": "Yonex Cascade Drive 3 Badminton Shoes",
+    "slug": "yonex-cascade-drive-3",
+    "image": "products/yonex-cascade-drive-3-peacock.jpg",
+    "description": "Yonex Cascade Drive 3 Badminton Shoes are designed for players seeking comfort, stability, and smooth movement on the court. With a lightweight construction and supportive cushioning, these shoes help reduce impact during fast footwork. The durable upper provides a secure fit, while the non-marking rubber outsole ensures reliable grip and balance on indoor badminton courts, making them suitable for both training and match play.",
+    "base_price": "2450000.00",
+    "base_stock": 10,
+    "is_active": true,
+    "category": 2,
+    "brand": 1,
+    "created_at": "2026-02-09T15:34:31.739Z",
+    "updated_at": "2026-02-10T14:15:29.335Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 5,
+  "fields": {
+    "name": "Li-Ning 6613 Women’s Badminton Shirt – White",
+    "slug": "lining-6613-womens-badminton-shirt-white",
+    "image": "products/lining-6613-womens-badminton-shirt-white.jpg",
+    "description": "Lightweight and breathable women’s badminton shirt designed for comfort and active play.",
+    "base_price": "160000.00",
+    "base_stock": 75,
+    "is_active": true,
+    "category": 3,
+    "brand": 2,
+    "created_at": "2026-02-09T15:36:25.788Z",
+    "updated_at": "2026-02-10T14:21:19.741Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 6,
+  "fields": {
+    "name": "Yonex TSM2721 Badminton Shorts – Jet Black",
+    "slug": "yonex-tsm2721-badminton-shorts-jet-black",
+    "image": "products/yonex-tsm2721-badminton-shorts-jet-black.jpg",
+    "description": "Lightweight and breathable badminton shorts designed for comfort and unrestricted movement.",
+    "base_price": "439000.00",
+    "base_stock": 99,
+    "is_active": true,
+    "category": 3,
+    "brand": 1,
+    "created_at": "2026-02-09T15:38:39.843Z",
+    "updated_at": "2026-02-10T14:20:24.029Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 7,
+  "fields": {
+    "name": "Victor DriveX 12 WT25 Badminton Racket",
+    "slug": "victor-drivex-12-wt25",
+    "image": "products/victor-drivex-12-wt25.jpg",
+    "description": "Victor DriveX 12 WT25 Badminton Racket features a balanced frame, medium flex shaft, and an approximate weight of 85g (4U) for stable and controlled performance. Made from high-quality graphite and supporting string tension up to 30 lbs, this racket is ideal for intermediate to advanced players in both singles and doubles play.",
+    "base_price": "4449000.00",
+    "base_stock": 105,
+    "is_active": true,
+    "category": 1,
+    "brand": 3,
+    "created_at": "2026-02-09T15:40:48.652Z",
+    "updated_at": "2026-02-10T14:15:07.896Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 8,
+  "fields": {
+    "name": "Yonex B1408 Badminton Backpack",
+    "slug": "yonex-b1408-badminton-backpack",
+    "image": "products/yonex-b1408-badminton-backpack.jpg",
+    "description": "Yonex B1408 Badminton Backpack offers a practical and lightweight design with spacious compartments for rackets, apparel, and accessories. Made from durable materials with comfortable shoulder straps, this backpack is ideal for daily training and easy transport to the court.",
+    "base_price": "750000.00",
+    "base_stock": 200,
+    "is_active": true,
+    "category": 5,
+    "brand": 1,
+    "created_at": "2026-02-09T15:43:10.572Z",
+    "updated_at": "2026-02-10T14:15:02.196Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 9,
+  "fields": {
+    "name": "Li-Ning Halbertec Motor Pro Badminton Racket",
+    "slug": "lining-halbertec-motor-pro",
+    "image": "products/lining-halbertec-motor-pro.jpg",
+    "description": "Li-Ning Halbertec Motor Pro Badminton Racket features a head-heavy balance, stiff shaft, and an approximate weight of 85g (4U), delivering powerful smashes with solid control. Constructed from high-quality carbon fiber for both frame and shaft, it supports string tension up to 30 lbs, ensuring durability and stability. This racket is well suited for intermediate to advanced players in both singles and doubles play.",
+    "base_price": "2100000.00",
+    "base_stock": 50,
+    "is_active": true,
+    "category": 1,
+    "brand": 2,
+    "created_at": "2026-02-09T15:46:27.340Z",
+    "updated_at": "2026-02-10T14:14:55.668Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 10,
+  "fields": {
+    "name": "Yonex Astrox 88D Pro 2024 Badminton Racket",
+    "slug": "yonex-astrox-88d-pro-2024",
+    "image": "products/yonex-astrox-88d-pro-2024.jpg",
+    "description": "Yonex Astrox 88D Pro 2024 Badminton Racket features a head-heavy balance, stiff shaft, and an approximate weight of 85g (4U), designed to maximize power and steep attacking shots from the rear court. Built with high-modulus graphite and advanced Astrox technology, it supports string tension up to 28–30 lbs, delivering excellent stability, control, and explosive performance. This racket is ideal for advanced players who specialize in powerful singles and rear-court doubles play.",
+    "base_price": "5039000.00",
+    "base_stock": 7,
+    "is_active": true,
+    "category": 1,
+    "brand": 1,
+    "created_at": "2026-02-09T15:59:26.785Z",
+    "updated_at": "2026-02-10T14:19:26.856Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 11,
+  "fields": {
+    "name": "Mizuno Carbo Pro 835 Badminton Racket",
+    "slug": "mizuno-carbo-pro-835",
+    "image": "products/mizuno-carbo-pro-835.jpg",
+    "description": "Mizuno Carbo Pro 835 Badminton Racket features an even balance, medium flex shaft, and an approximate weight of 83–85g (4U), offering a smooth blend of control and power. Built with durable carbon graphite and supporting string tension up to 28 lbs, it delivers stable performance and quick handling, ideal for intermediate to advanced all-round players.",
+    "base_price": "1040000.00",
+    "base_stock": 20,
+    "is_active": true,
+    "category": 1,
+    "brand": 4,
+    "created_at": "2026-02-11T13:22:44.940Z",
+    "updated_at": "2026-02-11T13:22:44.940Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 12,
+  "fields": {
+    "name": "Mizuno Acrospeed 8 Badminton Racket",
+    "slug": "mizuno-acrospeed-8",
+    "image": "products/mizuno-acrospeed-8.jpg",
+    "description": "Mizuno Acrospeed 8 Badminton Racket features a head-light balance, flexible shaft, and an approximate weight of 83–85g (4U), delivering fast swing speed and excellent maneuverability. Built with high-quality carbon graphite and supporting string tension up to 28 lbs, it offers responsive feel and smooth control, ideal for intermediate players seeking quick defense and agile net play.",
+    "base_price": "3150000.00",
+    "base_stock": 15,
+    "is_active": true,
+    "category": 1,
+    "brand": 4,
+    "created_at": "2026-02-11T13:24:05.321Z",
+    "updated_at": "2026-02-11T13:24:05.321Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 13,
+  "fields": {
+    "name": "Victor Thruster Goku GB F Badminton Racket Set – Dragon Ball Z 2025",
+    "slug": "victor-thruster-goku-gb-f-ndash-dragonball-z-2025",
+    "image": "products/victor-thruster-goku-gb-f-ndash-dragonball-z-2025.jpg",
+    "description": "Victor Thruster Goku GB F Badminton Racket Set – Dragon Ball Z 2025 features a head-heavy balance, stiff shaft, and an approximate weight of 83g (4U) for powerful, steep smashes. Built with high-modulus graphite and supporting string tension up to 30 lbs, it delivers excellent stability and explosive rear-court performance—ideal for advanced attacking players and Dragon Ball Z collectors.",
+    "base_price": "4800000.00",
+    "base_stock": 5,
+    "is_active": true,
+    "category": 1,
+    "brand": 3,
+    "created_at": "2026-02-11T13:28:01.309Z",
+    "updated_at": "2026-02-11T13:28:01.309Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 14,
+  "fields": {
+    "name": "Victor Spider-Man Limited Badminton Racket Set",
+    "slug": "victor-spider-man-limited-set",
+    "image": "products/victor-spider-man-limited.jpg",
+    "description": "Victor Spider-Man Limited Badminton Racket Set features a balanced to head-heavy design with a responsive shaft and an approximate weight of 83–85g (4U), delivering quick swing speed and solid power. Built with high-quality graphite and supporting string tension up to 30 lbs, it offers stable control and dynamic performance—perfect for players seeking versatile play and Spider-Man themed exclusivity.",
+    "base_price": "5500000.00",
+    "base_stock": 3,
+    "is_active": true,
+    "category": 1,
+    "brand": 3,
+    "created_at": "2026-02-11T13:30:11.545Z",
+    "updated_at": "2026-02-11T13:30:11.545Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 15,
+  "fields": {
+    "name": "Yonex Nanoflare 001C 2024 Badminton Racket",
+    "slug": "yonex-nanoflare-001c-2024",
+    "image": "products/yonex-nanoflare-001c-2024.jpg",
+    "description": "Yonex Nanoflare 001C 2024 (5U) features a head-light balance and an ultra-lightweight design of approximately 78–80g (5U), delivering exceptional swing speed and effortless maneuverability. Built with high-quality graphite and supporting stable string tension, it offers quick defense and smooth control—ideal for beginners and players who prioritize speed and easy handling.",
+    "base_price": "959000.00",
+    "base_stock": 30,
+    "is_active": true,
+    "category": 1,
+    "brand": 1,
+    "created_at": "2026-02-11T13:33:55.577Z",
+    "updated_at": "2026-02-11T13:33:55.577Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 16,
+  "fields": {
+    "name": "Li-Ning Halbertec 8000 Badminton Racket Set",
+    "slug": "li-ning-halbertec-8000-set",
+    "image": "products/li-ning-halbertec-8000-set.jpg",
+    "description": "Li-Ning Halbertec 8000 Badminton Racket Set features a balanced to slightly head-heavy design with a stiff shaft and an approximate weight of 85–87g (3U/4U), delivering powerful smashes and precise shot control. Built with high-modulus carbon fiber and supporting high string tension, it offers excellent stability and responsiveness—ideal for advanced players seeking aggressive all-round performance.",
+    "base_price": "5520000.00",
+    "base_stock": 2,
+    "is_active": true,
+    "category": 1,
+    "brand": 2,
+    "created_at": "2026-02-11T14:31:17.869Z",
+    "updated_at": "2026-02-11T14:31:17.870Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 17,
+  "fields": {
+    "name": "VS Kimetsu no Yaiba 10 – Kamado Tanjiro Badminton Racket",
+    "slug": "vs-kimetsu-no-yaiba-10-ndash-kamado-tanjiro",
+    "image": "products/vs-kimetsu-no-yaiba-10-ndash-kamado-tanjiro.jpg",
+    "description": "VS Kimetsu no Yaiba 10 – Kamado Tanjiro Badminton Racket features a dynamic design inspired by Tanjiro Kamado, paired with a balanced build and responsive shaft to deliver quick maneuverability and reliable power. Built with high-quality graphite and supporting stable string tension, it offers excellent control and versatile performance—ideal for intermediate players seeking both agility and impactful play with a unique anime-themed style.",
+    "base_price": "1250000.00",
+    "base_stock": 5,
+    "is_active": true,
+    "category": 1,
+    "brand": 5,
+    "created_at": "2026-02-11T14:36:13.006Z",
+    "updated_at": "2026-02-11T14:36:13.006Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 18,
+  "fields": {
+    "name": "VS Dragon Badminton Racket Set",
+    "slug": "vs-dragon-set",
+    "image": "products/vs-dragon-set.jpg",
+    "description": "VS Dragon Badminton Racket Set (3U / 4U) features a choice of 3U for powerful smashes and solid driving play, or 4U for faster swing speed and agile defense. Both versions deliver balanced performance with a lightweight build and responsive shaft for quick maneuverability. Constructed with high-quality graphite and supporting stable string tension, it offers excellent control and reliable power—ideal for intermediate players seeking dynamic all-around play with a distinctive dragon-themed design.",
+    "base_price": "1850000.00",
+    "base_stock": 7,
+    "is_active": true,
+    "category": 1,
+    "brand": 5,
+    "created_at": "2026-02-11T14:38:12.805Z",
+    "updated_at": "2026-02-11T14:38:12.805Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 19,
+  "fields": {
+    "name": "Li-Ning AYTT001-6 Badminton Shoes",
+    "slug": "li-ning-aytt001-6-badminton-shoes",
+    "image": "products/li-ning-aytt001-6-badminton-shoes.jpg",
+    "description": "Li-Ning AYTT001-6 Badminton Shoes feature a lightweight, breathable design with excellent grip and cushioning, delivering stable support and dynamic agility on court. Built with durable materials and advanced traction technology, they provide superior responsiveness and comfort—ideal for players seeking speed, stability, and all-around performance.",
+    "base_price": "1200000.00",
+    "base_stock": 45,
+    "is_active": true,
+    "category": 2,
+    "brand": 2,
+    "created_at": "2026-02-11T14:43:36.984Z",
+    "updated_at": "2026-02-11T14:43:36.984Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 20,
+  "fields": {
+    "name": "Yonex Velo 300 Badminton Shoes",
+    "slug": "yonex-velo-300-badminton-shoes",
+    "image": "products/yonex-velo-300-badminton-shoes.jpg",
+    "description": "Yonex Velo 300 Badminton Shoes feature a lightweight, breathable upper and responsive cushioning for enhanced comfort and agility on court. Engineered with high-traction sole technology, they deliver excellent grip and stability during fast lateral movements. Ideal for intermediate players seeking speed, support, and all-around performance.",
+    "base_price": "679000.00",
+    "base_stock": 41,
+    "is_active": true,
+    "category": 2,
+    "brand": 1,
+    "created_at": "2026-02-11T14:47:30.839Z",
+    "updated_at": "2026-02-23T04:59:23.825Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 21,
+  "fields": {
+    "name": "Yonex SKSM1898ZMP8 Badminton Socks",
+    "slug": "yonex-sksm1898zmp8-badminton-socks",
+    "image": "products/yonex-sksm1898zmp8-badminton-socks.jpg",
+    "description": "Yonex SKSM1898ZMP8 Badminton Socks are breathable, cushion-enhanced performance socks designed to keep your feet dry and comfortable on court. Made with moisture-wicking fabric and reinforced arch support, they deliver excellent comfort and stability during intense rallies—ideal for badminton players of all levels looking for reliable grip and all-around foot support.",
+    "base_price": "69000.00",
+    "base_stock": 112,
+    "is_active": true,
+    "category": 4,
+    "brand": 1,
+    "created_at": "2026-02-11T14:52:36.349Z",
+    "updated_at": "2026-02-11T14:52:36.349Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 22,
+  "fields": {
+    "name": "Li-Ning AWSU084-2 Badminton Socks",
+    "slug": "li-ning-awsu084-2-badminton-socks",
+    "image": "products/li-ning-awsu084-2-badminton-socks.jpg",
+    "description": "Li-Ning AWSU084-2 Badminton Socks are breathable, moisture-wicking performance socks designed to keep your feet dry and comfortable during intense play. Featuring cushioned padding and arch support for enhanced stability, they offer excellent comfort and reduced fatigue—ideal for badminton players seeking reliable foot support and all-around performance on court.",
+    "base_price": "100000.00",
+    "base_stock": 99,
+    "is_active": true,
+    "category": 4,
+    "brand": 2,
+    "created_at": "2026-02-11T14:54:02.966Z",
+    "updated_at": "2026-02-11T14:54:02.966Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 23,
+  "fields": {
+    "name": "Victor Long Plain Badminton Socks",
+    "slug": "victor-long-plain-badminton-socks",
+    "image": "products/victor-long-plain-badminton-socks.jpg",
+    "description": "Victor Long Plain Badminton Socks are breathable, moisture-wicking performance socks designed for superior comfort and support during intense rallies. Featuring extended length for added protection and cushioned padding at heel and toe, they offer excellent comfort, stability, and reduced foot fatigue—ideal for players seeking reliable foot support and performance on court.",
+    "base_price": "35000.00",
+    "base_stock": 205,
+    "is_active": true,
+    "category": 4,
+    "brand": 3,
+    "created_at": "2026-02-11T14:55:30.375Z",
+    "updated_at": "2026-02-11T14:55:30.375Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 24,
+  "fields": {
+    "name": "VS Sports Sweatband",
+    "slug": "vs-sports-sweatband",
+    "image": "products/vs-sports-sweatband.jpg",
+    "description": "VS Sports Sweatband is designed to effectively absorb sweat and keep your hands and face dry during intense matches. Made from soft, breathable, and stretchable fabric, it provides a comfortable fit and reliable moisture control—ideal for badminton players and other indoor sports activities.",
+    "base_price": "50000.00",
+    "base_stock": 199,
+    "is_active": true,
+    "category": 4,
+    "brand": 5,
+    "created_at": "2026-02-11T14:57:16.657Z",
+    "updated_at": "2026-02-11T14:57:16.657Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 25,
+  "fields": {
+    "name": "Yonex Badminton Head Sweatband",
+    "slug": "yonex-badminton-head-sweatband",
+    "image": "products/yonex-badminton-head-sweatband.jpg",
+    "description": "Yonex Badminton Head Sweatband is a breathable, moisture-wicking headband designed to keep sweat out of your eyes during intense rallies. Made with soft, stretchable fabric and enhanced comfort fit, it provides reliable sweat absorption and secure wear—ideal for badminton players and other court sports.",
+    "base_price": "439000.00",
+    "base_stock": 78,
+    "is_active": true,
+    "category": 4,
+    "brand": 1,
+    "created_at": "2026-02-11T14:58:29.461Z",
+    "updated_at": "2026-02-11T14:58:29.461Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 26,
+  "fields": {
+    "name": "Yonex Badminton Bag",
+    "slug": "yonex-badminton-bag",
+    "image": "products/yonex-badminton-bag.jpg",
+    "description": "Yonex Badminton Bag is a durable, spacious racket bag designed to carry your badminton gear with ease. Featuring multiple compartments for rackets, shoes, shuttlecocks, and accessories, it offers reliable protection and organization. Built with tough, weather-resistant fabric and comfortable straps, it’s ideal for players who need convenient storage and transport for training or competition.",
+    "base_price": "850000.00",
+    "base_stock": 99,
+    "is_active": true,
+    "category": 5,
+    "brand": 1,
+    "created_at": "2026-02-11T15:00:06.206Z",
+    "updated_at": "2026-02-11T15:00:06.206Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 27,
+  "fields": {
+    "name": "Victor BR5043 AM Badminton Backpack – White/Blue",
+    "slug": "victor-br5043-am-badminton-backpack-white-blue",
+    "image": "products/victor-br5043-am-badminton-backpack-white-blue.jpg",
+    "description": "Victor BR5043 AM Badminton Backpack – White/Blue is a spacious and durable badminton bag designed to carry all your gear securely and comfortably. Featuring multiple compartments for rackets, shoes, and accessories, it offers easy organization and quick access. Built with tough, water-resistant materials and padded straps for comfort, it’s ideal for players who need reliable storage for training and competition.",
+    "base_price": "1050000.00",
+    "base_stock": 21,
+    "is_active": true,
+    "category": 5,
+    "brand": 3,
+    "created_at": "2026-02-11T15:01:51.334Z",
+    "updated_at": "2026-02-11T15:01:51.335Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 28,
+  "fields": {
+    "name": "Vina Star Shuttlecock Tube",
+    "slug": "vina-star-shuttlecock-tube",
+    "image": "products/vina-star-shuttlecock-tube.jpg",
+    "description": "Vina Star Shuttlecock Tube is a durable and lightweight container designed to protect and organize badminton shuttlecocks. Made with sturdy materials and a secure cap, it keeps shuttlecocks safe from damage and easy to transport—ideal for players and coaches who need reliable storage and protection on and off the court.",
+    "base_price": "305000.00",
+    "base_stock": 100,
+    "is_active": true,
+    "category": 6,
+    "brand": 6,
+    "created_at": "2026-02-11T15:05:19.620Z",
+    "updated_at": "2026-02-11T15:05:39.153Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 29,
+  "fields": {
+    "name": "Ba Sao ProX Shuttlecock Tube",
+    "slug": "ba-sao-prox-shuttlecock-tube",
+    "image": "products/ba-sao-prox-shuttlecock-tube.jpg",
+    "description": "Ba Sao ProX Shuttlecock Tube is a durable and lightweight container designed to protect and store badminton shuttlecocks. Made from sturdy materials with a secure cap, it keeps shuttlecocks safe from damage and easy to carry to practice or matches—ideal for players and coaches who need reliable shuttlecock protection and storage.",
+    "base_price": "290000.00",
+    "base_stock": 99,
+    "is_active": true,
+    "category": 6,
+    "brand": 6,
+    "created_at": "2026-02-11T15:07:09.133Z",
+    "updated_at": "2026-02-11T15:07:09.133Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 30,
+  "fields": {
+    "name": "Yonex TPM3005 Badminton Shirt – Jet Black",
+    "slug": "yonex-badminton-shirt-jet-black",
+    "image": "products/yonex-tshirt-jet-black.jpg",
+    "description": "Lightweight Yonex TPM3005 badminton shirt in Jet Black, designed for comfort, breathability, and peak performance on court.",
+    "base_price": "289000.00",
+    "base_stock": 89,
+    "is_active": true,
+    "category": 3,
+    "brand": 1,
+    "created_at": "2026-02-20T14:58:44.098Z",
+    "updated_at": "2026-02-20T15:02:03.306Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 32,
+  "fields": {
+    "name": "Yonex TSI2846 Badminton Skirt – Hemlock",
+    "slug": "yonex-tsi2846-badminton-skirt-hemlock",
+    "image": "products/yonex-tsi2846-badminton-skirt-hemlock_Dm04Dwn.jpg",
+    "description": "Yonex TSI2846 Badminton Skirt – Hemlock is a lightweight, breathable women’s sports skirt with a comfortable fit and moisture-wicking fabric, ideal for training and matches.",
+    "base_price": "279000.00",
+    "base_stock": 99,
+    "is_active": true,
+    "category": 3,
+    "brand": 1,
+    "created_at": "2026-02-22T07:46:43.343Z",
+    "updated_at": "2026-02-22T07:46:43.343Z"
+  }
+}
+]

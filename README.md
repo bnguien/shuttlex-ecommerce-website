@@ -211,6 +211,12 @@ EMAIL_HOST_PASSWORD=abcd efgh ijkl mnop  # (Sao chép chính xác, không thêm 
 python manage.py migrate
 ```
 
+### Bước 4.1: Cập nhật dữ liệu mẫu
+
+```bash
+python manage.py loaddata fixtures/category_seed_once.json fixtures/product_seed_once.json
+```
+
 ### Bước 5: Tạo Superuser
 
 ```bash

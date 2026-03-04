@@ -27,3 +27,8 @@ node_modules/
 # OS / Editor
 .vscode/
 .DS_Store
+
+# Django fixtures: keep only one-time seed files in git
+backend/fixtures/*.json
+!backend/fixtures/category_seed_once.json
+!backend/fixtures/product_seed_once.json
