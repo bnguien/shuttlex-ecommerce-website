@@ -15,7 +15,7 @@ import {
 } from "../../utils/validation";
 
 function AuthPage({ initialMode = "login" }) {
-  const { setIsAuthenticated, setIsStaff, get_username, get_user_role } =
+  const { setIsAuthenticated, refreshUserData } =
     useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -86,16 +86,8 @@ function AuthPage({ initialMode = "login" }) {
       setIsAuthenticated(true);
       window.dispatchEvent(new Event("cart:refresh"));
 
-      await get_username();
-
-      let isAdmin = false;
-      try {
-        const roleResponse = await get_user_role();
-        isAdmin = roleResponse?.data?.is_staff || roleResponse?.data?.is_superuser;
-        setIsStaff(!!isAdmin);
-      } catch (roleErr) {
-        console.log("role fetch error", roleErr);
-      }
+      const refreshed = await refreshUserData();
+      const isAdmin = !!refreshed?.isStaff;
 
       if (isAdmin) {
         navigate("/admin/dashboard", { replace: true });

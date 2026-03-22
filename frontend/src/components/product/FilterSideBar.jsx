@@ -20,15 +20,26 @@ function FilterSideBar({ category, filters, onChange }) {
   }, [])
 
   const sizeType = getCategoryType(category)
+  const inferredSizeType =
+    sizes.length > 0 && new Set(sizes.map((size) => size.type)).size === 1
+      ? sizes[0].type
+      : null
+  const resolvedSizeType = sizeType || inferredSizeType
 
   useEffect(() => {
-    if (sizeType) {
-      api.get("sizes/", { params: { type: sizeType } })
-        .then(res => setSizes(res.data))
-        .catch(err => console.error(err))
-    } else {
+    if (!category) {
       setSizes([])
+      return
     }
+
+    const params = { category }
+    if (sizeType) {
+      params.type = sizeType
+    }
+
+    api.get("sizes/", { params })
+      .then(res => setSizes(res.data))
+      .catch(err => console.error(err))
   }, [category, sizeType])
 
   useEffect(() => {
@@ -58,7 +69,7 @@ function FilterSideBar({ category, filters, onChange }) {
   return (
     <div className={`d-flex flex-column p-4 h-100 ${styles.filterSidebar}`}>
       <div className="mb-4">
-        <h5 className="">Price Range</h5>
+        <h5 className="">Khoảng giá</h5>
         <div className="d-flex align-items-center gap-2">
           <input
             type="number"
@@ -89,7 +100,7 @@ function FilterSideBar({ category, filters, onChange }) {
       </div>
       
       <div className="mb-4">
-        <h5 className="">Brand</h5>
+        <h5 className="">Thương hiệu</h5>
         {brands.map((brand, index) => {
           const brandValue = brand.slug || brand.name
           return (
@@ -117,8 +128,8 @@ function FilterSideBar({ category, filters, onChange }) {
 
       {sizes.length > 0 && (
         <div className="mb-4">
-          <h5 className="">Size</h5>
-          {sizeType === "racket" ? (
+          <h5 className="">Kích cỡ</h5>
+          {resolvedSizeType === "racket" ? (
             sizes.map((size, index) => {
               const sizeValue = String(size.id ?? size.name)
               return (
@@ -147,7 +158,7 @@ function FilterSideBar({ category, filters, onChange }) {
               {sizes
                 .slice()
                 .sort((a, b) => {
-                  if (sizeType !== "clothes" && sizeType !== "apparel") return 0
+                  if (resolvedSizeType !== "clothes" && resolvedSizeType !== "apparel") return 0
                   const order = ["S", "M", "L", "XL", "XXL", "XXXL"]
                   const aName = String(a.name || "").trim().toUpperCase()
                   const bName = String(b.name || "").trim().toUpperCase()

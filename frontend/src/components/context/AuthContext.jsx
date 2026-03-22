@@ -22,11 +22,14 @@ function AuthProvider({ children }) {
             const current_time = Date.now() / 1000
             if (expiry_date >= current_time) {
                 setIsAuthenticated(true)
+                return true
             }
         }
+        setIsAuthenticated(false)
+        return false
     }
     function get_username() {
-        api.get("get_username/")
+        return api.get("get_username/")
             .then(res => {
                 setUsername(res.data.username)
             })
@@ -35,7 +38,7 @@ function AuthProvider({ children }) {
             })
     }
     function get_first_name() {
-        api.get("get_first_name/")
+        return api.get("get_first_name/")
             .then(res => {
                 setFirstName(res.data.first_name)
             })
@@ -44,7 +47,7 @@ function AuthProvider({ children }) {
             })
     }
     function get_last_name() {
-        api.get("get_last_name/")
+        return api.get("get_last_name/")
             .then(res => {
                 setLastName(res.data.last_name)
             })
@@ -53,7 +56,7 @@ function AuthProvider({ children }) {
             })
     }
     function get_email() {
-        api.get("get_email/")
+        return api.get("get_email/")
             .then(res => {
                 setEmail(res.data.email)
             })
@@ -71,6 +74,30 @@ function AuthProvider({ children }) {
                 console.log(err)
                 return null
             })
+    }
+
+    async function refreshUserData() {
+        const authenticated = handleAuth()
+        if (!authenticated) {
+            setUsername("")
+            setFirstName("")
+            setLastName("")
+            setEmail("")
+            setIsStaff(false)
+            return { isStaff: false }
+        }
+
+        const [, , , , roleResponse] = await Promise.all([
+            get_username(),
+            get_first_name(),
+            get_last_name(),
+            get_email(),
+            get_user_role()
+        ])
+
+        return {
+            isStaff: !!(roleResponse?.data?.is_staff || roleResponse?.data?.is_superuser)
+        }
     }
     async function logout() {
         try {
@@ -92,21 +119,14 @@ function AuthProvider({ children }) {
     useEffect(() => {
         const loadUserData = async () => {
             try {
-                handleAuth()
-                await Promise.all([
-                    api.get("get_username/").then(res => setUsername(res.data.username)).catch(err => console.log(err)),
-                    api.get("get_first_name/").then(res => setFirstName(res.data.first_name)).catch(err => console.log(err)),
-                    api.get("get_last_name/").then(res => setLastName(res.data.last_name)).catch(err => console.log(err)),
-                    api.get("get_email/").then(res => setEmail(res.data.email)).catch(err => console.log(err)),
-                    api.get("get_user_role/").then(res => setIsStaff(res.data.is_staff || res.data.is_superuser)).catch(err => console.log(err))
-                ])
+                await refreshUserData()
             } finally {
                 setIsLoading(false)
             }
         }
         loadUserData()
     }, [])
-    const authValue = { isAuthenticated, setIsAuthenticated, isLoading, get_username, get_first_name, get_last_name, get_email, get_user_role, setIsStaff, username, first_name, last_name, email, isStaff, logout }
+    const authValue = { isAuthenticated, setIsAuthenticated, isLoading, get_username, get_first_name, get_last_name, get_email, get_user_role, refreshUserData, setIsStaff, username, first_name, last_name, email, isStaff, logout }
     return <AuthContext.Provider value={authValue}>
         {children}
     </AuthContext.Provider>

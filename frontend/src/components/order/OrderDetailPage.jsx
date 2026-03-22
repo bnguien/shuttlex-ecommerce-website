@@ -11,6 +11,11 @@ const STEP_DEFS = [
   { key: "DELIVERED", label: "Đã giao" },
 ]
 
+const CANCELLED_STEP_DEFS = [
+  { key: "CONFIRMED", label: "Đã xác nhận" },
+  { key: "CANCELLED", label: "Đã hủy" },
+]
+
 const STATUS_LABEL = {
   PENDING: "Chờ xử lý",
   CONFIRMED: "Đã xác nhận",
@@ -34,6 +39,7 @@ function OrderDetailPage() {
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [cancelling, setCancelling] = useState(false)
 
   useEffect(() => {
     if (!code) {
@@ -50,16 +56,38 @@ function OrderDetailPage() {
       .finally(() => setLoading(false))
   }, [code])
 
+  const timelineSteps = useMemo(() => {
+    return order?.status === "CANCELLED" ? CANCELLED_STEP_DEFS : STEP_DEFS
+  }, [order?.status])
+
   const activeIndex = useMemo(() => {
     if (!order?.status) return 0
-    const idx = STEP_DEFS.findIndex((step) => step.key === order.status)
+    const idx = timelineSteps.findIndex((step) => step.key === order.status)
     if (idx >= 0) return idx
     if (order.status === "PENDING") return 0
-    return STEP_DEFS.length - 1
-  }, [order?.status])
+    return 0
+  }, [order?.status, timelineSteps])
 
   if (loading) return <div className="container py-5">Đang tải chi tiết đơn hàng...</div>
   if (error || !order) return <div className="container py-5 text-danger">{error || "Không có dữ liệu đơn hàng."}</div>
+
+  const canCancel = order.status === "CONFIRMED"
+
+  const handleCancelOrder = async () => {
+    const ok = window.confirm("Bạn có chắc muốn hủy đơn hàng này không?")
+    if (!ok) return
+
+    setCancelling(true)
+    try {
+      const res = await api.patch(`my-orders/${order.code}/`, { status: "CANCELLED" })
+      setOrder(res.data)
+    } catch (err) {
+      const message = err?.response?.data?.detail || "Không thể hủy đơn hàng."
+      window.alert(message)
+    } finally {
+      setCancelling(false)
+    }
+  }
 
   return (
     <section className="order-detail-page py-4 py-lg-5">
@@ -73,15 +101,28 @@ function OrderDetailPage() {
             <h1 className="order-detail-title mb-1">Order #{order.code}</h1>
             <p className="text-muted mb-0">Ngày đặt: {formatOrderDate(order.created_at)}</p>
           </div>
-          <span className="order-detail-status">{STATUS_LABEL[order.status] || order.status}</span>
+          <div className="d-flex align-items-center gap-2">
+            <span className="order-detail-status">{STATUS_LABEL[order.status] || order.status}</span>
+            {canCancel && (
+              <button
+                type="button"
+                className="btn btn-outline-danger btn-sm"
+                disabled={cancelling}
+                onClick={handleCancelOrder}
+              >
+                {cancelling ? "Đang hủy..." : "Hủy đơn hàng"}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="order-tracking mb-4">
-          {STEP_DEFS.map((step, index) => {
+          {timelineSteps.map((step, index) => {
             const done = index <= activeIndex
+            const linkDone = index < activeIndex
             return (
-              <div className="track-step" key={step.key}>
-                <div className={`track-dot ${done ? "done" : ""}`}>{done ? "✓" : ""}</div>
+              <div className={`track-step ${done ? "done" : ""} ${linkDone ? "link-done" : ""}`} key={step.key}>
+                <div className={`track-dot ${done ? "done" : ""}`} />
                 <small>{step.label}</small>
               </div>
             )

@@ -26,7 +26,7 @@ class Cart(models.Model):
           ]
           constraints = [
                models.UniqueConstraint(
-                    fields=["user", "cart_code"],
+                    fields=["user"],
                     condition=models.Q(is_active=True), 
                     name='unique_active_cart_per_user')
           ]

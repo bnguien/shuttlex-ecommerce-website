@@ -14,10 +14,10 @@ from .serializers import ProductSerializer, ProductDetailSerializer, CategorySer
 @permission_classes([AllowAny])
 def products(request):
     qs = Product.objects.select_related("category", "brand")
-    #Lọc category theo tên
+    #Lọc category theo slug
     category_query = request.GET.get("category")
     if category_query:
-        qs = qs.filter(category__name__istartswith=category_query)
+        qs = qs.filter(category__slug=category_query)
 
     #Lọc brand theo tên
     brands_query = request.GET.get("brands")
@@ -317,6 +317,15 @@ def sizes(request):
     size_type = request.GET.get("type")
     if size_type:
         qs = qs.filter(type=size_type)
+
+    # Filter by category slug (sizes actually used by products in that category)
+    category_slug = request.GET.get("category")
+    if category_slug:
+        qs = qs.filter(
+            variants__product__category__slug=category_slug,
+            variants__is_active=True,
+            variants__product__is_active=True,
+        ).distinct()
 
     serializer = SizeSerializer(qs, many=True)
     return Response(serializer.data)

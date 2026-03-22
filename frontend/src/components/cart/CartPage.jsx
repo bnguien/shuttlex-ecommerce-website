@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import CartPageItem from './CartPageItem'
 import CartPageSummary from './CartPageSummary'
 import api from '../../api'
@@ -9,10 +9,15 @@ function CartPage({ setNumCartItems }) {
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const pollingRef = useRef(null)
 
-  useEffect(() => {
+  const loadCart = () => {
     const cartCode = localStorage.getItem("cart_code")
-    if (!cartCode) return
+    if (!cartCode) {
+      setCartItems([])
+      setError("")
+      return
+    }
 
     setLoading(true)
     api.get(`get_cart_items?cart_code=${cartCode}`)
@@ -24,13 +29,27 @@ function CartPage({ setNumCartItems }) {
         setError(err.message || "Không tải được giỏ hàng.")
       })
       .finally(() => setLoading(false))
+  }
+
+  // Load cart items when component mounts
+  useEffect(() => {
+    loadCart()
+
+    // Polling to reload cart every 2 seconds
+    pollingRef.current = setInterval(() => {
+      loadCart()
+    }, 2000)
+
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current)
+    }
   }, [])
 
   const hasUnavailable = cartItems.some((item) => item.is_available === false)
   const canCheckout = cartItems.length > 0 && !hasUnavailable
 
-  if (loading) return <div className="container mt-5"><p>Đang tải...</p></div>
-  if (error) return <div className="container mt-5"><p className="text-danger">Lỗi: {error}</p></div>
+  if (loading && cartItems.length === 0) return <div className="container mt-5"><p>Đang tải...</p></div>
+  if (error && cartItems.length === 0) return <div className="container mt-5"><p className="text-danger">Lỗi: {error}</p></div>
 
   return (
     <section className="py-2" id="cart-page">

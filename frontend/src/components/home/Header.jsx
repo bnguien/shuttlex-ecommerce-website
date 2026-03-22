@@ -100,7 +100,7 @@ function Header() {
                   {slide.subtitle}
                 </p>
                 <a
-                  href="#"
+                  href="/products"
                   className="btn"
                   style={{
                     backgroundColor: ctaHover ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.85)',

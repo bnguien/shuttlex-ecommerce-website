@@ -331,7 +331,7 @@ function ProductsPage() {
         <button className="btn btn-primary" onClick={handleCreate}>Thêm sản phẩm</button>
       </div>
 
-      <ProductFilters filters={filters} onChange={setFilters} />
+      <ProductFilters filters={filters} onChange={setFilters} categories={categories} />
 
       <div className="card">
         <div className="card-body">

@@ -1,11 +1,34 @@
-import { useContext } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext.jsx'
 import { FiUser, FiMail, FiMapPin, FiShoppingBag, FiLock, FiEdit3 } from 'react-icons/fi'
+import api from '../../api'
 
 function UserInfoPage() {
     const {username, last_name, first_name, email, isLoading} = useContext(AuthContext)
     const navigate = useNavigate()
+    const [orderStats, setOrderStats] = useState({
+      total: 0,
+      pending: 0,
+      processing: 0,
+      completed: 0
+    })
+
+    useEffect(() => {
+      api.get('my-orders/')
+        .then(res => {
+          const orders = Array.isArray(res.data) ? res.data : []
+          const pending = orders.filter(o => ['PENDING', 'CONFIRMED', 'PACKING', 'SHIPPING'].includes(o.status)).length
+          const completed = orders.filter(o => o.status === 'DELIVERED').length
+          setOrderStats({
+            total: orders.length,
+            pending,
+            processing: orders.filter(o => o.status === 'PACKING').length,
+            completed
+          })
+        })
+        .catch(() => {})
+    }, [])
 
   if (isLoading) {
     return (
@@ -126,41 +149,53 @@ function UserInfoPage() {
                 <div className="row text-center">
                   <div className="col-4">
                     <div className="border rounded p-3">
-                      <h3 className="mb-0 text-primary">0</h3>
+                      <h3 className="mb-0 text-primary">{orderStats.total}</h3>
                       <small className="text-muted">Tổng đơn hàng</small>
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="border rounded p-3">
-                      <h3 className="mb-0" style={{color: '#ff4d2a'}}>0</h3>
+                      <h3 className="mb-0" style={{color: '#ff4d2a'}}>{orderStats.pending}</h3>
                       <small className="text-muted">Đang xử lý</small>
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="border rounded p-3">
-                      <h3 className="mb-0 text-success">0</h3>
+                      <h3 className="mb-0 text-success">{orderStats.completed}</h3>
                       <small className="text-muted">Hoàn thành</small>
                     </div>
                   </div>
                 </div>
                 <hr className="my-3" />
-                <div className="text-center text-muted">
-                  <p className="mb-3">Chưa có đơn hàng nào</p>
-                  <div className="d-flex justify-content-center gap-2">
+                {orderStats.total > 0 ? (
+                  <div className="text-center">
                     <button 
-                      className="btn btn-outline-success"
+                      className="btn btn-success w-100"
                       onClick={() => navigate('/orders')}
                     >
+                      <FiShoppingBag className="me-2" />
                       Xem lịch sử đơn hàng
                     </button>
-                    <button 
-                      className="btn btn-success"
-                      onClick={() => navigate('/products')}
-                    >
-                      Bắt đầu mua sắm
-                    </button>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-center text-muted">
+                    <p className="mb-3">Chưa có đơn hàng nào</p>
+                    <div className="d-flex justify-content-center gap-2">
+                      <button 
+                        className="btn btn-outline-success"
+                        onClick={() => navigate('/orders')}
+                      >
+                        Xem lịch sử đơn hàng
+                      </button>
+                      <button 
+                        className="btn btn-success"
+                        onClick={() => navigate('/products')}
+                      >
+                        Bắt đầu mua sắm
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

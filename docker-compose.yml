@@ -45,6 +45,7 @@ services:
       CELERY_ACCEPT_CONTENT: json
       CELERY_TASK_SERIALIZER: json
       DB_HOST: mysql
+      CHECKOUT_LOCK_BLOCKING_SEC: "10"
     volumes:
       - ./backend:/app
     extra_hosts:
@@ -70,6 +71,7 @@ services:
       CELERY_ACCEPT_CONTENT: json
       CELERY_TASK_SERIALIZER: json
       DB_HOST: mysql
+      CHECKOUT_LOCK_BLOCKING_SEC: "10"
     volumes:
       - ./backend:/app
     extra_hosts:

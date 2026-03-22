@@ -69,7 +69,7 @@ function OrderSuccessPage() {
               const done = index <= activeStepIndex
               return (
                 <div key={step.key} className="tracking-step">
-                  <div className={`tracking-dot ${done ? "done" : ""}`}>{done ? "✓" : ""}</div>
+                  <div className={`tracking-dot ${done ? "done" : ""}`} />
                   <p className="tracking-label mb-0">{step.label}</p>
                 </div>
               )

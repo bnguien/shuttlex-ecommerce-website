@@ -1,4 +1,4 @@
-function ProductFilters({ filters, onChange }) {
+function ProductFilters({ filters, onChange, categories = [] }) {
   return (
     <div className="card mb-3">
       <div className="card-body">
@@ -18,8 +18,8 @@ function ProductFilters({ filters, onChange }) {
           </div>
           <div className="col-md-4">
             <label className="form-label">Danh mục</label>
-            <input
-              className="form-control"
+            <select
+              className="form-select"
               value={filters.category}
               onChange={(event) =>
                 onChange({
@@ -27,7 +27,14 @@ function ProductFilters({ filters, onChange }) {
                   category: event.target.value
                 })
               }
-            />
+            >
+              <option value="">Tất cả</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.slug}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="col-md-4">
             <label className="form-label">Thương hiệu</label>

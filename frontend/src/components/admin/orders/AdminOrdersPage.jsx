@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import api from "../../../api"
 import { formatCurrencyVND } from "../../../utils/format"
 import "./AdminOrdersPage.css"
 
 const STATUS_LABEL = {
-  PENDING: "PENDING",
-  CONFIRMED: "CONFIRMED",
-  PACKING: "PACKING",
-  SHIPPING: "IN TRANSIT",
-  DELIVERED: "DELIVERED",
-  CANCELLED: "CANCELLED",
+  PENDING: "Chờ xử lý",
+  CONFIRMED: "Đã xác nhận",
+  PACKING: "Đang chuẩn bị",
+  SHIPPING: "Đang giao",
+  DELIVERED: "Đã giao",
+  CANCELLED: "Đã hủy",
 }
 
 const STATUS_OPTIONS = [
@@ -21,6 +22,23 @@ const STATUS_OPTIONS = [
   "CANCELLED",
 ]
 
+const VALID_TRANSITIONS = {
+  PENDING: ["CONFIRMED", "PACKING", "SHIPPING", "DELIVERED", "CANCELLED"],
+  CONFIRMED: ["PACKING", "SHIPPING", "DELIVERED", "CANCELLED"],
+  PACKING: ["SHIPPING", "DELIVERED", "CANCELLED"],
+  SHIPPING: ["DELIVERED", "CANCELLED"],
+  DELIVERED: [], 
+  CANCELLED: [], 
+}
+
+const getAvailableStatuses = (currentStatus) => {
+  return VALID_TRANSITIONS[currentStatus] || []
+}
+
+const isStatusLocked = (status) => {
+  return status === "DELIVERED" || status === "CANCELLED"
+}
+
 function formatDate(value) {
   if (!value) return "-"
   const d = new Date(value)
@@ -29,6 +47,7 @@ function formatDate(value) {
 }
 
 function AdminOrdersPage() {
+  const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
@@ -98,8 +117,7 @@ function AdminOrdersPage() {
     <section className="admin-orders-page p-4 p-lg-5">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-          <small className="text-uppercase text-muted fw-semibold">Executive Overview</small>
-          <h1 className="admin-orders-title mb-0">Order Management</h1>
+          <h1 className="admin-orders-title mb-0">Quản lý Đơn hàng</h1>
         </div>
       </div>
 
@@ -115,25 +133,25 @@ function AdminOrdersPage() {
       <div className="row g-3 mb-4">
         <div className="col-12 col-md-6 col-xl-3">
           <div className="soft-card stat-card stat-total">
-            <small className="text-muted">Total Orders</small>
+            <small className="text-muted">Tổng đơn hàng</small>
             <h2>{stats.total}</h2>
           </div>
         </div>
         <div className="col-12 col-md-6 col-xl-3">
           <div className="soft-card stat-card stat-pending">
-            <small className="text-muted">Pending</small>
+            <small className="text-muted">Chờ xử lý</small>
             <h2>{stats.pending}</h2>
           </div>
         </div>
         <div className="col-12 col-md-6 col-xl-3">
           <div className="soft-card stat-card stat-transit">
-            <small className="text-muted">In Transit</small>
+            <small className="text-muted">Đang vận chuyển</small>
             <h2>{stats.inTransit}</h2>
           </div>
         </div>
         <div className="col-12 col-md-6 col-xl-3">
           <div className="soft-card stat-card stat-delivered">
-            <small className="text-muted">Delivered</small>
+            <small className="text-muted">Đã giao</small>
             <h2>{stats.delivered}</h2>
           </div>
         </div>
@@ -141,7 +159,7 @@ function AdminOrdersPage() {
 
       <div className="soft-card recent-orders-card p-0">
         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-          <h5 className="mb-0">Recent Orders</h5>
+          <h5 className="mb-0">Đơn hàng gần đây</h5>
         </div>
 
         {loading && <div className="p-3 text-muted">Đang tải đơn hàng...</div>}
@@ -158,6 +176,7 @@ function AdminOrdersPage() {
                   <th>Tổng tiền</th>
                   <th>Trạng thái</th>
                   <th>Số món</th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -172,19 +191,47 @@ function AdminOrdersPage() {
                       <td>{formatDate(order.created_at)}</td>
                       <td className="fw-semibold">{formatCurrencyVND(order.total || 0)}</td>
                       <td>
-                        <div className="admin-order-actions">
+                        {isStatusLocked(order.status) ? (
+                          <div
+                            className={`form-select form-select-sm status-select status-${order.status?.toLowerCase() || "pending"}`}
+                            style={{
+                              cursor: "not-allowed",
+                              opacity: 0.7,
+                              backgroundColor: "#f0f0f0",
+                              padding: "0.375rem 0.75rem",
+                              borderRadius: "0.25rem",
+                              border: "1px solid #dee2e6",
+                              display: "inline-block",
+                            }}
+                          >
+                            {STATUS_LABEL[order.status] || order.status}
+                          </div>
+                        ) : (
                           <select
                             className={`form-select form-select-sm status-select status-${order.status?.toLowerCase() || "pending"}`}
                             value={order.status}
                             disabled={updatingId === order.id || deletingId === order.id}
                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
                           >
-                            {STATUS_OPTIONS.map((statusValue) => (
+                            <option value={order.status}>{STATUS_LABEL[order.status]}</option>
+                            {getAvailableStatuses(order.status).map((statusValue) => (
                               <option key={statusValue} value={statusValue}>
-                                {STATUS_LABEL[statusValue] || statusValue}
+                                {STATUS_LABEL[statusValue]}
                               </option>
                             ))}
                           </select>
+                        )}
+                      </td>
+                      <td>{order.item_count ?? 0}</td>
+                      <td>
+                        <div className="admin-order-actions" style={{ gap: "0.5rem", display: "flex" }}>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-info"
+                            onClick={() => navigate(`/admin/orders/${order.id}`)}
+                          >
+                            Chi tiết
+                          </button>
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-danger"
@@ -195,12 +242,11 @@ function AdminOrdersPage() {
                           </button>
                         </div>
                       </td>
-                      <td>{order.item_count ?? 0}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="text-center text-muted py-4">
+                    <td colSpan={7} className="text-center text-muted py-4">
                       Không có đơn hàng phù hợp.
                     </td>
                   </tr>

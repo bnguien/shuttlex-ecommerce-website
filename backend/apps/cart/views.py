@@ -41,26 +41,28 @@ def get_or_create_cart(cart_code, user=None):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_cart_stat(request):
-    """GET ?cart_code=xxx → { num_of_items, cart_code }."""
+    """GET ?cart_code=xxx → { num_of_items, cart_code }.
+    For authenticated users: use their user cart only, ignore cart_code.
+    """
     user = request.user if request.user.is_authenticated else None
-    cart_code = request.GET.get("cart_code")
-    cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first() if cart_code else None
-
-    if user and not cart:
+    
+    # For authenticated users: only show their user cart
+    if user:
         cart = Cart.objects.filter(user=user, is_active=True).first()
-
-    if cart and not _is_cart_accessible(cart, request.user):
-        cart = Cart.objects.filter(user=user, is_active=True).first() if user else None
-
-    if cart and user and cart.user_id is None:
-        cart.user = user
-        cart.save(update_fields=["user", "updated_at"])
-
-    if not cart:
-        return Response({
-            "num_of_items": 0,
-            "cart_code": None
-        })
+        if not cart:
+            return Response({
+                "num_of_items": 0,
+                "cart_code": None
+            })
+    else:
+        # For guests: use cart_code
+        cart_code = request.GET.get("cart_code")
+        cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first() if cart_code else None
+        if not cart:
+            return Response({
+                "num_of_items": 0,
+                "cart_code": None
+            })
 
     num = cart.items.aggregate(total=Sum("quantity"))['total'] or 0
     return Response({
@@ -71,19 +73,25 @@ def get_cart_stat(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_cart_items(request):
-    """GET ?cart_code=xxx → { items: [...] }."""
-    cart_code = request.GET.get('cart_code')
-    if not cart_code:
-        return Response({"items": []})
-    
+    """GET ?cart_code=xxx → { items: [...] }.
+    For authenticated users: always use their user cart, ignore cart_code.
+    For guests: use cart_code from localStorage.
+    """
     user = request.user if request.user.is_authenticated else None
-    cart, _ = get_or_create_cart(cart_code, user)
-    if not _is_cart_accessible(cart, request.user):
-        return Response({"items": []})
-
-    if user and cart.user_id is None:
-        cart.user = user
-        cart.save(update_fields=["user", "updated_at"])
+    
+    # For authenticated users: only show their user cart
+    if user:
+        cart = Cart.objects.filter(user=user, is_active=True).first()
+        if not cart:
+            return Response({"items": []})
+    else:
+        # For guests: use cart_code
+        cart_code = request.GET.get('cart_code')
+        if not cart_code:
+            return Response({"items": []})
+        cart, _ = get_or_create_cart(cart_code, user)
+        if not _is_cart_accessible(cart, request.user):
+            return Response({"items": []})
 
     items = cart.items.select_related("product", "variant", "variant__size").order_by("id")
     return Response({
@@ -95,16 +103,14 @@ def get_cart_items(request):
 def add_item(request):
     '''
     POST { cart_code, product_id, variant_id?, quantity }
+    - For authenticated users: always add to their user cart, ignore cart_code.
+    - For guests: use cart_code.
     - Cộng dồn quantity nếu đã có cùng product+variant trong giỏ.
-    - Validate stock và giới hạn 50 dòng/giỏ.
     '''
-    cart_code = request.data.get("cart_code")
     product_id = request.data.get("product_id")
     variant_id = request.data.get("variant_id")
     quantity = int(request.data.get("quantity") or 1)
 
-    if not cart_code:
-        cart_code = uuid.uuid4().hex
     if not product_id:
         return Response(
             {"detail": "product_id is required"},
@@ -134,7 +140,17 @@ def add_item(request):
 
     user = request.user if request.user.is_authenticated else None
     with transaction.atomic():
-        cart, _ = get_or_create_cart(cart_code, user)
+        # For authenticated users: use their user cart only
+        if user:
+            cart = Cart.objects.filter(user=user, is_active=True).first()
+            if not cart:
+                cart = Cart.objects.create(user=user)
+            cart_code = cart.cart_code
+        else:
+            # For guests: use cart_code from request
+            cart_code = request.data.get("cart_code") or uuid.uuid4().hex
+            cart, _ = get_or_create_cart(cart_code, user)
+        
         if cart.items.count() >= CART_ITEM_LIMIT and not cart.items.filter(product=product, variant=variant).exists():
             return Response(
                 {"detail": f"Giỏ hàng tối đa {CART_ITEM_LIMIT} sản phẩm."},
@@ -186,21 +202,31 @@ def add_item(request):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def product_in_cart(request):
-    """GET ?cart_code=xxx&product_id=yyy&variant_id=zzz → { product_in_cart: true/false }."""
-    cart_code = request.GET.get("cart_code")
+    """GET ?cart_code=xxx&product_id=yyy&variant_id=zzz → { product_in_cart: true/false }.
+    For authenticated users: ignore cart_code, use their user cart only.
+    """
     product_id = request.GET.get("product_id")
     variant_id = request.GET.get("variant_id")
-    if not cart_code or not product_id:
+    if not product_id:
         return Response({"product_in_cart": False})
-    cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
-    if not cart:
-        return Response({"product_in_cart": False})
-    if not _is_cart_accessible(cart, request.user):
-        return Response({"product_in_cart": False})
-
-    if request.user.is_authenticated and cart.user_id is None:
-        cart.user = request.user
-        cart.save(update_fields=["user", "updated_at"])
+    
+    user = request.user if request.user.is_authenticated else None
+    
+    # For authenticated users: use their user cart only
+    if user:
+        cart = Cart.objects.filter(user=user, is_active=True).first()
+        if not cart:
+            return Response({"product_in_cart": False})
+    else:
+        # For guests: use cart_code
+        cart_code = request.GET.get("cart_code")
+        if not cart_code:
+            return Response({"product_in_cart": False})
+        cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
+        if not cart:
+            return Response({"product_in_cart": False})
+        if not _is_cart_accessible(cart, request.user):
+            return Response({"product_in_cart": False})
 
     q = cart.items.filter(product_id=product_id)
     if variant_id:
@@ -212,38 +238,52 @@ def product_in_cart(request):
 def update_item_quantity(request, product_id=None):
     """
     PUT/PATCH body: { cart_code, variant_id?, quantity } hoặc product_id trong URL.
+    For authenticated users: ignore cart_code, use their user cart only.
     Logic:
     - quantity > 0: cập nhật số lượng & giá.
     - quantity <= 0: xóa item khỏi giỏ hàng.
     """
-    cart_code = request.data.get("cart_code")
     variant_id = request.data.get("variant_id")
     pid = product_id or request.data.get("product_id")
 
     new_quantity = request.data.get("quantity")
     change = request.data.get("change")
 
-    if not cart_code or not pid:
+    if not pid:
         return Response(
-            {"detail": "cart_code và product_id bắt buộc."},
+            {"detail": "product_id bắt buộc."},
             status = status.HTTP_400_BAD_REQUEST
         )
 
-    cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
-    if not cart:
-        return Response(
-            {"detail": "Không tìm thấy giỏ hàng."},
-            status = status.HTTP_404_NOT_FOUND
-        )
-    if not _is_cart_accessible(cart, request.user):
-        return Response(
-            {"detail": "Bạn không có quyền truy cập giỏ hàng này."},
-            status=status.HTTP_403_FORBIDDEN,
-        )
-
-    if request.user.is_authenticated and cart.user_id is None:
-        cart.user = request.user
-        cart.save(update_fields=["user", "updated_at"])
+    user = request.user if request.user.is_authenticated else None
+    
+    # For authenticated users: use their user cart only
+    if user:
+        cart = Cart.objects.filter(user=user, is_active=True).first()
+        if not cart:
+            return Response(
+                {"detail": "Không tìm thấy giỏ hàng."},
+                status = status.HTTP_404_NOT_FOUND
+            )
+    else:
+        # For guests: use cart_code
+        cart_code = request.data.get("cart_code")
+        if not cart_code:
+            return Response(
+                {"detail": "cart_code bắt buộc cho khách."},
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
+        if not cart:
+            return Response(
+                {"detail": "Không tìm thấy giỏ hàng."},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        if not _is_cart_accessible(cart, request.user):
+            return Response(
+                {"detail": "Bạn không có quyền truy cập giỏ hàng này."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
     variant = None
     if variant_id:
@@ -305,31 +345,48 @@ def update_item_quantity(request, product_id=None):
 @api_view(['DELETE', 'POST'])
 @permission_classes([AllowAny])
 def remove_item(request, product_id=None):
-    """DELETE ?cart_code=xxx&variant_id=yyy hoặc product_id trong URL, body có thể chứa cart_code, variant_id."""
-    cart_code = request.GET.get("cart_code") or request.data.get("cart_code")
-    variant_id = request.GET.get("variant_id") or request.data.get("product_id")
+    """DELETE ?cart_code=xxx&variant_id=yyy hoặc product_id trong URL, body có thể chứa cart_code, variant_id.
+    For authenticated users: ignore cart_code, use their user cart only.
+    """
+    variant_id = request.GET.get("variant_id") or request.data.get("variant_id")
     pid = product_id or request.GET.get("product_id") or request.data.get("product_id")
-    if not cart_code or not pid:
+    
+    if not pid:
         return Response(
-            {"detail": "cart_code and product_id required"},
+            {"detail": "product_id required"},
             status = status.HTTP_400_BAD_REQUEST
         )
     
-    cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
-    if not cart: 
-        return Response(
-            {"detail": "Cart not found"},
-            status = status.HTTP_404_NOT_FOUND
-        )
-    if not _is_cart_accessible(cart, request.user):
-        return Response(
-            {"detail": "Bạn không có quyền truy cập giỏ hàng này."},
-            status=status.HTTP_403_FORBIDDEN,
-        )
-
-    if request.user.is_authenticated and cart.user_id is None:
-        cart.user = request.user
-        cart.save(update_fields=["user", "updated_at"])
+    user = request.user if request.user.is_authenticated else None
+    
+    # For authenticated users: use their user cart only
+    if user:
+        cart = Cart.objects.filter(user=user, is_active=True).first()
+        if not cart: 
+            return Response(
+                {"detail": "Cart not found"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+    else:
+        # For guests: use cart_code
+        cart_code = request.GET.get("cart_code") or request.data.get("cart_code")
+        if not cart_code:
+            return Response(
+                {"detail": "cart_code required for guests"},
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        
+        cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
+        if not cart: 
+            return Response(
+                {"detail": "Cart not found"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        if not _is_cart_accessible(cart, request.user):
+            return Response(
+                {"detail": "Bạn không có quyền truy cập giỏ hàng này."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
     
     variant = None
     if variant_id:

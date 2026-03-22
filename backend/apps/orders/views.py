@@ -1,10 +1,20 @@
-from rest_framework import status
+from rest_framework import status as http_status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Order, OrderAddress, ShippingMethod, OrderStatus
 from .serializers import CheckoutSerializer, OrderAddressSerializer, OrderSerializer, AdminOrderSerializer
+
+# Define status transition rules: map each status to allowed next statuses
+STATUS_TRANSITIONS = {
+	OrderStatus.PENDING: [OrderStatus.CONFIRMED, OrderStatus.PACKING, OrderStatus.SHIPPING, OrderStatus.DELIVERED, OrderStatus.CANCELLED],
+	OrderStatus.CONFIRMED: [OrderStatus.PACKING, OrderStatus.SHIPPING, OrderStatus.DELIVERED, OrderStatus.CANCELLED],
+	OrderStatus.PACKING: [OrderStatus.SHIPPING, OrderStatus.DELIVERED, OrderStatus.CANCELLED],
+	OrderStatus.SHIPPING: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
+	OrderStatus.DELIVERED: [],
+	OrderStatus.CANCELLED: [],
+}
 
 
 @api_view(["GET"])
@@ -43,7 +53,7 @@ def order_addresses(request):
 	serializer = OrderAddressSerializer(data=request.data)
 	serializer.is_valid(raise_exception=True)
 	address = serializer.save(user=request.user)
-	return Response(OrderAddressSerializer(address).data, status=status.HTTP_201_CREATED)
+	return Response(OrderAddressSerializer(address).data, status=http_status.HTTP_201_CREATED)
 
 
 @api_view(["POST"])
@@ -54,9 +64,9 @@ def checkout(request):
 	try:
 		order = serializer.save()
 	except ValueError as exc:
-		return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({"detail": str(exc)}, status=http_status.HTTP_400_BAD_REQUEST)
 
-	return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+	return Response(OrderSerializer(order).data, status=http_status.HTTP_201_CREATED)
 
 
 @api_view(["GET"])
@@ -71,7 +81,7 @@ def my_orders(request):
 	return Response(OrderSerializer(orders, many=True).data)
 
 
-@api_view(["GET"])
+@api_view(["GET", "PATCH"])
 @permission_classes([IsAuthenticated])
 def order_detail(request, code):
 	order = (
@@ -81,7 +91,26 @@ def order_detail(request, code):
 		.first()
 	)
 	if not order:
-		return Response({"detail": "Không tìm thấy đơn hàng."}, status=status.HTTP_404_NOT_FOUND)
+		return Response({"detail": "Không tìm thấy đơn hàng."}, status=http_status.HTTP_404_NOT_FOUND)
+
+	if request.method == "PATCH":
+		new_status = request.data.get("status")
+		if new_status != OrderStatus.CANCELLED:
+			return Response(
+				{"detail": "Bạn chỉ có thể hủy đơn hàng."},
+				status=http_status.HTTP_400_BAD_REQUEST,
+			)
+
+		if order.status != OrderStatus.CONFIRMED:
+			return Response(
+				{"detail": "Chỉ đơn hàng ở trạng thái 'Đã xác nhận' mới có thể hủy."},
+				status=http_status.HTTP_400_BAD_REQUEST,
+			)
+
+		order.status = OrderStatus.CANCELLED
+		order.save(update_fields=["status", "updated_at"])
+		return Response(OrderSerializer(order).data)
+
 	return Response(OrderSerializer(order).data)
 
 
@@ -89,7 +118,7 @@ def order_detail(request, code):
 @permission_classes([IsAuthenticated])
 def admin_orders(request):
 	if not (request.user.is_staff or request.user.is_superuser):
-		return Response({"detail": "Bạn không có quyền truy cập."}, status=status.HTTP_403_FORBIDDEN)
+		return Response({"detail": "Bạn không có quyền truy cập."}, status=http_status.HTTP_403_FORBIDDEN)
 
 	orders = (
 		Order.objects.select_related("user")
@@ -99,15 +128,23 @@ def admin_orders(request):
 	return Response(AdminOrderSerializer(orders, many=True).data)
 
 
-@api_view(["PATCH", "DELETE"])
+@api_view(["GET", "PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
 def admin_order_detail(request, order_id):
 	if not (request.user.is_staff or request.user.is_superuser):
-		return Response({"detail": "Bạn không có quyền truy cập."}, status=status.HTTP_403_FORBIDDEN)
+		return Response({"detail": "Bạn không có quyền truy cập."}, status=http_status.HTTP_403_FORBIDDEN)
 
-	order = Order.objects.filter(id=order_id).first()
+	order = (
+		Order.objects.filter(id=order_id)
+		.select_related("shipping_address", "user")
+		.prefetch_related("items")
+		.first()
+	)
 	if not order:
-		return Response({"detail": "Không tìm thấy đơn hàng."}, status=status.HTTP_404_NOT_FOUND)
+		return Response({"detail": "Không tìm thấy đơn hàng."}, status=http_status.HTTP_404_NOT_FOUND)
+
+	if request.method == "GET":
+		return Response(OrderSerializer(order).data)
 
 	if request.method == "PATCH":
 		new_status = request.data.get("status")
@@ -115,14 +152,21 @@ def admin_order_detail(request, order_id):
 		if new_status not in valid_statuses:
 			return Response(
 				{"detail": "Trạng thái đơn hàng không hợp lệ."},
-				status=status.HTTP_400_BAD_REQUEST,
+				status=http_status.HTTP_400_BAD_REQUEST,
 			)
 
-		if order.status != new_status:
+		# Check if transition is allowed
+		if new_status != order.status:
+			allowed_transitions = STATUS_TRANSITIONS.get(order.status, [])
+			if new_status not in allowed_transitions:
+				return Response(
+					{"detail": f"Không thể chuyển từ trạng thái '{order.status}' sang '{new_status}'. Trạng thái không được quay về trạng thái trước đó."},
+					status=http_status.HTTP_400_BAD_REQUEST,
+				)
 			order.status = new_status
 			order.save()
 
 		return Response(AdminOrderSerializer(order).data)
 
 	order.delete()
-	return Response(status=status.HTTP_204_NO_CONTENT)
+	return Response(status=http_status.HTTP_204_NO_CONTENT)

@@ -21,7 +21,7 @@
 
 .order-tracking {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 10px;
   align-items: center;
 }
@@ -29,6 +29,26 @@
 .track-step {
   text-align: center;
   position: relative;
+}
+
+.track-step::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: calc(50% + 17px);
+  width: calc(100% - 34px + 10px);
+  height: 3px;
+  border-radius: 999px;
+  background: #d6e7d8;
+  z-index: 0;
+}
+
+.track-step:last-child::after {
+  display: none;
+}
+
+.track-step.link-done::after {
+  background: #14742f;
 }
 
 .track-step small {
@@ -49,6 +69,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .track-dot.done {
@@ -97,6 +119,10 @@
 @media (max-width: 992px) {
   .order-tracking {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .track-step::after {
+    display: none;
   }
 
   .order-summary-box {

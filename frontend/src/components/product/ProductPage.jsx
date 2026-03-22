@@ -8,6 +8,7 @@ function ProductPage() {
   const [products, setProducts] = useState([])
   const [searchParams] = useSearchParams()
   const category = searchParams.get("category")
+  const [categoryName, setCategoryName] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [loaded, setLoaded] = useState(false)
@@ -22,6 +23,19 @@ function ProductPage() {
     sort: "newest"
   })
   const pageSize = 12
+
+  useEffect(() => {
+    if (category) {
+      api.get("categories/")
+        .then(res => {
+          const foundCategory = res.data.find(cat => cat.slug === category)
+          setCategoryName(foundCategory?.name || "")
+        })
+        .catch(() => setCategoryName(""))
+    } else {
+      setCategoryName("")
+    }
+  }, [category])
 
   useEffect(() => {
     setPage(1)
@@ -101,10 +115,10 @@ function ProductPage() {
         <div className="flex-grow-1 d-flex flex-column p-3 ps-0" style={{minWidth: 0, maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden"}}>
           <div className="p-3 d-flex flex-row ">
             <h3 className="fw-semibold">
-              {category ? category.charAt(0).toUpperCase() + category.slice(1) : "All Products"}
+              {categoryName || "Tất cả sản phẩm"}
             </h3>
             <div className="ms-auto d-flex align-items-center gap-2">
-              <span className="fw-medium">Sort by:</span>
+              <span className="fw-medium">Sắp xếp theo:</span>
               <select
                 className="form-select form-select-sm w-auto"
                 value={filters.sort}
@@ -115,8 +129,8 @@ function ProductPage() {
                   }))
                 }
               >
-                <option value="price_low_high">Price: Low to High</option>
-                <option value="price_high_low">Price: High to Low</option>
+                <option value="price_low_high">Giá: Thấp đến Cao</option>
+                <option value="price_high_low">Giá: Cao đến Thấp</option>
               </select>
             </div>
           </div>
@@ -159,7 +173,7 @@ function ProductPage() {
                       onClick={() => setPage(prev => Math.max(1, prev - 1))}
                       disabled={page === 1}
                     >
-                      Prev
+                      Trước
                     </button>
                   </li>
                   {pageNumbers.map(pageNum => (
@@ -175,7 +189,7 @@ function ProductPage() {
                       onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
                       disabled={page === totalPages}
                     >
-                      Next
+                      Tiếp
                     </button>
                   </li>
                 </ul>
@@ -183,7 +197,7 @@ function ProductPage() {
             )}
             {totalCount > 0 && (
               <div className="text-center mt-2 text-muted">
-                Page {page} of {totalPages} ({totalCount} items)
+                Trang {page} / {totalPages} ({totalCount} sản phẩm)
               </div>
             )}
           </div>
