@@ -4,7 +4,7 @@ function SizeFilters({ filters, onChange, sizeTypes }) {
       <div className="card-body">
         <div className="row g-3">
           <div className="col-md-6">
-            <label className="form-label">Search</label>
+            <label className="form-label">Tìm kiếm</label>
             <input
               className="form-control"
               value={filters.search}
@@ -17,7 +17,7 @@ function SizeFilters({ filters, onChange, sizeTypes }) {
             />
           </div>
           <div className="col-md-6">
-            <label className="form-label">Type</label>
+            <label className="form-label">Loại</label>
             <select
               className="form-select"
               value={filters.type}
@@ -28,7 +28,7 @@ function SizeFilters({ filters, onChange, sizeTypes }) {
                 })
               }
             >
-              <option value="">All</option>
+              <option value="">Tất cả</option>
               {sizeTypes.map((type) => (
                 <option key={type.value} value={type.value}>
                   {type.label}

@@ -24,7 +24,7 @@ function BrandsPage() {
       .then(res => setBrands(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
-        setError("Failed to load brands.")
+        setError("Không thể tải danh sách thương hiệu.")
       })
       .finally(() => setLoading(false))
   }, [filters.search, filters.status])
@@ -87,7 +87,7 @@ function BrandsPage() {
       await loadBrands()
     }catch(err){
       console.error(err)
-      const message = err?.response?.data?.detail || err?.response?.data || "Failed to save brand."
+      const message = err?.response?.data?.detail || err?.response?.data || "Không thể lưu thương hiệu."
       setError(typeof message === "string" ? message : JSON.stringify(message))
     }finally{
       setLoading(false)
@@ -107,7 +107,7 @@ function BrandsPage() {
       await loadBrands()
     }catch(err){
        console.error(err)
-      const message = err?.response?.data?.detail || err?.response?.data || "Failed to delete brand."
+      const message = err?.response?.data?.detail || err?.response?.data || "Không thể xóa thương hiệu."
       setError(typeof message === "string" ? message : JSON.stringify(message))
     }finally{
       setLoading(false)
@@ -118,15 +118,15 @@ function BrandsPage() {
   return (
     <div className="container-fluid p-4 bg-light h-100">
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <h2 className="fw-semibold mb-0">Brands</h2>
-        <button className="btn btn-primary" onClick={handleCreate}>New Brand</button>
+        <h2 className="fw-semibold mb-0">Thương hiệu</h2>
+        <button className="btn btn-primary" onClick={handleCreate}>Thêm thương hiệu</button>
       </div>
 
       <BrandFilters filters={filters} onChange={setFilters} />
 
       <div className="card">
         <div className="card-body">
-          {loading && <div className="text-muted">Loading brands...</div>}
+          {loading && <div className="text-muted">Đang tải thương hiệu...</div>}
           {error && <div className="text-danger mb-3">{error}</div>}
           <BrandsTable
             brands={brands}

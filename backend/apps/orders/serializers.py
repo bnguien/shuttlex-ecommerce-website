@@ -67,6 +67,12 @@ class CheckoutSerializer(serializers.Serializer):
           allow_blank=True,
           allow_null=True
      )
+     shipping_voucher_code = serializers.CharField(
+          max_length=25,
+          required=False,
+          allow_blank=True,
+          allow_null=True
+     )
      payment_method = serializers.ChoiceField(
           choices=PaymentMethod.choices
      )
@@ -87,9 +93,10 @@ class CheckoutSerializer(serializers.Serializer):
                raise serializers.ValidationError("Giỏ hàng trống hoặc không tồn tại.")
           attrs["cart"] = cart
 
-          method_code = attrs["shipping_method_code"]
+          method_code = attrs.get("shipping_method_code") or ShippingMethod.ShippingName.GHN
           if not ShippingMethod.get_method_by_code(method_code):
                raise serializers.ValidationError({"shipping_method_code": "Phương thức vận chuyển không hợp lệ."})
+          attrs["shipping_method_code"] = method_code
 
           return attrs
 

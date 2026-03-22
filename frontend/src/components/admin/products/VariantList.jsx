@@ -5,7 +5,7 @@ function VariantList({ variants, onEdit, onDelete }) {
   const [searchTerm, setSearchTerm] = useState('')
 
   if (!variants || variants.length === 0) {
-    return <div className="text-muted p-3">No variants yet.</div>
+    return <div className="text-muted p-3">Chưa có biến thể.</div>
   }
 
   // Filter data logic
@@ -24,7 +24,7 @@ function VariantList({ variants, onEdit, onDelete }) {
       <div className="card-header bg-white py-3">
         <div className="row align-items-center">
           <div className="col-md-4">
-            <h6 className="mb-0 fw-bold">Variant List ({filteredVariants.length})</h6>
+            <h6 className="mb-0 fw-bold">Danh sách biến thể ({filteredVariants.length})</h6>
           </div>
           <div className="col-md-8">
             <div className="input-group">
@@ -34,7 +34,7 @@ function VariantList({ variants, onEdit, onDelete }) {
               <input
                 type="text"
                 className="form-control border-start-0 bg-light"
-                placeholder="Search by SKU, Size, or Color..."
+                placeholder="Tìm theo SKU, kích cỡ hoặc màu..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -43,7 +43,7 @@ function VariantList({ variants, onEdit, onDelete }) {
                   className="btn btn-outline-secondary" 
                   onClick={() => setSearchTerm('')}
                 >
-                  Clear
+                  Xóa lọc
                 </button>
               )}
             </div>
@@ -56,14 +56,14 @@ function VariantList({ variants, onEdit, onDelete }) {
         <table className="table align-middle table-hover mb-0">
           <thead className="table-light">
             <tr>
-              <th>Size</th>
-              <th>Color</th>
+              <th>Kích cỡ</th>
+              <th>Màu</th>
               <th>SKU</th>
-              <th>Price</th>
-              <th>Sale Price</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th className="text-end">Actions</th>
+              <th>Giá</th>
+              <th>Giá sale</th>
+              <th>Tồn kho</th>
+              <th>Trạng thái</th>
+              <th className="text-end">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -76,7 +76,7 @@ function VariantList({ variants, onEdit, onDelete }) {
                   <td>
                     {variant.price 
                       ? formatCurrencyVND(variant.price) 
-                      : <span className="text-muted small">(Base price)</span>}
+                      : <span className="text-muted small">(Giá gốc)</span>}
                   </td>
                   <td>
                     {variant.sale_price ? (
@@ -94,9 +94,9 @@ function VariantList({ variants, onEdit, onDelete }) {
                   </td>
                   <td>
                     {variant.is_active !== false ? (
-                      <span className="badge rounded-pill bg-primary">Active</span>
+                      <span className="badge rounded-pill bg-primary">Đang bán</span>
                     ) : (
-                      <span className="badge rounded-pill bg-secondary">Inactive</span>
+                      <span className="badge rounded-pill bg-secondary">Ngừng bán</span>
                     )}
                   </td>
                   <td className="text-end">
@@ -104,13 +104,13 @@ function VariantList({ variants, onEdit, onDelete }) {
                       className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => onEdit(variant)}
                     >
-                      <i className="bi bi-pencil me-1"></i> Edit
+                      <i className="bi bi-pencil me-1"></i> Sửa
                     </button>
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => onDelete(variant)}
                     >
-                      <i className="bi bi-trash me-1"></i> Delete
+                      <i className="bi bi-trash me-1"></i> Xóa
                     </button>
                   </td>
                 </tr>
@@ -118,7 +118,7 @@ function VariantList({ variants, onEdit, onDelete }) {
             ) : (
               <tr>
                 <td colSpan="8" className="text-center py-4 text-muted">
-                  No variants found matching "{searchTerm}"
+                  Không tìm thấy biến thể khớp với "{searchTerm}"
                 </td>
               </tr>
             )}

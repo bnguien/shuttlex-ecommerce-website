@@ -16,7 +16,7 @@ from apps.orders.models import (
      OrderHistory, 
      ShippingMethod
 )
-from apps.promotions.models import Voucher, VoucherType
+from apps.promotions.models import Voucher
 
 def validate_coordinates(latitude: Optional[float], longitude: Optional[float]) -> None:
      '''
@@ -162,7 +162,7 @@ def create_order(
      )
 
      if not cart_items.exists():
-          raise ValueError("Cart is empty")
+          raise ValueError("Giỏ hàng trống.")
 
      variant_ids = [ci.variant_id for ci in cart_items if ci.variant_id]
      product_ids = [ci.product_id for ci in cart_items if ci.product_id]
@@ -200,7 +200,7 @@ def create_order(
 
      shipping_method = ShippingMethod.get_method_by_code(shipping_method_code)
      if not shipping_method:
-          raise ValueError("Shipping method not found or inactive.")
+          raise ValueError("Không tìm thấy phương thức vận chuyển hoặc đã bị vô hiệu hóa.")
 
      shipping_fee = calculate_shipping_fee(region, shipping_method, subtotal)
      product_voucher = None
@@ -268,14 +268,14 @@ def create_order(
           if ci.variant_id:
                variant = variant_map[ci.variant_id]
                if variant.stock < ci.quantity:
-                    raise ValueError("Not enough stock for variant")
+                    raise ValueError("Biến thể sản phẩm không đủ tồn kho.")
                variant.stock -= ci.quantity
                variant.save()
                product = variant.product
           else:
                product = product_map[ci.product_id]
                if product.base_stock < ci.quantity:
-                    raise ValueError("Not enough stock for product")
+                    raise ValueError("Sản phẩm không đủ tồn kho.")
                product.base_stock -= ci.quantity
                product.save()
           
@@ -296,7 +296,7 @@ def create_order(
           to_status=OrderStatus.PENDING,
           from_payment_status="",
           to_payment_status=PaymentStatus.PENDING,
-          note="Order created",
+          note="Đơn hàng được tạo.",
      )
      cart.items.all().delete()
      return order

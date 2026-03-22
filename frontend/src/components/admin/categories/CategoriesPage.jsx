@@ -24,7 +24,7 @@ function CategoriesPage() {
       .then(res => setCategories(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
-        setError("Failed to load categories.")
+        setError("Không thể tải danh sách danh mục.")
       })
       .finally(() => setLoading(false))
   }, [filters.search, filters.status])
@@ -89,7 +89,7 @@ function CategoriesPage() {
       await loadCategories()
     } catch (err) {
       console.error(err)
-      const message = err?.response?.data?.detail || err?.response?.data || "Failed to save category."
+      const message = err?.response?.data?.detail || err?.response?.data || "Không thể lưu danh mục."
       setError(typeof message === "string" ? message : JSON.stringify(message))
     } finally {
       setLoading(false)
@@ -110,7 +110,7 @@ function CategoriesPage() {
       await loadCategories()
     } catch (err) {
       console.error(err)
-      const message = err?.response?.data?.detail || err?.response?.data || "Failed to delete category."
+      const message = err?.response?.data?.detail || err?.response?.data || "Không thể xóa danh mục."
       setError(typeof message === "string" ? message : JSON.stringify(message))
     } finally {
       setLoading(false)
@@ -120,15 +120,15 @@ function CategoriesPage() {
   return (
     <div className="container-fluid p-4 bg-light h-100">
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <h2 className="fw-semibold mb-0">Categories</h2>
-        <button className="btn btn-primary" onClick={handleCreate}>New Category</button>
+        <h2 className="fw-semibold mb-0">Danh mục</h2>
+        <button className="btn btn-primary" onClick={handleCreate}>Thêm danh mục</button>
       </div>
 
       <CategoryFilters filters={filters} onChange={setFilters} />
 
       <div className="card">
         <div className="card-body">
-          {loading && <div className="text-muted">Loading categories...</div>}
+          {loading && <div className="text-muted">Đang tải danh mục...</div>}
           {error && <div className="text-danger mb-3">{error}</div>}
           <CategoriesTable
             categories={categories}

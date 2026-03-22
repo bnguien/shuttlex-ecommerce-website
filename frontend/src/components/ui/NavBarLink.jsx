@@ -1,6 +1,7 @@
 import { NavLink, useNavigate, Link, useLocation } from "react-router-dom"
 import { useContext, useEffect, useState } from "react"
 import { FaChevronDown } from "react-icons/fa6"
+import { FaRightFromBracket } from "react-icons/fa6"
 import { AuthContext } from "../context/AuthContext.jsx"
 import api from "../../api"
 import styles from "./NavBarLink.module.css"
@@ -69,7 +70,7 @@ const NavBarLink = () => {
                         }
                         end
                     >
-                        Home
+                        Trang chủ
                     </NavLink>
                 </li>
                 <li className="nav-item">
@@ -80,7 +81,7 @@ const NavBarLink = () => {
                         }
                         onClick={handleAboutClick}
                     >
-                        About
+                        Giới thiệu
                     </NavLink>
                 </li>
                 <li
@@ -95,7 +96,7 @@ const NavBarLink = () => {
                         }
                         onClick={() => setIsProductsOpen(false)}
                     >
-                        Products
+                        Sản phẩm
                         <span
                             className={`${styles.productsArrow} ${isProductsOpen ? styles.productsArrowOpen : ""}`}
                             aria-hidden="true"
@@ -106,7 +107,7 @@ const NavBarLink = () => {
                     <div className={styles.dropdown}>
                         <div className={styles.dropdownGrid}>
                             {categories.length === 0 && (
-                                <span className={styles.dropdownEmpty}>No categories</span>
+                                <span className={styles.dropdownEmpty}>Không có danh mục</span>
                             )}
                             {categories.map((category) => (
                                 <Link
@@ -129,7 +130,7 @@ const NavBarLink = () => {
                         }
                         onClick={handleContactClick}
                     >
-                        Contact
+                        Liên hệ
                     </NavLink>
                 </li>
             </ul>
@@ -144,7 +145,7 @@ const NavBarLink = () => {
                                     isActive ? "nav-link active fw-semibold" : "nav-link fw-semibold"
                                 }
                             >
-                                Login
+                                Đăng nhập
                             </NavLink>
                         </li>
                         <li className="nav-item">
@@ -154,7 +155,7 @@ const NavBarLink = () => {
                                     isActive ? "nav-link active fw-semibold" : "nav-link fw-semibold"
                                 }
                             >
-                                Register
+                                Đăng ký
                             </NavLink>
                         </li>
                     </>
@@ -169,16 +170,18 @@ const NavBarLink = () => {
                                 }
                                 end
                             >
-                                Hi, {username}
+                                Xin chào, {username}
                             </NavLink>
                         </li>
                         <li className="nav-item">
                             <button
                                 onClick={handleLogout}
-                                className="nav-link fw-semibold btn btn-link text-decoration-none"
-                                style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+                                className="btn btn-outline-light rounded-pill d-flex align-items-center justify-content-center"
+                                style={{ width: '40px', height: '40px' }}
+                                title="Đăng xuất"
+                                aria-label="Đăng xuất"
                             >
-                                Logout
+                                <FaRightFromBracket />
                             </button>
                         </li>
                     </>

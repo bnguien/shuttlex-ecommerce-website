@@ -1,6 +1,6 @@
 import { formatCurrencyVND } from "../../utils/format"
 
-function CartPageSummary({ cartItems, canCheckout = true }) {
+function CartPageSummary({ cartItems, canCheckout = true, onCheckout }) {
   function calculateSubtotal() {
     return cartItems.reduce((total, item) => {
       const subtotal = item.subtotal != null ? Number(item.subtotal) : (Number(item.price_at_add ?? item.price ?? 0) * (item.quantity || 0))
@@ -27,7 +27,7 @@ function CartPageSummary({ cartItems, canCheckout = true }) {
         </div>
       </div>
       <div className="mb-5 mt-4">
-        <button className="btn btn-primary w-100" disabled={!canCheckout}>
+        <button className="btn btn-primary w-100" disabled={!canCheckout} onClick={onCheckout}>
           {canCheckout ? "Thanh toán" : "Vui lòng xóa sản phẩm không khả dụng"}
         </button>
       </div>

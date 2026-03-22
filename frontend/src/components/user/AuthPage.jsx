@@ -103,12 +103,12 @@ function AuthPage({ initialMode = "login" }) {
         navigate(from, { replace: true });
       }
     } catch (err) {
-      let msg = "Login failed. Please try again.";
+      let msg = "Đăng nhập thất bại. Vui lòng thử lại.";
 
       if (err.response?.data) {
         const data = err.response.data;
         if (typeof data === "string" && data.includes("<!DOCTYPE")) {
-          msg = "Server error occurred. Please try again later.";
+          msg = "Máy chủ gặp lỗi. Vui lòng thử lại sau.";
         } else if (data.detail) {
           msg = data.detail;
         } else if (data.non_field_errors) {
@@ -173,12 +173,12 @@ function AuthPage({ initialMode = "login" }) {
 
       navigate("/verify-email", { replace: true, state: { email } });
     } catch (err) {
-      let msg = "Registration failed. Please try again.";
+      let msg = "Đăng ký thất bại. Vui lòng thử lại.";
 
       if (err.response?.data) {
         const data = err.response.data;
         if (typeof data === "string" && data.includes("<!DOCTYPE")) {
-          msg = "Server error occurred. Please try again later.";
+          msg = "Máy chủ gặp lỗi. Vui lòng thử lại sau.";
         } else {
           for (const value of Object.values(data)) {
             if (Array.isArray(value) && value.length > 0) {
@@ -209,16 +209,16 @@ function AuthPage({ initialMode = "login" }) {
           <section className="auth-form-pane auth-pane-login">
             <div className="auth-form-inner">
               {loginError && <Error error={loginError} />}
-              <p className="auth-eyebrow">Welcome back</p>
-              <h2 className="auth-title">Log in to your account</h2>
+              <p className="auth-eyebrow">Chào mừng quay lại</p>
+              <h2 className="auth-title">Đăng nhập tài khoản</h2>
               <p className="auth-subtitle">
-                Continue shopping and track your orders.
+                Tiếp tục mua sắm và theo dõi đơn hàng của bạn.
               </p>
 
               <form onSubmit={handleLoginSubmit}>
                 <div className="mb-3">
                   <label htmlFor="login-emailOrUsername" className="form-label">
-                    Email or Username
+                    Email hoặc tên đăng nhập
                   </label>
                   <input
                     type="text"
@@ -226,7 +226,7 @@ function AuthPage({ initialMode = "login" }) {
                     onChange={(e) => setEmailOrUsername(e.target.value)}
                     className="form-control"
                     id="login-emailOrUsername"
-                    placeholder="Enter your email or username"
+                    placeholder="Nhập email hoặc tên đăng nhập"
                     required
                   />
                   {getValidationMessage(emailOrUsername) && (
@@ -238,7 +238,7 @@ function AuthPage({ initialMode = "login" }) {
 
                 <div className="mb-3">
                   <label htmlFor="login-password" className="form-label">
-                    Password
+                    Mật khẩu
                   </label>
                   <input
                     type="password"
@@ -246,7 +246,7 @@ function AuthPage({ initialMode = "login" }) {
                     onChange={(e) => setLoginPassword(e.target.value)}
                     className="form-control"
                     id="login-password"
-                    placeholder="Enter your password"
+                    placeholder="Nhập mật khẩu"
                     required
                   />
                 </div>
@@ -256,22 +256,22 @@ function AuthPage({ initialMode = "login" }) {
                   className="btn w-100 auth-primary"
                   disabled={loginLoading || !isValidInput(emailOrUsername)}
                 >
-                  {loginLoading ? "Logging in..." : "Login"}
+                  {loginLoading ? "Đang đăng nhập..." : "Đăng nhập"}
                 </button>
               </form>
 
               <div className="auth-footer">
-                <Link to="/forgot-password">Forgot your password?</Link>
+                <Link to="/forgot-password">Quên mật khẩu?</Link>
               </div>
 
               <div className="auth-inline-toggle">
-                <span>New here?</span>
+                <span>Bạn mới ở đây?</span>
                 <button
                   type="button"
                   className="btn btn-link p-0"
                   onClick={() => handleModeChange("register")}
                 >
-                  Create an account
+                  Tạo tài khoản
                 </button>
               </div>
             </div>
@@ -280,17 +280,17 @@ function AuthPage({ initialMode = "login" }) {
           <section className="auth-form-pane auth-pane-register">
             <div className="auth-form-inner">
               {registerError && <Error error={registerError} />}
-              <p className="auth-eyebrow">New to Shuttlex?</p>
-              <h2 className="auth-title">Create your account</h2>
+              <p className="auth-eyebrow">Mới đến với ShuttleX?</p>
+              <h2 className="auth-title">Tạo tài khoản của bạn</h2>
               <p className="auth-subtitle">
-                Join the club to save favorites, track deliveries, and more.
+                Tham gia ngay để lưu yêu thích, theo dõi giao hàng và nhiều hơn nữa.
               </p>
 
               <form onSubmit={handleRegisterSubmit}>
                 <div className="mb-3 auth-grid">
                   <div>
                     <label htmlFor="register-firstName" className="form-label">
-                      First Name
+                      Tên
                     </label>
                     <input
                       type="text"
@@ -298,12 +298,12 @@ function AuthPage({ initialMode = "login" }) {
                       onChange={(e) => setFirstName(e.target.value)}
                       className="form-control"
                       id="register-firstName"
-                      placeholder="First name"
+                      placeholder="Nhập tên"
                     />
                   </div>
                   <div>
                     <label htmlFor="register-lastName" className="form-label">
-                      Last Name
+                      Họ
                     </label>
                     <input
                       type="text"
@@ -311,13 +311,13 @@ function AuthPage({ initialMode = "login" }) {
                       onChange={(e) => setLastName(e.target.value)}
                       className="form-control"
                       id="register-lastName"
-                      placeholder="Last name"
+                      placeholder="Nhập họ"
                     />
                   </div>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="register-username" className="form-label">
-                    Username
+                    Tên đăng nhập
                   </label>
                   <input
                     type="text"
@@ -325,7 +325,7 @@ function AuthPage({ initialMode = "login" }) {
                     onChange={(e) => setUsername(e.target.value)}
                     className="form-control"
                     id="register-username"
-                    placeholder="Choose a username"
+                    placeholder="Chọn tên đăng nhập"
                     required
                   />
                 </div>
@@ -339,7 +339,7 @@ function AuthPage({ initialMode = "login" }) {
                     onChange={(e) => setEmail(e.target.value)}
                     className="form-control"
                     id="register-email"
-                    placeholder="Enter your email"
+                    placeholder="Nhập email"
                     required
                   />
                   {getValidationEmailMessage(email) && (
@@ -350,7 +350,7 @@ function AuthPage({ initialMode = "login" }) {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="register-password" className="form-label">
-                    Password
+                    Mật khẩu
                   </label>
                   <input
                     type="password"
@@ -358,7 +358,7 @@ function AuthPage({ initialMode = "login" }) {
                     onChange={(e) => setPassword(e.target.value)}
                     className="form-control"
                     id="register-password"
-                    placeholder="Create a password"
+                    placeholder="Tạo mật khẩu"
                     required
                   />
                   {getPasswordValidationMessage(password) && (
@@ -369,7 +369,7 @@ function AuthPage({ initialMode = "login" }) {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="register-confirmPassword" className="form-label">
-                    Confirm password
+                    Xác nhận mật khẩu
                   </label>
                   <input
                     type="password"
@@ -377,7 +377,7 @@ function AuthPage({ initialMode = "login" }) {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="form-control"
                     id="register-confirmPassword"
-                    placeholder="Re-enter your password"
+                    placeholder="Nhập lại mật khẩu"
                     required
                   />
                   {getPasswordMatchMessage(password, confirmPassword) && (
@@ -391,18 +391,18 @@ function AuthPage({ initialMode = "login" }) {
                   className="btn w-100 auth-primary"
                   disabled={registerLoading}
                 >
-                  {registerLoading ? "Registering..." : "Register"}
+                  {registerLoading ? "Đang đăng ký..." : "Đăng ký"}
                 </button>
               </form>
 
               <div className="auth-footer">
-                <span>Already have an account?</span>
+                <span>Đã có tài khoản?</span>
                 <button
                   type="button"
                   className="btn btn-link p-0"
                   onClick={() => handleModeChange("login")}
                 >
-                  Log in
+                  Đăng nhập
                 </button>
               </div>
             </div>
@@ -412,30 +412,30 @@ function AuthPage({ initialMode = "login" }) {
             <div className="auth-overlay-panel">
               {mode === "register" ? (
                 <>
-                  <h3>Welcome back</h3>
+                  <h3>Chào mừng quay lại</h3>
                   <p>
-                    Access your account to track orders, manage your gear, and stay ready for your next match !
+                    Truy cập tài khoản để theo dõi đơn hàng, quản lý dụng cụ và sẵn sàng cho trận đấu tiếp theo!
                   </p>
                   <button
                     type="button"
                     className="btn auth-ghost"
                     onClick={() => handleModeChange("login")}
                   >
-                    Sign in
+                    Đăng nhập
                   </button>
                 </>
               ) : (
                 <>
-                  <h3>First time here?</h3>
+                  <h3>Lần đầu đến với ShuttleX?</h3>
                   <p>
-                    Shop with us and make every game better with the right gear by your side.
+                    Mua sắm cùng chúng tôi để mỗi trận đấu đều tốt hơn với dụng cụ phù hợp.
                   </p>
                   <button
                     type="button"
                     className="btn auth-ghost"
                     onClick={() => handleModeChange("register")}
                   >
-                    Create account
+                    Tạo tài khoản
                   </button>
                 </>
               )}

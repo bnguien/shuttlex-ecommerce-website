@@ -47,7 +47,7 @@ function ProductsPage() {
       })
       .catch(err => {
         console.error(err)
-        setError("Failed to load products.")
+        setError("Không thể tải danh sách sản phẩm.")
       })
       .finally(() => setLoading(false))
   }, [page, pageSize, filters.search, filters.category, filters.brand, filters.status])
@@ -112,7 +112,7 @@ function ProductsPage() {
   const handleDeleteVariant = async (variant) => {
     if (!variant?.id) return
 
-    const confirmed = window.confirm("Delete this variant?")
+    const confirmed = window.confirm("Bạn có chắc muốn xóa biến thể này?")
     if (!confirmed) return
 
     setLoading(true)
@@ -133,7 +133,7 @@ function ProductsPage() {
       await loadProducts()
     } catch (err) {
       console.error(err)
-      setError("Failed to delete variant.")
+      setError("Không thể xóa biến thể.")
     } finally {
       setLoading(false)
     }
@@ -200,8 +200,8 @@ function ProductsPage() {
       await loadProducts()
     } catch (err) {
       console.error(err)
-      const message = err?.response?.data || "Failed to save product."
-      setError(typeof message === "string" ? message : "Failed to save product.")
+      const message = err?.response?.data || "Không thể lưu sản phẩm."
+      setError(typeof message === "string" ? message : "Không thể lưu sản phẩm.")
     } finally {
       setLoading(false)
     }
@@ -216,7 +216,7 @@ function ProductsPage() {
 
     const stockValue = Number(data.stock)
     if (Number.isNaN(stockValue) || stockValue < 0) {
-      setError("Variant stock must be a number >= 0.")
+      setError("Tồn kho biến thể phải là số >= 0.")
       return
     }
 
@@ -243,7 +243,7 @@ function ProductsPage() {
       } else {
         // Create new variant
         if (!data.product) {
-          setError("Product ID is required to create variant.")
+          setError("Cần có ID sản phẩm để tạo biến thể.")
           setLoading(false)
           return
         }
@@ -263,8 +263,8 @@ function ProductsPage() {
       await loadProducts()
     } catch (err) {
       console.error(err)
-      const action = data.id ? "update" : "create"
-      setError(`Failed to ${action} variant.`)
+      const action = data.id ? "cập nhật" : "tạo"
+      setError(`Không thể ${action} biến thể.`)
     } finally {
       setLoading(false)
     }
@@ -285,7 +285,7 @@ function ProductsPage() {
     } catch (err) {
       console.error(err)
       const payload = err?.response?.data
-      const fallback = "Failed to delete product."
+      const fallback = "Không thể xóa sản phẩm."
 
       let message = payload?.detail || payload?.message
       if (!message && typeof payload === "string") {
@@ -327,15 +327,15 @@ function ProductsPage() {
   return (
     <div className="container-fluid p-4 bg-light h-100">
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <h2 className="fw-semibold mb-0">Products</h2>
-        <button className="btn btn-primary" onClick={handleCreate}>New Product</button>
+        <h2 className="fw-semibold mb-0">Sản phẩm</h2>
+        <button className="btn btn-primary" onClick={handleCreate}>Thêm sản phẩm</button>
       </div>
 
       <ProductFilters filters={filters} onChange={setFilters} />
 
       <div className="card">
         <div className="card-body">
-          {loading && <div className="text-muted">Loading products...</div>}
+          {loading && <div className="text-muted">Đang tải sản phẩm...</div>}
           {error && <div className="text-danger mb-3">{error}</div>}
           <ProductsTable
             ref={tableRef}
@@ -347,7 +347,7 @@ function ProductsPage() {
             onDeleteVariant={handleDeleteVariant}
           />
           {totalPages > 1 && (
-            <nav aria-label="Products pagination" className="d-flex justify-content-center mt-4">
+            <nav aria-label="Phân trang sản phẩm" className="d-flex justify-content-center mt-4">
               <ul className="pagination mb-0">
                 <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
                   <button
@@ -355,7 +355,7 @@ function ProductsPage() {
                     onClick={() => setPage(prev => Math.max(1, prev - 1))}
                     disabled={page === 1}
                   >
-                    Prev
+                    Trước
                   </button>
                 </li>
                 {pageNumbers.map(pageNum => (
@@ -371,7 +371,7 @@ function ProductsPage() {
                     onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={page === totalPages}
                   >
-                    Next
+                    Sau
                   </button>
                 </li>
               </ul>
@@ -379,7 +379,7 @@ function ProductsPage() {
           )}
           {totalCount > 0 && (
             <div className="text-center mt-2 text-muted">
-              Page {page} of {totalPages} ({totalCount} items)
+              Trang {page}/{totalPages} ({totalCount} mục)
             </div>
           )}
         </div>

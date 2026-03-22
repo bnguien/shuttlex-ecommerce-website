@@ -40,7 +40,7 @@ function ProductModal({ open, product, brands, categories, sizes, onClose, onSav
         <div className="modal-dialog modal-lg" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{product ? "Edit Product" : "New Product"}</h5>
+              <h5 className="modal-title">{product ? "Sửa sản phẩm" : "Thêm sản phẩm"}</h5>
               <button type="button" className="btn-close" onClick={onClose} />
             </div>
             <div className="modal-body">

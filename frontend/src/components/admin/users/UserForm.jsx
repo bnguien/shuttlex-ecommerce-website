@@ -11,25 +11,25 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
     event.preventDefault()
     
     if (!values.username?.trim()) {
-      alert("Username is required!")
+      alert("Tên đăng nhập là bắt buộc!")
       return
     }
     
     if (!values.email?.trim()) {
-      alert("Email is required!")
+      alert("Email là bắt buộc!")
       return
     }
     
-    // Validate email format
+    // Kiểm tra định dạng email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(values.email)) {
-      alert("Invalid email format!")
+      alert("Định dạng email không hợp lệ!")
       return
     }
     
-    // Password is required for new user
+    // Bắt buộc mật khẩu khi tạo user mới
     if (!values.id && !values.password) {
-      alert("Password is required for new user!")
+      alert("Mật khẩu là bắt buộc khi tạo người dùng mới!")
       return
     }
     
@@ -40,13 +40,13 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
     <form onSubmit={handleSubmit}>
       <div className="row g-3">
         <div className="col-md-6">
-          <label className="form-label">Username *</label>
+          <label className="form-label">Tên đăng nhập *</label>
           <input
             className="form-control"
             name="username"
             value={values.username || ""}
             onChange={handleChange}
-            disabled={values.id} // Cannot change username after creation
+            disabled={values.id} // Không cho đổi tên đăng nhập sau khi tạo
           />
         </div>
         
@@ -62,7 +62,7 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">First Name</label>
+          <label className="form-label">Tên</label>
           <input
             className="form-control"
             name="first_name"
@@ -72,7 +72,7 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">Last Name</label>
+          <label className="form-label">Họ</label>
           <input
             className="form-control"
             name="last_name"
@@ -82,7 +82,7 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">Phone</label>
+          <label className="form-label">Số điện thoại</label>
           <input
             className="form-control"
             name="phone"
@@ -93,7 +93,7 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
 
         <div className="col-md-6">
           <label className="form-label">
-            Password {!values.id && "*"}
+            Mật khẩu {!values.id && "*"}
           </label>
           <input
             className="form-control"
@@ -101,15 +101,15 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
             type="password"
             value={values.password || ""}
             onChange={handleChange}
-            placeholder={values.id ? "Leave blank to keep current" : ""}
+            placeholder={values.id ? "Để trống nếu giữ nguyên" : ""}
           />
           {values.id && (
-            <small className="text-muted">Leave blank to keep current password</small>
+            <small className="text-muted">Để trống nếu giữ nguyên mật khẩu hiện tại</small>
           )}
         </div>
 
         <div className="col-12">
-          <label className="form-label">Address</label>
+          <label className="form-label">Địa chỉ</label>
           <textarea
             className="form-control"
             name="address"
@@ -128,7 +128,7 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
               checked={Boolean(values.is_active)}
               onChange={handleChange}
             />
-            <label className="form-check-label">Active</label>
+            <label className="form-check-label">Đang hoạt động</label>
           </div>
         </div>
 
@@ -141,7 +141,7 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
               checked={Boolean(values.is_staff)}
               onChange={handleChange}
             />
-            <label className="form-check-label">Staff (Can access admin)</label>
+            <label className="form-check-label">Nhân viên (Có quyền vào trang quản trị)</label>
           </div>
         </div>
 
@@ -154,17 +154,17 @@ function UserForm({ values, onChange, onSubmit, onCancel }) {
               checked={Boolean(values.is_superuser)}
               onChange={handleChange}
             />
-            <label className="form-check-label">Superuser (Full permissions)</label>
+            <label className="form-check-label">Quản trị cao nhất (Toàn quyền)</label>
           </div>
         </div>
       </div>
 
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>
-          Cancel
+          Hủy
         </button>
         <button type="submit" className="btn btn-primary">
-          Save
+          Lưu
         </button>
       </div>
     </form>

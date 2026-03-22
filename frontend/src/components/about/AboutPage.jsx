@@ -25,15 +25,15 @@ const AboutPage = () => {
         <div className="row gx-4 gy-5">
           <div className="col-md-6" ref={ref1} style={getAnimationStyle(isVisible1, 0)}>
             <div className="p-4 h-100">
-              <p>Who We Are</p>
-              <h1 className="mb-0">A Place for <br /> Badminton Essentials</h1>
+              <p>Chúng tôi là ai</p>
+              <h1 className="mb-0">Điểm đến cho <br /> người chơi cầu lông</h1>
             </div>
           </div>
 
           <div className="col-md-6" ref={ref2} style={getAnimationStyle(isVisible2, 100)}>
             <div className="p-4 h-100">
               <p className="mb-0">
-                We are a dedicated badminton shop serving players at every level — from beginners to competitive athletes. At ShuttleX, you'll find carefully selected gear, honest advice, and everything you need to play with confidence and consistency.
+                Chúng tôi là cửa hàng chuyên về cầu lông, phục vụ mọi cấp độ người chơi — từ người mới bắt đầu đến vận động viên thi đấu. Tại ShuttleX, bạn sẽ tìm thấy sản phẩm được chọn lọc kỹ, tư vấn trung thực và mọi thứ cần thiết để chơi tự tin, ổn định hơn mỗi ngày.
               </p>
 
               <NavLink 
@@ -49,7 +49,7 @@ const AboutPage = () => {
                 onMouseEnter={() => setCtaHover(true)}
                 onMouseLeave={() => setCtaHover(false)}
               >
-                <strong>Learn more about ShuttleX</strong>
+                <strong>Tìm hiểu thêm về ShuttleX</strong>
               </NavLink>
             </div>
           </div>
@@ -66,7 +66,7 @@ const AboutPage = () => {
             >
               <img
                 src={about1}
-                alt="About ShuttleX"
+                alt="Giới thiệu ShuttleX"
                 className="img-fluid"
                 style={{
                   transform: img1Hover ? 'scale(1.1)' : 'scale(1)',
@@ -88,7 +88,7 @@ const AboutPage = () => {
             >
               <img
                 src={about2}
-                alt="About ShuttleX"
+                alt="Giới thiệu ShuttleX"
                 className="img-fluid"
                 style={{
                   transform: img2Hover ? 'scale(1.1)' : 'scale(1)',

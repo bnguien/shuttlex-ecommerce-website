@@ -29,7 +29,7 @@ function SizeModal({ open, size, onClose, onSave, sizeTypes }) {
         <div className="modal-dialog modal-lg" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{size ? "Edit Size" : "New Size"}</h5>
+              <h5 className="modal-title">{size ? "Sửa kích cỡ" : "Thêm kích cỡ"}</h5>
               <button type="button" className="btn-close" onClick={onClose} />
             </div>
             <div className="modal-body">

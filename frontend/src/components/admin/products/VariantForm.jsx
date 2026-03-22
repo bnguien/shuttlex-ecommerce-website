@@ -11,14 +11,14 @@ function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
     <form onSubmit={onSubmit}>
       <div className="row g-3">
         <div className="col-md-6">
-          <label className="form-label">Size</label>
+          <label className="form-label">Kích cỡ</label>
           <select
             className="form-select"
             name="size_id"
             value={values.size_id || values.size?.id || ""}
             onChange={handleChange}
           >
-            <option value="">Select size</option>
+            <option value="">Chọn kích cỡ</option>
             {sizes.map((size) => (
               <option key={size.id} value={size.id}>
                 {size.name}
@@ -27,7 +27,7 @@ function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
           </select>
         </div>
         <div className="col-md-6">
-          <label className="form-label">Color</label>
+          <label className="form-label">Màu</label>
           <input
             className="form-control"
             name="color"
@@ -45,7 +45,7 @@ function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
           />
         </div>
         <div className="col-md-3">
-          <label className="form-label">Price</label>
+          <label className="form-label">Giá</label>
           <input
             className="form-control"
             name="price"
@@ -55,7 +55,7 @@ function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
           />
         </div>
         <div className="col-md-3">
-          <label className="form-label">Sale Price</label>
+          <label className="form-label">Giá sale</label>
           <input
             className="form-control"
             name="sale_price"
@@ -65,7 +65,7 @@ function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
           />
         </div>
         <div className="col-md-3">
-          <label className="form-label">Stock</label>
+          <label className="form-label">Tồn kho</label>
           <input
             className="form-control"
             name="stock"
@@ -75,7 +75,7 @@ function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
           />
         </div>
         <div className="col-md-6">
-          <label className="form-label">Sale Ends At</label>
+          <label className="form-label">Kết thúc sale lúc</label>
           <input
             className="form-control"
             name="sale_ends_at"
@@ -93,17 +93,17 @@ function VariantForm({ values, sizes = [], onChange, onSubmit, onCancel }) {
               checked={Boolean(values.is_active)}
               onChange={handleChange}
             />
-            <label className="form-check-label">Active</label>
+            <label className="form-check-label">Đang bán</label>
           </div>
         </div>
       </div>
 
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>
-          Cancel
+          Hủy
         </button>
         <button type="submit" className="btn btn-primary">
-          Save
+          Lưu
         </button>
       </div>
     </form>

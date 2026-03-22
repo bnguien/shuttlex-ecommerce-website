@@ -4,7 +4,7 @@ function BrandFilters({ filters, onChange }) {
       <div className="card-body">
         <div className="row g-3">
           <div className="col-md-6">
-            <label className="form-label">Search</label>
+            <label className="form-label">Tìm kiếm</label>
             <input
               className="form-control"
               value={filters.search}
@@ -17,7 +17,7 @@ function BrandFilters({ filters, onChange }) {
             />
           </div>
           <div className="col-md-6">
-            <label className="form-label">Status</label>
+            <label className="form-label">Trạng thái</label>
             <select
               className="form-select"
               value={filters.status}
@@ -28,9 +28,9 @@ function BrandFilters({ filters, onChange }) {
                 })
               }
             >
-              <option value="">All</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="">Tất cả</option>
+              <option value="active">Đang hoạt động</option>
+              <option value="inactive">Tạm khóa</option>
             </select>
           </div>
         </div>

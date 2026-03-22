@@ -13,9 +13,9 @@ function AdminProfilePage() {
         <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
           <div className="text-center">
             <div className="spinner-border text-success" role="status" style={{width: '3rem', height: '3rem'}}>
-              <span className="visually-hidden">Loading...</span>
+              <span className="visually-hidden">Đang tải...</span>
             </div>
-            <p className="mt-3 text-muted">Loading your profile...</p>
+            <p className="mt-3 text-muted">Đang tải hồ sơ của bạn...</p>
           </div>
         </div>
       </div>
@@ -27,10 +27,10 @@ function AdminProfilePage() {
       <div className="row">
         <div className="col-12">
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="mb-0">Admin Profile</h2>
+            <h2 className="mb-0">Hồ sơ quản trị</h2>
             <span className="badge bg-success fs-6">
               <FiShield className="me-1" />
-              {isStaff ? 'Staff' : 'Administrator'}
+              {isStaff ? 'Nhân viên' : 'Quản trị viên'}
             </span>
           </div>
 
@@ -40,13 +40,13 @@ function AdminProfilePage() {
                 <div className="card-header bg-white border-bottom">
                   <h5 className="mb-0">
                     <FiUser className="me-2" />
-                    Profile Information
+                    Thông tin hồ sơ
                   </h5>
                 </div>
                 <div className="card-body">
                   <div className="row g-3">
                     <div className="col-md-6">
-                      <label className="form-label text-muted small">Username</label>
+                      <label className="form-label text-muted small">Tên đăng nhập</label>
                       <div className="input-group">
                         <span className="input-group-text bg-light border-0">
                           <FiUser />
@@ -60,7 +60,7 @@ function AdminProfilePage() {
                       </div>
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label text-muted small">Email Address</label>
+                      <label className="form-label text-muted small">Địa chỉ email</label>
                       <div className="input-group">
                         <span className="input-group-text bg-light border-0">
                           <FiMail />
@@ -74,7 +74,7 @@ function AdminProfilePage() {
                       </div>
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label text-muted small">First Name</label>
+                      <label className="form-label text-muted small">Tên</label>
                       <input 
                         type="text" 
                         className="form-control bg-light border-0" 
@@ -83,7 +83,7 @@ function AdminProfilePage() {
                       />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label text-muted small">Last Name</label>
+                      <label className="form-label text-muted small">Họ</label>
                       <input 
                         type="text" 
                         className="form-control bg-light border-0" 
@@ -99,7 +99,7 @@ function AdminProfilePage() {
             <div className="col-lg-4">
               <div className="card shadow-sm border-0">
                 <div className="card-header bg-white border-bottom">
-                  <h5 className="mb-0">Quick Actions</h5>
+                  <h5 className="mb-0">Thao tác nhanh</h5>
                 </div>
                 <div className="card-body">
                   <div className="d-grid gap-2">
@@ -108,14 +108,14 @@ function AdminProfilePage() {
                       onClick={() => navigate('/admin/change-password')}
                     >
                       <FiLock className="me-2" />
-                      Change Password
+                      Đổi mật khẩu
                     </button>
                     <button 
                       className="btn btn-outline-secondary text-start"
                       onClick={() => navigate('/admin/dashboard')}
                     >
                       <FiShield className="me-2" />
-                      Back to Dashboard
+                      Quay lại bảng điều khiển
                     </button>
                   </div>
                 </div>
@@ -123,9 +123,9 @@ function AdminProfilePage() {
 
               <div className="card shadow-sm border-0 mt-3">
                 <div className="card-body">
-                  <h6 className="card-subtitle mb-2 text-muted">Account Type</h6>
+                  <h6 className="card-subtitle mb-2 text-muted">Loại tài khoản</h6>
                   <p className="card-text">
-                    You are logged in as an administrator. You have access to the admin panel and can manage the system.
+                    Bạn đang đăng nhập với vai trò quản trị. Bạn có quyền truy cập trang quản trị và quản lý hệ thống.
                   </p>
                 </div>
               </div>

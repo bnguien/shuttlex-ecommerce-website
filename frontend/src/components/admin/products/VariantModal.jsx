@@ -61,7 +61,7 @@ function VariantModal({ open, variant, sizes, onClose, onSave }) {
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{variant?.id ? "Edit Variant" : "Add Variant"}</h5>
+              <h5 className="modal-title">{variant?.id ? "Sửa biến thể" : "Thêm biến thể"}</h5>
               <button type="button" className="btn-close" onClick={onClose} />
             </div>
             <div className="modal-body">

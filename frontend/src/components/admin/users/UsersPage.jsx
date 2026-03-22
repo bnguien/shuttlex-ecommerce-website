@@ -28,7 +28,7 @@ function UsersPage() {
       })
       .catch((err) => {
         console.error(err)
-        setError("Failed to load users.")
+        setError("Không thể tải danh sách người dùng.")
       })
       .finally(() => setLoading(false))
   }, [page, pageSize, search])
@@ -89,9 +89,9 @@ function UsersPage() {
       await loadUsers()
     } catch (err) {
       console.error(err)
-      const message = err?.response?.data || "Failed to save user."
+      const message = err?.response?.data || "Không thể lưu người dùng."
       if (typeof message === "object") {
-        // Display validation errors
+        // Hiển thị lỗi validation
         const errors = Object.entries(message)
           .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(", ") : val}`)
           .join("\n")
@@ -118,7 +118,7 @@ function UsersPage() {
       await loadUsers()
     } catch (err) {
       console.error(err)
-      const message = err?.response?.data?.detail || "Failed to delete user."
+      const message = err?.response?.data?.detail || "Không thể xóa người dùng."
       setError(message)
     } finally {
       setLoading(false)
@@ -127,7 +127,7 @@ function UsersPage() {
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value)
-    setPage(1) // Reset to first page on search
+    setPage(1) // Quay lại trang đầu khi tìm kiếm
   }
 
   const getPageNumbers = () => {
@@ -146,13 +146,13 @@ function UsersPage() {
   return (
     <div className="container-fluid p-4 bg-light h-100">
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <h2 className="fw-semibold mb-0">Users</h2>
+        <h2 className="fw-semibold mb-0">Người dùng</h2>
         <button className="btn btn-primary" onClick={handleCreate}>
-          New User
+          Thêm người dùng
         </button>
       </div>
 
-      {/* Search */}
+      {/* Tìm kiếm */}
       <div className="card mb-3">
         <div className="card-body">
           <div className="row g-3">
@@ -160,7 +160,7 @@ function UsersPage() {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Search by username, email, or name..."
+                placeholder="Tìm theo tên đăng nhập, email hoặc họ tên..."
                 value={search}
                 onChange={handleSearchChange}
               />
@@ -169,16 +169,16 @@ function UsersPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Bảng dữ liệu */}
       <div className="card">
         <div className="card-body">
-          {loading && <div className="text-muted">Loading users...</div>}
+          {loading && <div className="text-muted">Đang tải người dùng...</div>}
           {error && <div className="text-danger mb-3">{error}</div>}
           <UsersTable users={users} onEdit={handleEdit} onDelete={handleDelete} />
           
-          {/* Pagination */}
+          {/* Phân trang */}
           {totalPages > 1 && (
-            <nav aria-label="Users pagination" className="d-flex justify-content-center mt-4">
+            <nav aria-label="Phân trang người dùng" className="d-flex justify-content-center mt-4">
               <ul className="pagination mb-0">
                 <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
                   <button
@@ -186,7 +186,7 @@ function UsersPage() {
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
                   >
-                    Previous
+                    Trước
                   </button>
                 </li>
                 {pageNumbers.map((num) => (
@@ -202,7 +202,7 @@ function UsersPage() {
                     onClick={() => setPage(page + 1)}
                     disabled={page === totalPages}
                   >
-                    Next
+                    Sau
                   </button>
                 </li>
               </ul>
@@ -211,7 +211,7 @@ function UsersPage() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Hộp thoại */}
       <UserModal
         open={isModalOpen}
         user={editingUser}
@@ -219,14 +219,14 @@ function UsersPage() {
         onSave={handleSave}
       />
 
-      {/* Delete Confirmation */}
+      {/* Xác nhận xóa */}
       {deletingUser && (
         <>
           <div className="modal d-block" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">Confirm Delete</h5>
+                  <h5 className="modal-title">Xác nhận xóa</h5>
                   <button
                     type="button"
                     className="btn-close"
@@ -235,9 +235,9 @@ function UsersPage() {
                 </div>
                 <div className="modal-body">
                   <p>
-                    Are you sure you want to delete user <strong>{deletingUser.username}</strong>?
+                    Bạn có chắc muốn xóa người dùng <strong>{deletingUser.username}</strong>?
                   </p>
-                  <p className="text-danger mb-0">This action cannot be undone.</p>
+                  <p className="text-danger mb-0">Thao tác này không thể hoàn tác.</p>
                 </div>
                 <div className="modal-footer">
                   <button
@@ -245,14 +245,14 @@ function UsersPage() {
                     className="btn btn-secondary"
                     onClick={() => setDeletingUser(null)}
                   >
-                    Cancel
+                    Hủy
                   </button>
                   <button
                     type="button"
                     className="btn btn-danger"
                     onClick={handleConfirmDelete}
                   >
-                    Delete
+                    Xóa
                   </button>
                 </div>
               </div>

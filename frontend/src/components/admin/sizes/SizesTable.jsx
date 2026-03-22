@@ -1,6 +1,6 @@
 function SizesTable({ sizes, onEdit, onDelete, sizeTypes }) {
   if (!sizes || sizes.length === 0) {
-    return <div className="text-muted">No sizes found.</div>
+    return <div className="text-muted">Không tìm thấy kích cỡ.</div>
   }
 
   const typeMap = sizeTypes.reduce((acc, type) => {
@@ -13,9 +13,9 @@ function SizesTable({ sizes, onEdit, onDelete, sizeTypes }) {
       <table className="table align-middle mb-0">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th className="text-end">Actions</th>
+            <th>Tên</th>
+            <th>Loại</th>
+            <th className="text-end">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -28,13 +28,13 @@ function SizesTable({ sizes, onEdit, onDelete, sizeTypes }) {
                   className="btn btn-sm btn-outline-primary me-2"
                   onClick={() => onEdit(size)}
                 >
-                  Edit
+                  Sửa
                 </button>
                 <button
                   className="btn btn-sm btn-outline-danger"
                   onClick={() => onDelete(size)}
                 >
-                  Delete
+                  Xóa
                 </button>
               </td>
             </tr>

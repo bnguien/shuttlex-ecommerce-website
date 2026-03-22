@@ -44,7 +44,7 @@ function CategoryForm({ values, onChange, onSubmit, onCancel }) {
     <form onSubmit={onSubmit}>
       <div className="row g-3">
         <div className="col-md-6">
-          <label className="form-label">Name</label>
+          <label className="form-label">Tên</label>
           <input
             className="form-control"
             name="name"
@@ -53,7 +53,7 @@ function CategoryForm({ values, onChange, onSubmit, onCancel }) {
           />
         </div>
         <div className="col-md-6">
-          <label className="form-label">Slug</label>
+          <label className="form-label">Đường dẫn (slug)</label>
           <input
             className="form-control"
             name="slug"
@@ -62,7 +62,7 @@ function CategoryForm({ values, onChange, onSubmit, onCancel }) {
           />
         </div>
         <div className="col-md-6">
-          <label className="form-label">Image</label>
+          <label className="form-label">Hình ảnh</label>
           <input
             className="form-control"
             name="image"
@@ -80,17 +80,17 @@ function CategoryForm({ values, onChange, onSubmit, onCancel }) {
               checked={Boolean(values.is_active)}
               onChange={handleChange}
             />
-            <label className="form-check-label">Active</label>
+            <label className="form-check-label">Đang hoạt động</label>
           </div>
         </div>
       </div>
 
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>
-          Cancel
+          Hủy
         </button>
         <button type="submit" className="btn btn-primary">
-          Save
+          Lưu
         </button>
       </div>
     </form>

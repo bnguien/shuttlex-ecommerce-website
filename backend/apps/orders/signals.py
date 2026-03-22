@@ -49,7 +49,7 @@ def order_post_save(sender, instance: Order, created: bool, **kwargs):
                to_status=instance.status,
                from_payment_status="",
                to_payment_status=instance.payment_status,
-               note="Order created (via signal).",
+               note="Đơn hàng được tạo (qua signal).",
           )
      else:
           if old_status != instance.status or old_payment_status != instance.payment_status:
@@ -59,7 +59,7 @@ def order_post_save(sender, instance: Order, created: bool, **kwargs):
                     to_status=instance.status,
                     from_payment_status=old_payment_status,
                     to_payment_status=instance.payment_status,
-                    note="Order updated (via signal).",
+                    note="Đơn hàng được cập nhật (qua signal).",
                )
 
      if created and not instance.order_email_sent:
