@@ -19,18 +19,18 @@ function Header() {
   const slides = [
     {
       image: homeImg,
-      title: 'Welcome to ShuttleX',
-      subtitle: 'Gear up. Smash harder. Play better.'
+      title: 'Chào mừng đến với ShuttleX',
+      subtitle: 'Chuẩn bị tốt hơn. Smash mạnh hơn. Chơi hay hơn.'
     },
     {
       image: homeImg1,
-      title: 'Big Sale – Up to 30% OFF',
-      subtitle: 'Limited Time Offer for Yonex Lovers'
+      title: 'Siêu giảm giá – Lên đến 30%',
+      subtitle: 'Ưu đãi có thời hạn cho tín đồ Yonex'
     },
     {
       image: homeImg2,
-      title: 'Get Into The Zone',
-      subtitle: 'Back in a bold new color with the Li-Ning Ranger Lite Z1.'
+      title: 'Bứt phá phong độ',
+      subtitle: 'Li-Ning Ranger Lite Z1 trở lại với phối màu nổi bật.'
     }
   ]
 
@@ -116,7 +116,7 @@ function Header() {
                   onMouseEnter={() => setCtaHover(true)}
                   onMouseLeave={() => setCtaHover(false)}
                 >
-                  Shop Now
+                  Mua ngay
                 </a>
               </div>
             </header>

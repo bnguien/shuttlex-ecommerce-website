@@ -1,6 +1,6 @@
 function BrandsTable({ brands, onEdit, onDelete }) {
   if (!brands || brands.length === 0) {
-    return <div className="text-muted">No brands found.</div>
+    return <div className="text-muted">Không tìm thấy thương hiệu.</div>
   }
 
   return (
@@ -8,10 +8,10 @@ function BrandsTable({ brands, onEdit, onDelete }) {
       <table className="table align-middle mb-0">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Tên</th>
             <th>Slug</th>
-            <th>Status</th>
-            <th className="text-end">Actions</th>
+            <th>Trạng thái</th>
+            <th className="text-end">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -19,19 +19,19 @@ function BrandsTable({ brands, onEdit, onDelete }) {
             <tr key={brand.id}>
               <td>{brand.name}</td>
               <td>{brand.slug}</td>
-              <td>{brand.is_active ? "Active" : "Inactive"}</td>
+              <td>{brand.is_active ? "Đang hoạt động" : "Tạm khóa"}</td>
               <td className="text-end">
                 <button
                   className="btn btn-sm btn-outline-primary me-2"
                   onClick={() => onEdit(brand)}
                 >
-                  Edit
+                  Sửa
                 </button>
                 <button
                   className="btn btn-sm btn-outline-danger"
                   onClick={() => onDelete(brand)}
                 >
-                  Delete
+                  Xóa
                 </button>
               </td>
             </tr>

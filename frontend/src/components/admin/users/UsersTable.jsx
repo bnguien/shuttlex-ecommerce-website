@@ -1,6 +1,6 @@
 function UsersTable({ users, onEdit, onDelete }) {
   if (!users || users.length === 0) {
-    return <div className="text-muted">No users found.</div>
+    return <div className="text-muted">Không tìm thấy người dùng.</div>
   }
 
   return (
@@ -8,13 +8,13 @@ function UsersTable({ users, onEdit, onDelete }) {
       <table className="table align-middle mb-0">
         <thead>
           <tr>
-            <th>Username</th>
+            <th>Tên đăng nhập</th>
             <th>Email</th>
-            <th>Full Name</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Joined</th>
-            <th className="text-end">Actions</th>
+            <th>Họ và tên</th>
+            <th>Vai trò</th>
+            <th>Trạng thái</th>
+            <th>Ngày tham gia</th>
+            <th className="text-end">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -25,18 +25,18 @@ function UsersTable({ users, onEdit, onDelete }) {
               <td>{user.full_name || "-"}</td>
               <td>
                 {user.is_superuser ? (
-                  <span className="badge bg-danger">Superuser</span>
+                  <span className="badge bg-danger">Quản trị cao nhất</span>
                 ) : user.is_staff ? (
-                  <span className="badge bg-primary">Staff</span>
+                  <span className="badge bg-primary">Nhân viên</span>
                 ) : (
-                  <span className="badge bg-secondary">Customer</span>
+                  <span className="badge bg-secondary">Khách hàng</span>
                 )}
               </td>
               <td>
                 {user.is_active ? (
-                  <span className="badge bg-success">Active</span>
+                  <span className="badge bg-success">Đang hoạt động</span>
                 ) : (
-                  <span className="badge bg-warning">Inactive</span>
+                  <span className="badge bg-warning">Tạm khóa</span>
                 )}
               </td>
               <td>{new Date(user.date_joined).toLocaleDateString()}</td>
@@ -45,13 +45,13 @@ function UsersTable({ users, onEdit, onDelete }) {
                   className="btn btn-sm btn-outline-primary me-2"
                   onClick={() => onEdit(user)}
                 >
-                  Edit
+                  Sửa
                 </button>
                 <button
                   className="btn btn-sm btn-outline-danger"
                   onClick={() => onDelete(user)}
                 >
-                  Delete
+                  Xóa
                 </button>
               </td>
             </tr>

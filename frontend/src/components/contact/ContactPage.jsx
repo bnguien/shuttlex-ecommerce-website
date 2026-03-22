@@ -15,12 +15,12 @@ function ContactPage() {
                     transition: 'opacity 600ms ease-out, transform 600ms ease-out'
                 }}
             >
-                <h2>Contact Us</h2>
-                <p>If you have any questions or need assistance, feel free to reach out to us!</p>
+                <h2>Liên hệ với chúng tôi</h2>
+                <p>Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ, hãy liên hệ với chúng tôi!</p>
                 <p><strong>Email:</strong>
                     <a href="mailto:contact@shuttlex.com">contact@shuttlex.com</a></p>
                 <p><strong>Phone:</strong> +84 234567890</p>
-                <p><strong>Address:</strong> 642 Ton Duc Thang, Da Nang, Vietnam</p>
+                <p><strong>Địa chỉ:</strong> 642 Tôn Đức Thắng, Đà Nẵng, Việt Nam</p>
             </div>
             <div 
                 className="map-container mb-4"

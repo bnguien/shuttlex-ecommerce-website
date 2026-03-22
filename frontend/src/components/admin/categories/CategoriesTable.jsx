@@ -1,6 +1,6 @@
 function CategoriesTable({ categories, onEdit, onDelete }) {
   if (!categories || categories.length === 0) {
-    return <div className="text-muted">No categories found.</div>
+    return <div className="text-muted">Không tìm thấy danh mục.</div>
   }
 
   return (
@@ -8,10 +8,10 @@ function CategoriesTable({ categories, onEdit, onDelete }) {
       <table className="table align-middle mb-0">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Tên</th>
             <th>Slug</th>
-            <th>Status</th>
-            <th className="text-end">Actions</th>
+            <th>Trạng thái</th>
+            <th className="text-end">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -19,19 +19,19 @@ function CategoriesTable({ categories, onEdit, onDelete }) {
             <tr key={category.id}>
               <td>{category.name}</td>
               <td>{category.slug}</td>
-              <td>{category.is_active ? "Active" : "Inactive"}</td>
+              <td>{category.is_active ? "Đang hoạt động" : "Tạm khóa"}</td>
               <td className="text-end">
                 <button
                   className="btn btn-sm btn-outline-primary me-2"
                   onClick={() => onEdit(category)}
                 >
-                  Edit
+                  Sửa
                 </button>
                 <button
                   className="btn btn-sm btn-outline-danger"
                   onClick={() => onDelete(category)}
                 >
-                  Delete
+                  Xóa
                 </button>
               </td>
             </tr>

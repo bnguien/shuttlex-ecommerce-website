@@ -23,7 +23,7 @@ function VerifyEmailPage() {
       try {
         await api.post("/auth/registration/verify-email/", { key })
         setVerified(true)
-        setFeedback("Email verified successfully! You can close this tab and return to login.")
+        setFeedback("Xác minh email thành công! Bạn có thể đóng tab này và quay lại đăng nhập.")
 
         // Broadcast to other tabs that verification succeeded
         localStorage.setItem("emailVerified", Date.now().toString())
@@ -37,7 +37,7 @@ function VerifyEmailPage() {
           }, 500)
         }, 2000)
       } catch (err) {
-        const msg = err.response?.data?.detail || "Verification failed or link expired. You can request a new link below."
+        const msg = err.response?.data?.detail || "Xác minh thất bại hoặc liên kết đã hết hạn. Bạn có thể yêu cầu gửi lại bên dưới."
         setError(msg)
       } finally {
         setLoading(false)
@@ -61,7 +61,7 @@ function VerifyEmailPage() {
   const handleResend = async (e) => {
     e.preventDefault()
     if (!email) {
-      setError("Please enter an email to resend the verification link.")
+      setError("Vui lòng nhập email để gửi lại liên kết xác minh.")
       return
     }
     setLoading(true)
@@ -69,9 +69,9 @@ function VerifyEmailPage() {
     setError("")
     try {
       await api.post("/auth/registration/resend-email/", { email })
-      setFeedback("The link has been resent successfully. Please check your email.")
+      setFeedback("Đã gửi lại liên kết thành công. Vui lòng kiểm tra email.")
     } catch (err) {
-      const msg = err.response?.data?.detail || "Resending email failed. Please try again later." 
+      const msg = err.response?.data?.detail || "Gửi lại email thất bại. Vui lòng thử lại sau." 
       setError(msg)
     } finally {
       setLoading(false)
@@ -82,23 +82,23 @@ function VerifyEmailPage() {
     <div className="container my-5" style={{ maxWidth: 640 }}>
       {verified ? (
         <div className="text-center">
-          <h2 className="mb-3 text-success">Email Verified!</h2>
+          <h2 className="mb-3 text-success">Xác minh email thành công!</h2>
           <div className="alert alert-success">
-            <p className="mb-2"><strong>Your email has been verified successfully.</strong></p>
-            <p className="mb-0">You can close this tab and return to login, or you will be redirected automatically.</p>
+            <p className="mb-2"><strong>Email của bạn đã được xác minh thành công.</strong></p>
+            <p className="mb-0">Bạn có thể đóng tab này và quay lại đăng nhập, hoặc sẽ được chuyển hướng tự động.</p>
           </div>
-          <button onClick={() => window.close()} className="btn btn-secondary me-2">Close Tab</button>
-          <button onClick={() => navigate("/login")} className="btn btn-primary">Go to Login</button>
+          <button onClick={() => window.close()} className="btn btn-secondary me-2">Đóng tab</button>
+          <button onClick={() => navigate("/login")} className="btn btn-primary">Đi tới đăng nhập</button>
         </div>
       ) : (
         <>
-          <h2 className="mb-3">Email Verification</h2>
+          <h2 className="mb-3">Xác minh email</h2>
           <p className="text-muted mb-4">
-            You have registered successfully. To complete the registration, please check your email for a verification link and click on it to verify your email address.
+            Bạn đã đăng ký thành công. Để hoàn tất đăng ký, vui lòng kiểm tra email và bấm vào liên kết xác minh.
           </p>
 
           {initialEmail && (
-            <div className="alert alert-info py-2">The link has been sent to: <strong>{initialEmail}</strong></div>
+            <div className="alert alert-info py-2">Liên kết đã được gửi tới: <strong>{initialEmail}</strong></div>
           )}
           {feedback && <div className="alert alert-success py-2">{feedback}</div>}
           {error && <div className="alert alert-danger py-2">{error}</div>}
@@ -112,12 +112,12 @@ function VerifyEmailPage() {
                 className="form-control"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter the registered email"
+                placeholder="Nhập email đã đăng ký"
                 required
               />
             </div>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? "Resending..." : "Resend verification email"}
+              {loading ? "Đang gửi lại..." : "Gửi lại email xác minh"}
             </button>
           </form>
         </>

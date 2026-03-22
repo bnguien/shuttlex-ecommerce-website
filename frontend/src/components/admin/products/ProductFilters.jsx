@@ -4,7 +4,7 @@ function ProductFilters({ filters, onChange }) {
       <div className="card-body">
         <div className="row g-3">
           <div className="col-md-4">
-            <label className="form-label">Search</label>
+            <label className="form-label">Tìm kiếm</label>
             <input
               className="form-control"
               value={filters.search}
@@ -17,7 +17,7 @@ function ProductFilters({ filters, onChange }) {
             />
           </div>
           <div className="col-md-4">
-            <label className="form-label">Category</label>
+            <label className="form-label">Danh mục</label>
             <input
               className="form-control"
               value={filters.category}
@@ -30,7 +30,7 @@ function ProductFilters({ filters, onChange }) {
             />
           </div>
           <div className="col-md-4">
-            <label className="form-label">Brand</label>
+            <label className="form-label">Thương hiệu</label>
             <input
               className="form-control"
               value={filters.brand}
@@ -43,7 +43,7 @@ function ProductFilters({ filters, onChange }) {
             />
           </div>
           <div className="col-md-4">
-            <label className="form-label">Status</label>
+            <label className="form-label">Trạng thái</label>
             <select
               className="form-select"
               value={filters.status}
@@ -54,9 +54,9 @@ function ProductFilters({ filters, onChange }) {
                 })
               }
             >
-              <option value="">All</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="">Tất cả</option>
+              <option value="active">Đang bán</option>
+              <option value="inactive">Ngừng bán</option>
             </select>
           </div>
         </div>

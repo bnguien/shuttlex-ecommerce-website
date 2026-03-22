@@ -4,6 +4,7 @@ import HomePage from './components/home/HomePage'
 import ProductDetailPage from './components/product/ProductDetailPage'
 import ProductPage from './components/product/ProductPage'
 import CartPage from "./components/cart/CartPage"
+import CheckoutPage from "./components/cart/CheckoutPage"
 import LoginPage from "./components/user/LoginPage"
 import RegisterPage from "./components/user/RegisterPage"
 import UserInfoPage from "./components/user/UserInfoPage"
@@ -55,6 +56,7 @@ const App = () => {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/cart" element={<ProtectedRoute><CartPage setNumCartItems={setNumCartItems} /></ProtectedRoute>} />
+            <Route path="/checkout" element={<ProtectedRoute><CheckoutPage setNumCartItems={setNumCartItems} /></ProtectedRoute>} />
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

@@ -30,7 +30,7 @@ function SizesPage() {
       .then(res => setSizes(Array.isArray(res.data) ? res.data : res.data.results || []))
       .catch(err => {
         console.error(err)
-        setError("Failed to load sizes.")
+        setError("Không thể tải danh sách kích cỡ.")
       })
       .finally(() => setLoading(false))
   }, [filters.search, filters.type])
@@ -83,7 +83,7 @@ function SizesPage() {
       await loadSizes()
     } catch (err) {
       console.error(err)
-      const message = err?.response?.data?.detail || err?.response?.data || "Failed to save size."
+      const message = err?.response?.data?.detail || err?.response?.data || "Không thể lưu kích cỡ."
       setError(typeof message === "string" ? message : JSON.stringify(message))
     } finally {
       setLoading(false)
@@ -103,7 +103,7 @@ function SizesPage() {
       await loadSizes()
     } catch (err) {
       console.error(err)
-      const message = err?.response?.data?.detail || err?.response?.data || "Failed to delete size."
+      const message = err?.response?.data?.detail || err?.response?.data || "Không thể xóa kích cỡ."
       setError(typeof message === "string" ? message : JSON.stringify(message))
     } finally {
       setLoading(false)
@@ -114,15 +114,15 @@ function SizesPage() {
   return (
     <div className="container-fluid p-4 bg-light h-100">
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <h2 className="fw-semibold mb-0">Sizes</h2>
-        <button className="btn btn-primary" onClick={handleCreate}>New Size</button>
+        <h2 className="fw-semibold mb-0">Kích cỡ</h2>
+        <button className="btn btn-primary" onClick={handleCreate}>Thêm kích cỡ</button>
       </div>
 
       <SizeFilters filters={filters} onChange={setFilters} sizeTypes={sizeTypes} />
 
       <div className="card">
         <div className="card-body">
-          {loading && <div className="text-muted">Loading sizes...</div>}
+          {loading && <div className="text-muted">Đang tải kích cỡ...</div>}
           {error && <div className="text-danger mb-3">{error}</div>}
           <SizesTable
             sizes={sizes}

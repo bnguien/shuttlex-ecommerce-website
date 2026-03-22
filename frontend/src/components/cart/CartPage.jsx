@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import CartPageItem from './CartPageItem'
 import CartPageSummary from './CartPageSummary'
 import api from '../../api'
+import { useNavigate } from 'react-router-dom'
 
 function CartPage({ setNumCartItems }) {
+  const navigate = useNavigate()
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -27,8 +29,8 @@ function CartPage({ setNumCartItems }) {
   const hasUnavailable = cartItems.some((item) => item.is_available === false)
   const canCheckout = cartItems.length > 0 && !hasUnavailable
 
-  if (loading) return <div className="container mt-5"><p>Loading...</p></div>
-  if (error) return <div className="container mt-5"><p className="text-danger">Error: {error}</p></div>
+  if (loading) return <div className="container mt-5"><p>Đang tải...</p></div>
+  if (error) return <div className="container mt-5"><p className="text-danger">Lỗi: {error}</p></div>
 
   return (
     <section className="py-2" id="cart-page">
@@ -63,7 +65,11 @@ function CartPage({ setNumCartItems }) {
         </div>
 
         <div className="me-3" style={{ width: "300px" }}>
-          <CartPageSummary cartItems={cartItems} canCheckout={canCheckout} />
+          <CartPageSummary
+            cartItems={cartItems}
+            canCheckout={canCheckout}
+            onCheckout={() => navigate('/checkout')}
+          />
         </div>
       </div>
     </section>

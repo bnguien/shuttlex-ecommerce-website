@@ -62,7 +62,7 @@ const ProductsTable = forwardRef(
     }
 
   if (!products || products.length === 0) {
-    return <div className="text-muted">No products found.</div>
+    return <div className="text-muted">Không tìm thấy sản phẩm.</div>
   }
 
   return (
@@ -71,13 +71,13 @@ const ProductsTable = forwardRef(
         <thead>
           <tr>
             <th style={{ width: "44px" }}></th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Brand</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th className="text-end">Actions</th>
+            <th>Tên</th>
+            <th>Danh mục</th>
+            <th>Thương hiệu</th>
+            <th>Giá</th>
+            <th>Tồn kho</th>
+            <th>Trạng thái</th>
+            <th className="text-end">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -94,7 +94,7 @@ const ProductsTable = forwardRef(
                       type="button"
                       className="btn btn-sm btn-light"
                       onClick={() => toggleExpand(product)}
-                      aria-label={isExpanded ? "Collapse variants" : "Expand variants"}
+                      aria-label={isExpanded ? "Thu gọn biến thể" : "Mở rộng biến thể"}
                     >
                       {isExpanded ? "▾" : "▸"}
                     </button>
@@ -104,19 +104,19 @@ const ProductsTable = forwardRef(
                   <td>{product.brand?.name || "-"}</td>
                   <td>{product.price || "-"}</td>
                   <td>{product.stock ?? 0}</td>
-                  <td>{product.is_active ? "Active" : "Inactive"}</td>
+                  <td>{product.is_active ? "Đang bán" : "Ngừng bán"}</td>
                   <td className="text-end">
                     <button
                       className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => onEdit(product)}
                     >
-                      Edit
+                      Sửa
                     </button>
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => onDelete(product)}
                     >
-                      Delete
+                      Xóa
                     </button>
                   </td>
                 </tr>
@@ -125,19 +125,19 @@ const ProductsTable = forwardRef(
                     <td></td>
                     <td colSpan={7}>
                       {isLoadingVariants ? (
-                        <div className="text-muted py-2">Loading variants...</div>
+                        <div className="text-muted py-2">Đang tải biến thể...</div>
                       ) : (
                         <div>
                           <div className="table-responsive border rounded">
                             <table className="table table-sm mb-0">
                               <thead className="table-light">
                                 <tr>
-                                  <th>Size</th>
-                                  <th>Color</th>
-                                  <th>Price</th>
-                                  <th>Stock</th>
-                                  <th>Active</th>
-                                  <th className="text-end">Actions</th>
+                                  <th>Kích cỡ</th>
+                                  <th>Màu</th>
+                                  <th>Giá</th>
+                                  <th>Tồn kho</th>
+                                  <th>Hoạt động</th>
+                                  <th className="text-end">Thao tác</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -148,21 +148,21 @@ const ProductsTable = forwardRef(
                                       <td>{variant.color || "-"}</td>
                                       <td>{variant.display_price || variant.price || "-"}</td>
                                       <td>{variant.stock ?? 0}</td>
-                                      <td>{variant.is_active ? "Yes" : "No"}</td>
+                                      <td>{variant.is_active ? "Có" : "Không"}</td>
                                       <td className="text-end">
                                         <button
                                           type="button"
                                           className="btn btn-sm btn-outline-primary me-2"
                                           onClick={() => onEditVariant?.({ ...variant, product: product.id })}
                                         >
-                                          Edit
+                                          Sửa
                                         </button>
                                         <button
                                           type="button"
                                           className="btn btn-sm btn-outline-danger"
                                           onClick={() => onDeleteVariant?.({ ...variant, product: product.id })}
                                         >
-                                          Delete
+                                          Xóa
                                         </button>
                                       </td>
                                     </tr>
@@ -170,7 +170,7 @@ const ProductsTable = forwardRef(
                                 ) : (
                                   <tr>
                                     <td colSpan={6} className="text-muted py-2">
-                                      No variants found.
+                                      Không có biến thể.
                                     </td>
                                   </tr>
                                 )}
@@ -184,7 +184,7 @@ const ProductsTable = forwardRef(
                               onClick={() => onAddVariant?.(product)}
                             >
                               <i className="bi bi-plus-circle me-1"></i>
-                              Add Variant
+                              Thêm biến thể
                             </button>
                           </div>
                         </div>

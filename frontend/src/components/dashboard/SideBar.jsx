@@ -23,7 +23,7 @@ function SideBar() {
             `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
           }
         >
-          <FiHome /> Dashboard
+          <FiHome /> Bảng điều khiển
         </NavLink>
         <div
           className={styles.sidebarGroupWrapper}
@@ -37,7 +37,7 @@ function SideBar() {
           >
             <span className={styles.sidebarGroupToggleInner}>
               <span className={styles.sidebarGroupTitle}>
-                <FiLayers /> Catalog
+                <FiLayers /> Danh mục
               </span>
               <FiChevronDown className={isCatalogOpen ? styles.catalogChevronOpen : styles.catalogChevron} />
             </span>
@@ -49,7 +49,7 @@ function SideBar() {
                 `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${styles.sidebarSubLink} ${isActive ? styles.sidebarLinkActive : ""}`
               }
             >
-              <FiGrid /> Categories
+              <FiGrid /> Danh mục sản phẩm
             </NavLink>
             <NavLink
               to="/admin/brands"
@@ -57,7 +57,7 @@ function SideBar() {
                 `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${styles.sidebarSubLink} ${isActive ? styles.sidebarLinkActive : ""}`
               }
             >
-              <FiTag /> Brands
+              <FiTag /> Thương hiệu
             </NavLink>
             <NavLink
               to="/admin/sizes"
@@ -65,7 +65,7 @@ function SideBar() {
                 `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${styles.sidebarSubLink} ${isActive ? styles.sidebarLinkActive : ""}`
               }
             >
-              <FiBox /> Sizes
+              <FiBox /> Kích cỡ
             </NavLink>
             <NavLink
               to="/admin/products"
@@ -73,7 +73,7 @@ function SideBar() {
                 `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${styles.sidebarSubLink} ${isActive ? styles.sidebarLinkActive : ""}`
               }
             >
-              <FiBox /> Products
+              <FiBox /> Sản phẩm
             </NavLink>
           </div>
         </div>
@@ -83,7 +83,7 @@ function SideBar() {
             `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
           }
         >
-          <FiShoppingBag /> Orders
+          <FiShoppingBag /> Đơn hàng
         </NavLink>
         <NavLink
           to="/admin/users"
@@ -91,13 +91,13 @@ function SideBar() {
             `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
           }
         >
-          <FiUsers /> Users
+          <FiUsers /> Người dùng
         </NavLink>
       </nav>
 
       <div className={`mt-auto pt-3 border-top small text-center ${styles.sidebarFooter}`}>
-        ShuttleX Admin<br />
-        2026 ShuttleX Inc.
+        Quản trị ShuttleX<br />
+        2026 ShuttleX
       </div>
     </div>
 

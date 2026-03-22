@@ -10,12 +10,12 @@ import {
 } from 'recharts'
 
 const revenueData = [
-  { month: 'Jan', revenue: 180 },
-  { month: 'Feb', revenue: 200 },
-  { month: 'Mar', revenue: 190 },
-  { month: 'Apr', revenue: 230 },
-  { month: 'May', revenue: 210 },
-  { month: 'Jun', revenue: 245 },
+  { month: 'T1', revenue: 180 },
+  { month: 'T2', revenue: 200 },
+  { month: 'T3', revenue: 190 },
+  { month: 'T4', revenue: 230 },
+  { month: 'T5', revenue: 210 },
+  { month: 'T6', revenue: 245 },
 ]
 
 function CustomTooltip({ active, payload, label }) {
@@ -32,8 +32,8 @@ function MainContent() {
   return (
     <div className="main-content p-4 bg-light h-100">
       <div className="mb-4">
-        <h4 className="fw-bold mb-1">Dashboard</h4>
-        <p className="text-muted mb-0">Welcome to your new ShuttleX dashboard</p>
+        <h4 className="fw-bold mb-1">Bảng điều khiển</h4>
+        <p className="text-muted mb-0">Chào mừng bạn đến với trang quản trị ShuttleX</p>
       </div>
 
       <div className="row g-3 mb-4">
@@ -41,10 +41,10 @@ function MainContent() {
           <div className="card shadow-sm">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <small className="text-muted fw-semibold">Total Products</small>
+                <small className="text-muted fw-semibold">Tổng sản phẩm</small>
               </div>
               <h5 className="fw-bold mb-1">128</h5>
-              <small className="text-success">+12% from last month</small>
+              <small className="text-success">+12% so với tháng trước</small>
             </div>
           </div>
         </div>
@@ -53,10 +53,10 @@ function MainContent() {
           <div className="card shadow-sm">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <small className="text-muted fw-semibold">Categories</small>
+                <small className="text-muted fw-semibold">Danh mục</small>
               </div>
               <h5 className="fw-bold mb-1">8</h5>
-              <small className="text-success">+8% from last month</small>
+              <small className="text-success">+8% so với tháng trước</small>
             </div>
           </div>
         </div>
@@ -65,10 +65,10 @@ function MainContent() {
           <div className="card shadow-sm">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <small className="text-muted fw-semibold">Active Orders</small>
+                <small className="text-muted fw-semibold">Đơn hàng đang xử lý</small>
               </div>
               <h5 className="fw-bold mb-1">46</h5>
-              <small className="text-success">+23% from last month</small>
+              <small className="text-success">+23% so với tháng trước</small>
             </div>
           </div>
         </div>
@@ -77,20 +77,20 @@ function MainContent() {
           <div className="card shadow-sm">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <small className="text-muted fw-semibold">Revenue</small>
+                <small className="text-muted fw-semibold">Doanh thu</small>
               </div>
               <h5 className="fw-bold mb-1">5,340,567 VND</h5>
-              <small className="text-success">+18% from last month</small>
+              <small className="text-success">+18% so với tháng trước</small>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Revenue Trend - Recharts */}
+      {/* Xu hướng doanh thu - Recharts */}
       <div className="card shadow-sm mb-4">
         <div className="card-body">
           <div className="d-flex align-items-center justify-content-between mb-3">
-            <h6 className="fw-bold mb-0">Revenue Trend</h6>
+            <h6 className="fw-bold mb-0">Xu hướng doanh thu</h6>
           </div>
 
           <div style={{ width: '100%', height: 220 }}>
@@ -122,19 +122,19 @@ function MainContent() {
         <div className="col-12 col-xl-6">
           <div className="card shadow-sm h-100">
             <div className="card-body">
-              <h6 className="fw-bold mb-3">Recent Activity</h6>
+              <h6 className="fw-bold mb-3">Hoạt động gần đây</h6>
               <ul className="list-unstyled mb-0">
                 <li className="mb-3">
-                  <div className="fw-semibold">New order placed</div>
-                  <div className="text-muted small">Order #SX1023 · 2 hours ago</div>
+                  <div className="fw-semibold">Có đơn hàng mới</div>
+                  <div className="text-muted small">Đơn #SX1023 · 2 giờ trước</div>
                 </li>
                 <li className="mb-3">
-                  <div className="fw-semibold">Product stock updated</div>
-                  <div className="text-muted small">Yonex Aerosensa 50 · 5 hours ago</div>
+                  <div className="fw-semibold">Đã cập nhật tồn kho sản phẩm</div>
+                  <div className="text-muted small">Yonex Aerosensa 50 · 5 giờ trước</div>
                 </li>
                 <li>
-                  <div className="fw-semibold">New user registered</div>
-                  <div className="text-muted small">customer01 · 1 day ago</div>
+                  <div className="fw-semibold">Người dùng mới đăng ký</div>
+                  <div className="text-muted small">customer01 · 1 ngày trước</div>
                 </li>
               </ul>
             </div>
@@ -144,29 +144,29 @@ function MainContent() {
         <div className="col-12 col-xl-6">
           <div className="card shadow-sm h-100">
             <div className="card-body">
-              <h6 className="fw-bold mb-3">Upcoming Tasks</h6>
+              <h6 className="fw-bold mb-3">Công việc sắp tới</h6>
 
               <div className="form-check mb-3">
                 <input className="form-check-input" type="checkbox" id="task1" />
                 <label className="form-check-label" htmlFor="task1">
-                  <div className="fw-semibold">Check low-stock items</div>
-                  <div className="text-muted small">Today at 2:00 PM</div>
+                  <div className="fw-semibold">Kiểm tra sản phẩm sắp hết hàng</div>
+                  <div className="text-muted small">Hôm nay lúc 14:00</div>
                 </label>
               </div>
 
               <div className="form-check mb-3">
                 <input className="form-check-input" type="checkbox" id="task2" />
                 <label className="form-check-label" htmlFor="task2">
-                  <div className="fw-semibold">Confirm pending orders</div>
-                  <div className="text-muted small">Tomorrow at 10:00 AM</div>
+                  <div className="fw-semibold">Xác nhận đơn hàng chờ xử lý</div>
+                  <div className="text-muted small">Ngày mai lúc 10:00</div>
                 </label>
               </div>
 
               <div className="form-check">
                 <input className="form-check-input" type="checkbox" id="task3" />
                 <label className="form-check-label" htmlFor="task3">
-                  <div className="fw-semibold">Update homepage banners</div>
-                  <div className="text-muted small">Friday at 3:00 PM</div>
+                  <div className="fw-semibold">Cập nhật banner trang chủ</div>
+                  <div className="text-muted small">Thứ Sáu lúc 15:00</div>
                 </label>
               </div>
 

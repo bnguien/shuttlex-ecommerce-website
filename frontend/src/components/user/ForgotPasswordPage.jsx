@@ -14,7 +14,7 @@ function ForgotPasswordPage() {
         const handleStorageChange = (e) => {
             if (e.key === "passwordResetSuccess") {
                 setResetComplete(true)
-                setSuccess("Password has been reset successfully! You can now login with your new password.")
+                setSuccess("Đặt lại mật khẩu thành công! Bạn có thể đăng nhập bằng mật khẩu mới.")
                 setError("")
 
                 setTimeout(() => {
@@ -41,7 +41,7 @@ function ForgotPasswordPage() {
             await api.post("/auth/password/reset/", payload)
 
             setEmail("")
-            setSuccess("Password reset link has been sent to your email. Please check your inbox!")
+            setSuccess("Liên kết đặt lại mật khẩu đã được gửi tới email của bạn. Vui lòng kiểm tra hộp thư!")
         } catch (err) {
             const msg =
                 err.response?.data?.detail ||
@@ -62,24 +62,24 @@ function ForgotPasswordPage() {
                 
                 {resetComplete ? (
                     <div className="text-center">
-                        <h2 className="forgot-password-title text-success">Password Reset Complete!</h2>
-                        <p className="forgot-password-subtitle">Your password has been successfully reset.</p>
-                        <a href="/login" className="btn btn-primary mt-3">Go to Login</a>
+                        <h2 className="forgot-password-title text-success">Đặt lại mật khẩu hoàn tất!</h2>
+                        <p className="forgot-password-subtitle">Mật khẩu của bạn đã được đặt lại thành công.</p>
+                        <a href="/login" className="btn btn-primary mt-3">Đi tới trang đăng nhập</a>
                     </div>
                 ) : (
                     <>
-                        <h2 className="forgot-password-title">Reset Password</h2>
-                        <p className="forgot-password-subtitle">Enter your email address and we'll send you a link to reset your password</p>
+                        <h2 className="forgot-password-title">Đặt lại mật khẩu</h2>
+                        <p className="forgot-password-subtitle">Nhập email của bạn, chúng tôi sẽ gửi liên kết đặt lại mật khẩu</p>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email Address</label>
+                                <label htmlFor="email" className="form-label">Địa chỉ email</label>
                                 <input 
                                     type="email" 
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     className="form-control" 
                                     id="email"
-                                    placeholder="Enter your email address" 
+                                    placeholder="Nhập địa chỉ email" 
                                     required 
                                 />
                             </div>
@@ -88,11 +88,11 @@ function ForgotPasswordPage() {
                                 className="btn btn-primary w-100" 
                                 disabled={loading}
                             >
-                                {loading ? "Sending..." : "Send Reset Link"}
+                                {loading ? "Đang gửi..." : "Gửi liên kết đặt lại"}
                             </button>
                         </form>
                         <div className="forgot-password-footer">
-                            <p>Remember your password? <a href="/login">Log in</a></p>
+                            <p>Đã nhớ mật khẩu? <a href="/login">Đăng nhập</a></p>
                         </div>
                     </>
                 )}

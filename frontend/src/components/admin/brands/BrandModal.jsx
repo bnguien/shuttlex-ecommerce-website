@@ -31,7 +31,7 @@ function BrandModal({ open, brand, onClose, onSave }) {
         <div className="modal-dialog modal-lg" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{brand ? "Edit Brand" : "New Brand"}</h5>
+              <h5 className="modal-title">{brand ? "Sửa thương hiệu" : "Thêm thương hiệu"}</h5>
               <button type="button" className="btn-close" onClick={onClose} />
             </div>
             <div className="modal-body">

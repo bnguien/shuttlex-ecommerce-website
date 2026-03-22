@@ -18,7 +18,7 @@ const normalizeUserForForm = (user) => {
   if (!user) return emptyUser
   return {
     ...user,
-    password: "" // Never show password
+    password: "" // Không bao giờ hiển thị mật khẩu
   }
 }
 
@@ -43,7 +43,7 @@ function UserModal({ open, user, onClose, onSave }) {
         <div className="modal-dialog modal-lg" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{user?.id ? "Edit User" : "New User"}</h5>
+              <h5 className="modal-title">{user?.id ? "Chỉnh sửa người dùng" : "Người dùng mới"}</h5>
               <button type="button" className="btn-close" onClick={onClose} />
             </div>
             <div className="modal-body">

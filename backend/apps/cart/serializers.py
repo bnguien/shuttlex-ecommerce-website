@@ -40,6 +40,8 @@ class CartItemSerializer(serializers.ModelSerializer):
         return None
 
     def get_color(self, obj):
+        if not obj.variant:
+            return None
         return (obj.variant.color or "").strip() or None
 
     def get_image(self, obj):

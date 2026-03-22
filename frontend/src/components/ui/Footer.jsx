@@ -7,17 +7,17 @@ const Footer = () => {
         }}>
             <div className="container text-center">
                 <div className="mb-2">
-                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>Home</a>
-                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>About</a>
-                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>Shop</a>
-                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>Contact</a>
+                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>Trang chủ</a>
+                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>Giới thiệu</a>
+                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>Mua sắm</a>
+                    <a href="#" className="text-decoration-none mx-2" style={{ color: "#b6d985", fontWeight: "bold" }}>Liên hệ</a>
                 </div>
 
                 <div className="mb-2">
                     <a href="#" className="mx-2" style={{ color: "#b6d985" }}><FaFacebook /></a>
                     <a href="#" className="mx-2" style={{ color: "#b6d985" }}><FaInstagram /></a>
                 </div>
-                <p className="mb-0" style={{ fontWeight: "bold" }}>&copy; 2026 ShuttleX. All rights reserved.</p>
+                <p className="mb-0" style={{ fontWeight: "bold" }}>&copy; 2026 ShuttleX. Bảo lưu mọi quyền.</p>
             </div>
         </footer>
     )

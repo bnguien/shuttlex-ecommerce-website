@@ -151,7 +151,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
     <form onSubmit={handleSubmit}>
       <div className="row g-3">
         <div className="col-md-6">
-          <label className="form-label">Name</label>
+          <label className="form-label">Tên</label>
           <input
             className="form-control"
             name="name"
@@ -160,7 +160,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
           />
         </div>
         <div className="col-md-6">
-          <label className="form-label">Slug</label>
+          <label className="form-label">Đường dẫn (slug)</label>
           <input
             className="form-control"
             name="slug"
@@ -169,7 +169,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
           />
         </div>
         <div className="col-md-6">
-            <label className="form-label">Image</label>
+            <label className="form-label">Hình ảnh</label>
             <input
               className="form-control"
               name="image"
@@ -179,14 +179,14 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
             />
         </div>
         <div className="col-md-6">
-          <label className="form-label">Category</label>
+          <label className="form-label">Danh mục</label>
           <select
             className="form-select"
             name="category_id"
             value={values.category_id || values.category?.id || ""}
             onChange={handleChange}
           >
-            <option value="">Select category</option>
+            <option value="">Chọn danh mục</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -195,14 +195,14 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
           </select>
         </div>
         <div className="col-md-6">
-          <label className="form-label">Brand</label>
+          <label className="form-label">Thương hiệu</label>
           <select
             className="form-select"
             name="brand_id"
             value={values.brand_id || values.brand?.id || ""}
             onChange={handleChange}
           >
-            <option value="">Select brand</option>
+            <option value="">Chọn thương hiệu</option>
             {brands.map((brand) => (
               <option key={brand.id} value={brand.id}>
                 {brand.name}
@@ -211,7 +211,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
           </select>
         </div>
         <div className="col-md-6">
-          <label className="form-label">Base Price</label>
+          <label className="form-label">Giá gốc</label>
           <input
             className="form-control"
             name="base_price"
@@ -219,10 +219,10 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
             value={values.base_price || ""}
             onChange={handleChange}
           />
-          <small className="text-muted">Used when product has no variants</small>
+          <small className="text-muted">Dùng khi sản phẩm không có biến thể</small>
         </div>
         <div className="col-md-6">
-          <label className="form-label">Base Stock</label>
+          <label className="form-label">Tồn kho gốc</label>
           <input
             className="form-control"
             name="base_stock"
@@ -230,10 +230,10 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
             value={values.base_stock || ""}
             onChange={handleChange}
           />
-          <small className="text-muted">Used when product has no variants. Total stock = sum of variants if variants exist.</small>
+          <small className="text-muted">Dùng khi sản phẩm không có biến thể. Tổng tồn kho = tổng tồn kho các biến thể nếu có.</small>
         </div>
         <div className="col-12">
-          <label className="form-label">Description</label>
+          <label className="form-label">Mô tả</label>
           <textarea
             className="form-control"
             name="description"
@@ -251,7 +251,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
               checked={Boolean(values.is_active)}
               onChange={handleChange}
             />
-            <label className="form-check-label">Active</label>
+            <label className="form-check-label">Đang bán</label>
           </div>
         </div>
       </div>
@@ -260,32 +260,32 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
         <div className="mt-4">
           <div className="d-flex align-items-center justify-content-between mb-2">
             <div>
-              <h6 className="fw-semibold mb-0">Product Variants</h6>
+              <h6 className="fw-semibold mb-0">Biến thể sản phẩm</h6>
               {variants.length > 0 && (
                 <small className="text-muted">
-                  Total Stock: {variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)}
+                  Tổng tồn kho: {variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)}
                 </small>
               )}
             </div>
             <button type="button" className="btn btn-outline-primary btn-sm" onClick={addVariant}>
-              Add Variant
+              Thêm biến thể
             </button>
           </div>
           {variants.length === 0 ? (
-            <div className="text-muted">No variants added.</div>
+            <div className="text-muted">Chưa thêm biến thể.</div>
           ) : (
             <div className="table-responsive">
               <table className="table align-middle">
                 <thead>
                   <tr>
-                    <th>Size</th>
-                    <th>Color</th>
+                    <th>Kích cỡ</th>
+                    <th>Màu</th>
                     <th>SKU</th>
-                    <th>Price</th>
-                    <th>Sale Price</th>
-                    <th>Stock</th>
-                    <th>Active</th>
-                    <th className="text-end">Actions</th>
+                    <th>Giá</th>
+                    <th>Giá sale</th>
+                    <th>Tồn kho</th>
+                    <th>Hoạt động</th>
+                    <th className="text-end">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -297,7 +297,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
                           value={variant.size_id || variant.size?.id || ""}
                           onChange={(event) => handleVariantChange(index, "size_id", event.target.value)}
                         >
-                          <option value="">Select size</option>
+                          <option value="">Chọn kích cỡ</option>
                           {sizes.map((size) => (
                             <option key={size.id} value={size.id}>
                               {size.name}
@@ -360,7 +360,7 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
                           className="btn btn-outline-danger btn-sm"
                           onClick={() => removeVariant(index)}
                         >
-                          Remove
+                          Xóa
                         </button>
                       </td>
                     </tr>
@@ -376,17 +376,17 @@ function ProductForm({ values, brands = [], categories = [], sizes = [], onChang
         <div className="mt-4">
           <div className="alert alert-info mb-0">
             <i className="bi bi-info-circle me-2"></i>
-            To manage variants for this product, expand the product row in the products table.
+            Để quản lý biến thể của sản phẩm này, hãy mở rộng dòng sản phẩm trong bảng sản phẩm.
           </div>
         </div>
       )}
 
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>
-          Cancel
+          Hủy
         </button>
         <button type="submit" className="btn btn-primary">
-          Save
+          Lưu
         </button>
       </div>
     </form>
