@@ -1,0 +1,120 @@
+.admin-orders-page {
+  background: #edf9ed;
+  min-height: 100%;
+}
+
+.admin-orders-title {
+  color: #073a1b;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+}
+
+.soft-card {
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(13, 88, 40, 0.12);
+  border-radius: 20px;
+}
+
+.admin-orders-search {
+  border: none;
+  background: rgba(190, 234, 190, 0.65);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.admin-orders-search:focus {
+  box-shadow: none;
+  background: rgba(180, 229, 180, 0.85);
+}
+
+.stat-card {
+  padding: 16px;
+}
+
+.stat-total {
+  background: rgba(246, 248, 246, 0.92);
+}
+
+.stat-pending {
+  background: rgba(251, 247, 221, 0.95);
+}
+
+.stat-transit {
+  background: rgba(195, 240, 247, 0.95);
+}
+
+.stat-delivered {
+  background: rgba(211, 239, 214, 0.95);
+}
+
+.stat-card h2 {
+  margin: 8px 0 0;
+  font-weight: 800;
+  color: #064e2b;
+}
+
+.recent-orders-card {
+  background: rgba(244, 250, 244, 0.92);
+}
+
+.admin-orders-table th,
+.admin-orders-table td {
+  background: rgba(255, 255, 255, 0.32);
+  border-color: rgba(6, 78, 43, 0.08);
+}
+
+.admin-order-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 210px;
+}
+
+.admin-order-actions .status-select {
+  min-width: 138px;
+  max-width: 150px;
+  border: none;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 6px 28px;
+  box-shadow: none;
+  text-align: center;
+  text-align-last: center;
+  -moz-text-align-last: center;
+}
+
+.admin-order-actions .status-select:focus {
+  box-shadow: 0 0 0 2px rgba(6, 78, 43, 0.12);
+}
+
+.admin-order-actions .status-select.status-pending {
+  background: #fef3c7;
+  color: #f59e0b;
+}
+
+.admin-order-actions .status-select.status-confirmed {
+  background: #e5e7eb;
+  color: #2f8b4b;
+}
+
+.admin-order-actions .status-select.status-packing {
+  background: #e0ecff;
+  color: #2563eb;
+}
+
+.admin-order-actions .status-select.status-shipping {
+  background: #d9f4f4;
+  color: #0f9499;
+}
+
+.admin-order-actions .status-select.status-delivered {
+  background: #e5e7eb;
+  color: #2f8b4b;
+}
+
+.admin-order-actions .status-select.status-cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}

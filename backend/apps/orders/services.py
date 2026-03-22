@@ -1,8 +1,18 @@
+import logging
+import os
+import time
+import uuid
 from decimal import Decimal
+from contextlib import contextmanager
 from typing import Optional
 
 from django.db import transaction
 from django.utils import timezone
+
+try:
+     import redis  # type: ignore
+except Exception:
+     redis = None
 
 from apps.cart.models import CartItem
 from apps.catalog.models import Product, ProductVariant
@@ -17,6 +27,93 @@ from apps.orders.models import (
      ShippingMethod
 )
 from apps.promotions.models import Voucher
+
+logger = logging.getLogger(__name__)
+
+CHECKOUT_LOCK_TIMEOUT_MS = int(os.getenv("CHECKOUT_LOCK_TIMEOUT_MS", "15000"))
+CHECKOUT_LOCK_BLOCKING_SEC = float(os.getenv("CHECKOUT_LOCK_BLOCKING_SEC", "3"))
+
+
+def _get_redis_client():
+     if redis is None:
+          return None
+
+     redis_url = (
+          os.getenv("REDIS_LOCK_URL")
+          or os.getenv("CELERY_BROKER_URL")
+          or "redis://127.0.0.1:6379/0"
+     )
+     try:
+          return redis.Redis.from_url(redis_url, decode_responses=True)
+     except Exception:
+          logger.warning("Không khởi tạo được Redis client để lock checkout.", exc_info=True)
+          return None
+
+
+def _build_checkout_lock_keys(cart_items) -> list[str]:
+     lock_keys = set()
+     for ci in cart_items:
+          if ci.variant_id:
+               lock_keys.add(f"checkout:variant:{ci.variant_id}")
+          elif ci.product_id:
+               lock_keys.add(f"checkout:product:{ci.product_id}")
+     return sorted(lock_keys)
+
+
+@contextmanager
+def _acquire_checkout_locks(cart_items):
+     keys = _build_checkout_lock_keys(cart_items)
+     if not keys:
+          yield
+          return
+
+     client = _get_redis_client()
+     if not client:
+          yield
+          return
+
+     token = uuid.uuid4().hex
+     acquired_keys = []
+     deadline = time.monotonic() + CHECKOUT_LOCK_BLOCKING_SEC
+
+     try:
+          for key in keys:
+               locked = False
+               while time.monotonic() < deadline:
+                    try:
+                         locked = bool(client.set(key, token, nx=True, px=CHECKOUT_LOCK_TIMEOUT_MS))
+                    except Exception:
+                         logger.warning("Redis lock checkout bị lỗi, fallback DB lock.", exc_info=True)
+                         locked = True
+                         break
+
+                    if locked:
+                         break
+
+                    time.sleep(0.05)
+
+               if not locked:
+                    raise ValueError("Hệ thống đang xử lý sản phẩm này. Vui lòng thử lại sau vài giây.")
+
+               acquired_keys.append(key)
+
+          yield
+     finally:
+          for key in acquired_keys:
+               try:
+                    client.eval(
+                         """
+                         if redis.call('get', KEYS[1]) == ARGV[1] then
+                              return redis.call('del', KEYS[1])
+                         end
+                         return 0
+                         """,
+                         1,
+                         key,
+                         token,
+                    )
+               except Exception:
+                    logger.warning("Không giải phóng được Redis lock key=%s", key, exc_info=True)
 
 def validate_coordinates(latitude: Optional[float], longitude: Optional[float]) -> None:
      '''
@@ -155,150 +252,151 @@ def create_order(
      shipping_voucher_code: Optional[str]=None,  
      note: str = "",
 ) -> Order:
-     cart_items = (
+     cart_items = list(
           CartItem.objects
           .select_related("product", "variant")
           .filter(cart=cart)
      )
 
-     if not cart_items.exists():
+     if not cart_items:
           raise ValueError("Giỏ hàng trống.")
 
-     variant_ids = [ci.variant_id for ci in cart_items if ci.variant_id]
-     product_ids = [ci.product_id for ci in cart_items if ci.product_id]
+     with _acquire_checkout_locks(cart_items):
+          variant_ids = [ci.variant_id for ci in cart_items if ci.variant_id]
+          product_ids = [ci.product_id for ci in cart_items if ci.product_id]
 
-     variants = (ProductVariant.objects.select_for_update()
-                    .filter(id__in= variant_ids))
-     products = (Product.objects.select_for_update()
-                    .filter(id__in= product_ids))
+          variants = (ProductVariant.objects.select_for_update()
+                         .filter(id__in= variant_ids))
+          products = (Product.objects.select_for_update()
+                         .filter(id__in= product_ids))
 
-     variant_map = {v.id: v for v in variants}
-     product_map = {p.id: p for p in products}
+          variant_map = {v.id: v for v in variants}
+          product_map = {p.id: p for p in products}
 
-     subtotal = Decimal("0")
-     order_items_data = []
+          subtotal = Decimal("0")
+          order_items_data = []
 
-     for ci in cart_items:
-          if ci.variant_id:
-               variant = variant_map[ci.variant_id]
-               unit_price = variant.get_effective_price()
-          else:
-               product = product_map[ci.product_id]
-               unit_price = product.get_effective_price()
+          for ci in cart_items:
+               if ci.variant_id:
+                    variant = variant_map[ci.variant_id]
+                    unit_price = variant.get_effective_price()
+               else:
+                    product = product_map[ci.product_id]
+                    unit_price = product.get_effective_price()
+               
+               line_total = unit_price * ci.quantity
+               subtotal += line_total
+
+               order_items_data.append({
+                    "cart_item": ci, 
+                    "unit_price": unit_price,
+                    "line_total": line_total,
+               })
+
+          validate_coordinates(address.latitude, address.longitude)
+          region = define_region(address)
+
+          shipping_method = ShippingMethod.get_method_by_code(shipping_method_code)
+          if not shipping_method:
+               raise ValueError("Không tìm thấy phương thức vận chuyển hoặc đã bị vô hiệu hóa.")
+
+          shipping_fee = calculate_shipping_fee(region, shipping_method, subtotal)
+          product_voucher = None
+          shipping_voucher = None
+          product_discount_amount = Decimal("0")
+          shipping_discount_amount = Decimal("0")
+
+          if product_voucher_code:
+               product_voucher = Voucher.objects.filter(
+                    code=product_voucher_code,
+                    voucher_type=Voucher.VoucherType.PRODUCT,
+               ).first()
+               if product_voucher:
+                    product_discount_amount = product_voucher.calculate_discount(subtotal)
           
-          line_total = unit_price * ci.quantity
-          subtotal += line_total
+          if shipping_voucher_code:
+               shipping_voucher = Voucher.objects.filter(
+                    code=shipping_voucher_code,
+                    voucher_type=Voucher.VoucherType.SHIPPING,
+               ).first()
+               if shipping_voucher:
+                    shipping_discount_amount = shipping_voucher.calculate_discount(
+                         order_subtotal=subtotal, shipping_fee=shipping_fee
+                    )
+          discount_amount = product_discount_amount + shipping_discount_amount
 
-          order_items_data.append({
-               "cart_item": ci, 
-               "unit_price": unit_price,
-               "line_total": line_total,
-          })
-
-     validate_coordinates(address.latitude, address.longitude)
-     region = define_region(address)
-
-     shipping_method = ShippingMethod.get_method_by_code(shipping_method_code)
-     if not shipping_method:
-          raise ValueError("Không tìm thấy phương thức vận chuyển hoặc đã bị vô hiệu hóa.")
-
-     shipping_fee = calculate_shipping_fee(region, shipping_method, subtotal)
-     product_voucher = None
-     shipping_voucher = None
-     product_discount_amount = Decimal("0")
-     shipping_discount_amount = Decimal("0")
-
-     if product_voucher_code:
-          product_voucher = Voucher.objects.filter(
-               code=product_voucher_code,
-               voucher_type=Voucher.VoucherType.PRODUCT,
-          ).first()
-          if product_voucher:
-               product_discount_amount = product_voucher.calculate_discount(subtotal)
-     
-     if shipping_voucher_code:
-          shipping_voucher = Voucher.objects.filter(
-               code=shipping_voucher_code,
-               voucher_type=Voucher.VoucherType.SHIPPING,
-          ).first()
-          if shipping_voucher:
-               shipping_discount_amount = shipping_voucher.calculate_discount(
-                    order_subtotal=subtotal, shipping_fee=shipping_fee
-               )
-     discount_amount = product_discount_amount + shipping_discount_amount
-
-     total = subtotal + shipping_fee - discount_amount
-     if total < 0:
-          total = Decimal("0")
-     is_freeship = shipping_fee == 0
-     
-     from django.utils.crypto import get_random_string
-     order_code = f"SO-{get_random_string(10).upper()}"
-     reservation_expires_at = (
-          timezone.now() + timezone.timedelta(minutes=30) 
-          if payment_method == PaymentMethod.BANK_TRANSFER 
-          else None
-     )
-     order = Order.objects.create(
-          user=user,
-          code=order_code,
-          status=OrderStatus.PENDING,
-          payment_status=PaymentStatus.PENDING,
-          shipping_address=address,
-          subtotal=subtotal,
-          shipping_method=shipping_method,
-          shipping_fee=shipping_fee,
-          is_freeship=is_freeship,
-          product_voucher=product_voucher,
-          shipping_voucher=shipping_voucher,
-          product_discount_amount=product_discount_amount,
-          shipping_discount_amount=shipping_discount_amount,
-          discount_amount=discount_amount,
-          total=total,
-          payment_method=payment_method,
-          reservation_expires_at=reservation_expires_at,
-          note=note,
-     )
-
-     for item_data in order_items_data:
-          ci = item_data["cart_item"]
-          unit_price = item_data["unit_price"]
-          line_total = item_data["line_total"]
-
-          if ci.variant_id:
-               variant = variant_map[ci.variant_id]
-               if variant.stock < ci.quantity:
-                    raise ValueError("Biến thể sản phẩm không đủ tồn kho.")
-               variant.stock -= ci.quantity
-               variant.save()
-               product = variant.product
-          else:
-               product = product_map[ci.product_id]
-               if product.base_stock < ci.quantity:
-                    raise ValueError("Sản phẩm không đủ tồn kho.")
-               product.base_stock -= ci.quantity
-               product.save()
+          total = subtotal + shipping_fee - discount_amount
+          if total < 0:
+               total = Decimal("0")
+          is_freeship = shipping_fee == 0
           
-          OrderItem.objects.create(
-               order=order,
-               product=product,
-               variant=variant_map.get(ci.variant_id),
-               quantity=ci.quantity,
-               price_at_purchase=unit_price,
-               product_name_snapshot=product.name,
-               variant_display_snapshot=str(variant) if ci.variant_id else "",
-               line_total=line_total,
+          from django.utils.crypto import get_random_string
+          order_code = f"SO-{get_random_string(10).upper()}"
+          reservation_expires_at = (
+               timezone.now() + timezone.timedelta(minutes=30) 
+               if payment_method == PaymentMethod.BANK_TRANSFER 
+               else None
+          )
+          order = Order.objects.create(
+               user=user,
+               code=order_code,
+               status=OrderStatus.PENDING,
+               payment_status=PaymentStatus.PENDING,
+               shipping_address=address,
+               subtotal=subtotal,
+               shipping_method=shipping_method,
+               shipping_fee=shipping_fee,
+               is_freeship=is_freeship,
+               product_voucher=product_voucher,
+               shipping_voucher=shipping_voucher,
+               product_discount_amount=product_discount_amount,
+               shipping_discount_amount=shipping_discount_amount,
+               discount_amount=discount_amount,
+               total=total,
+               payment_method=payment_method,
+               reservation_expires_at=reservation_expires_at,
+               note=note,
           )
 
-     OrderHistory.objects.create(
-          order=order,
-          from_status="",
-          to_status=OrderStatus.PENDING,
-          from_payment_status="",
-          to_payment_status=PaymentStatus.PENDING,
-          note="Đơn hàng được tạo.",
-     )
-     if payment_method != PaymentMethod.BANK_TRANSFER:
-          cart.items.all().delete()
-     return order
+          for item_data in order_items_data:
+               ci = item_data["cart_item"]
+               unit_price = item_data["unit_price"]
+               line_total = item_data["line_total"]
+
+               if ci.variant_id:
+                    variant = variant_map[ci.variant_id]
+                    if variant.stock < ci.quantity:
+                         raise ValueError("Biến thể sản phẩm không đủ tồn kho.")
+                    variant.stock -= ci.quantity
+                    variant.save()
+                    product = variant.product
+               else:
+                    product = product_map[ci.product_id]
+                    if product.base_stock < ci.quantity:
+                         raise ValueError("Sản phẩm không đủ tồn kho.")
+                    product.base_stock -= ci.quantity
+                    product.save()
+               
+               OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    variant=variant_map.get(ci.variant_id),
+                    quantity=ci.quantity,
+                    price_at_purchase=unit_price,
+                    product_name_snapshot=product.name,
+                    variant_display_snapshot=str(variant) if ci.variant_id else "",
+                    line_total=line_total,
+               )
+
+          OrderHistory.objects.create(
+               order=order,
+               from_status="",
+               to_status=OrderStatus.PENDING,
+               from_payment_status="",
+               to_payment_status=PaymentStatus.PENDING,
+               note="Đơn hàng được tạo.",
+          )
+          if payment_method != PaymentMethod.BANK_TRANSFER:
+               cart.items.all().delete()
+          return order
 

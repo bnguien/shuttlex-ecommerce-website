@@ -53,6 +53,35 @@ class OrderSerializer(serializers.ModelSerializer):
           ]
           read_only_fields = fields
 
+
+class AdminOrderSerializer(serializers.ModelSerializer):
+     customer_name = serializers.SerializerMethodField()
+     customer_email = serializers.EmailField(source="user.email", read_only=True)
+     item_count = serializers.SerializerMethodField()
+
+     class Meta:
+          model = Order
+          fields = [
+               "id",
+               "code",
+               "status",
+               "payment_status",
+               "total",
+               "created_at",
+               "payment_method",
+               "customer_name",
+               "customer_email",
+               "item_count",
+          ]
+          read_only_fields = fields
+
+     def get_customer_name(self, obj):
+          full_name = f"{obj.user.first_name} {obj.user.last_name}".strip()
+          return full_name or obj.user.username
+
+     def get_item_count(self, obj):
+          return obj.items.count()
+
 class CheckoutSerializer(serializers.Serializer):
      address_id = serializers.IntegerField()
      shipping_method_code = serializers.CharField(

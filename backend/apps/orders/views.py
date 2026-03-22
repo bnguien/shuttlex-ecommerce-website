@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Order, OrderAddress, ShippingMethod
-from .serializers import CheckoutSerializer, OrderAddressSerializer, OrderSerializer
+from .models import Order, OrderAddress, ShippingMethod, OrderStatus
+from .serializers import CheckoutSerializer, OrderAddressSerializer, OrderSerializer, AdminOrderSerializer
 
 
 @api_view(["GET"])
@@ -83,3 +83,46 @@ def order_detail(request, code):
 	if not order:
 		return Response({"detail": "Không tìm thấy đơn hàng."}, status=status.HTTP_404_NOT_FOUND)
 	return Response(OrderSerializer(order).data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def admin_orders(request):
+	if not (request.user.is_staff or request.user.is_superuser):
+		return Response({"detail": "Bạn không có quyền truy cập."}, status=status.HTTP_403_FORBIDDEN)
+
+	orders = (
+		Order.objects.select_related("user")
+		.prefetch_related("items")
+		.order_by("-created_at")
+	)
+	return Response(AdminOrderSerializer(orders, many=True).data)
+
+
+@api_view(["PATCH", "DELETE"])
+@permission_classes([IsAuthenticated])
+def admin_order_detail(request, order_id):
+	if not (request.user.is_staff or request.user.is_superuser):
+		return Response({"detail": "Bạn không có quyền truy cập."}, status=status.HTTP_403_FORBIDDEN)
+
+	order = Order.objects.filter(id=order_id).first()
+	if not order:
+		return Response({"detail": "Không tìm thấy đơn hàng."}, status=status.HTTP_404_NOT_FOUND)
+
+	if request.method == "PATCH":
+		new_status = request.data.get("status")
+		valid_statuses = set(OrderStatus.values)
+		if new_status not in valid_statuses:
+			return Response(
+				{"detail": "Trạng thái đơn hàng không hợp lệ."},
+				status=status.HTTP_400_BAD_REQUEST,
+			)
+
+		if order.status != new_status:
+			order.status = new_status
+			order.save()
+
+		return Response(AdminOrderSerializer(order).data)
+
+	order.delete()
+	return Response(status=status.HTTP_204_NO_CONTENT)

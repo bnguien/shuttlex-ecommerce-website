@@ -3,6 +3,16 @@
   --admin-green-dark: #037a33;
   --admin-orange: #f28c28;
   --admin-orange-dark: #e07a16;
+  --admin-page-bg: #edf9ed;
+}
+
+.admin-layout .flex-grow-1 {
+  background-color: var(--admin-page-bg);
+}
+
+.admin-layout .container-fluid.p-4.bg-light.h-100,
+.admin-layout .main-content.p-4.bg-light.h-100 {
+  background-color: var(--admin-page-bg) !important;
 }
 
 .admin-layout .btn-primary {
