@@ -14,6 +14,14 @@ from apps.catalog.models import Product, ProductVariant
 
 CART_ITEM_LIMIT = 50
 
+
+def _is_cart_accessible(cart, user):
+    if not cart:
+        return False
+    if user and user.is_authenticated:
+        return cart.user_id in (None, user.id)
+    return cart.user_id is None
+
 def get_or_create_cart(cart_code, user=None):
     ''' Lấy hoặc tạo Cart theo cart_code. 
     Guest: user=None.
@@ -34,23 +42,30 @@ def get_or_create_cart(cart_code, user=None):
 @permission_classes([AllowAny])
 def get_cart_stat(request):
     """GET ?cart_code=xxx → { num_of_items, cart_code }."""
+    user = request.user if request.user.is_authenticated else None
     cart_code = request.GET.get("cart_code")
-    if not cart_code:
-        return Response({
-            "num_of_items": 0,
-            "cart_code": None
-        })
-    cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
+    cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first() if cart_code else None
+
+    if user and not cart:
+        cart = Cart.objects.filter(user=user, is_active=True).first()
+
+    if cart and not _is_cart_accessible(cart, request.user):
+        cart = Cart.objects.filter(user=user, is_active=True).first() if user else None
+
+    if cart and user and cart.user_id is None:
+        cart.user = user
+        cart.save(update_fields=["user", "updated_at"])
 
     if not cart:
         return Response({
             "num_of_items": 0,
-            "cart_code": cart_code
+            "cart_code": None
         })
+
     num = cart.items.aggregate(total=Sum("quantity"))['total'] or 0
     return Response({
         "num_of_items": num,
-        "cart_code": cart_code
+        "cart_code": cart.cart_code
     })
 
 @api_view(['GET'])
@@ -61,7 +76,15 @@ def get_cart_items(request):
     if not cart_code:
         return Response({"items": []})
     
-    cart, _ = get_or_create_cart(cart_code, getattr(request, "user", None) if request.user.is_authenticated else None)
+    user = request.user if request.user.is_authenticated else None
+    cart, _ = get_or_create_cart(cart_code, user)
+    if not _is_cart_accessible(cart, request.user):
+        return Response({"items": []})
+
+    if user and cart.user_id is None:
+        cart.user = user
+        cart.save(update_fields=["user", "updated_at"])
+
     items = cart.items.select_related("product", "variant", "variant__size").order_by("id")
     return Response({
         "items": CartItemSerializer(items, many=True).data
@@ -172,6 +195,13 @@ def product_in_cart(request):
     cart = Cart.objects.filter(cart_code=cart_code, is_active=True).first()
     if not cart:
         return Response({"product_in_cart": False})
+    if not _is_cart_accessible(cart, request.user):
+        return Response({"product_in_cart": False})
+
+    if request.user.is_authenticated and cart.user_id is None:
+        cart.user = request.user
+        cart.save(update_fields=["user", "updated_at"])
+
     q = cart.items.filter(product_id=product_id)
     if variant_id:
         q = q.filter(variant_id=variant_id)
@@ -205,6 +235,15 @@ def update_item_quantity(request, product_id=None):
             {"detail": "Không tìm thấy giỏ hàng."},
             status = status.HTTP_404_NOT_FOUND
         )
+    if not _is_cart_accessible(cart, request.user):
+        return Response(
+            {"detail": "Bạn không có quyền truy cập giỏ hàng này."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    if request.user.is_authenticated and cart.user_id is None:
+        cart.user = request.user
+        cart.save(update_fields=["user", "updated_at"])
 
     variant = None
     if variant_id:
@@ -282,6 +321,15 @@ def remove_item(request, product_id=None):
             {"detail": "Cart not found"},
             status = status.HTTP_404_NOT_FOUND
         )
+    if not _is_cart_accessible(cart, request.user):
+        return Response(
+            {"detail": "Bạn không có quyền truy cập giỏ hàng này."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    if request.user.is_authenticated and cart.user_id is None:
+        cart.user = request.user
+        cart.save(update_fields=["user", "updated_at"])
     
     variant = None
     if variant_id:

@@ -84,6 +84,7 @@ function AuthPage({ initialMode = "login" }) {
       setEmailOrUsername("");
       setLoginPassword("");
       setIsAuthenticated(true);
+      window.dispatchEvent(new Event("cart:refresh"));
 
       await get_username();
 

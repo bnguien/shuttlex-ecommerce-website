@@ -80,8 +80,12 @@ function AuthProvider({ children }) {
         } finally {
             localStorage.removeItem("access")
             localStorage.removeItem("refresh")
+            window.dispatchEvent(new Event("cart:reset"))
             setIsAuthenticated(false)
             setUsername("")
+            setFirstName("")
+            setLastName("")
+            setEmail("")
             setIsStaff(false)
         }
     }

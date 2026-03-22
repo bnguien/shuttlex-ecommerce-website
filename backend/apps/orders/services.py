@@ -298,6 +298,7 @@ def create_order(
           to_payment_status=PaymentStatus.PENDING,
           note="Đơn hàng được tạo.",
      )
-     cart.items.all().delete()
+     if payment_method != PaymentMethod.BANK_TRANSFER:
+          cart.items.all().delete()
      return order
 

@@ -193,12 +193,21 @@ function CheckoutPage({ setNumCartItems }) {
         payment_method: paymentMethod,
       })
 
-      setCartItems([])
-      if (setNumCartItems) setNumCartItems(0)
-
       const code = res.data?.code
-      showToast(`Đặt hàng thành công${code ? ` (${code})` : ""}.`, "success")
-      navigate("/profile")
+      if (code && paymentMethod === "BANK_TRANSFER") {
+        showToast("Đơn hàng đã được tạo, vui lòng quét QR để hoàn tất thanh toán.", "success")
+        navigate(`/payment/qr/${code}`, { state: { order: res.data } })
+      } else if (code) {
+        setCartItems([])
+        if (setNumCartItems) setNumCartItems(0)
+        showToast(`Đặt hàng thành công (${code}).`, "success")
+        navigate(`/orders/${code}`)
+      } else {
+        setCartItems([])
+        if (setNumCartItems) setNumCartItems(0)
+        showToast("Đặt hàng thành công.", "success")
+        navigate("/profile")
+      }
     } catch (err) {
       const msg = err.response?.data?.detail || "Không thể tạo đơn hàng."
       showToast(msg, "error")

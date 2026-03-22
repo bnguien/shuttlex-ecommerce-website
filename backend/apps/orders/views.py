@@ -37,12 +37,12 @@ def shipping_methods(request):
 @permission_classes([IsAuthenticated])
 def order_addresses(request):
 	if request.method == "GET":
-		qs = OrderAddress.objects.all().order_by("-id")
+		qs = OrderAddress.objects.filter(user=request.user).order_by("-id")
 		return Response(OrderAddressSerializer(qs, many=True).data)
 
 	serializer = OrderAddressSerializer(data=request.data)
 	serializer.is_valid(raise_exception=True)
-	address = serializer.save()
+	address = serializer.save(user=request.user)
 	return Response(OrderAddressSerializer(address).data, status=status.HTTP_201_CREATED)
 
 

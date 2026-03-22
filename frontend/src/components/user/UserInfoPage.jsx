@@ -146,12 +146,20 @@ function UserInfoPage() {
                 <hr className="my-3" />
                 <div className="text-center text-muted">
                   <p className="mb-3">Chưa có đơn hàng nào</p>
-                  <button 
-                    className="btn btn-outline-success"
-                    onClick={() => navigate('/products')}
-                  >
-                    Bắt đầu mua sắm
-                  </button>
+                  <div className="d-flex justify-content-center gap-2">
+                    <button 
+                      className="btn btn-outline-success"
+                      onClick={() => navigate('/orders')}
+                    >
+                      Xem lịch sử đơn hàng
+                    </button>
+                    <button 
+                      className="btn btn-success"
+                      onClick={() => navigate('/products')}
+                    >
+                      Bắt đầu mua sắm
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,0 +1,127 @@
+.payment-qr-page {
+  background: #f6f7f6;
+}
+
+.payment-qr-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #0f3f22;
+}
+
+.payment-qr-card,
+.payment-info-card {
+  background: #ffffff;
+  border: 1px solid #e8ece8;
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.payment-qr-subtitle {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1a7f39;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.payment-qr-image-wrap {
+  border-radius: 18px;
+  background: #edf6ef;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.payment-qr-image {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 14px;
+  object-fit: contain;
+}
+
+.payment-qr-timer {
+  margin-top: 16px;
+  border: 1px solid #deebe1;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 8px;
+  padding: 8px 14px;
+  color: #2d3a33;
+}
+
+.payment-qr-timer strong {
+  color: #15803d;
+}
+
+.payment-info-label {
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.payment-info-amount {
+  color: #0f7b2d;
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.payment-info-order {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.payment-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eef1ee;
+  margin-bottom: 4px;
+  gap: 8px;
+}
+
+.payment-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.payment-step-item {
+  background: #ffffff;
+  border: 1px solid #e8ece8;
+  border-radius: 16px;
+  padding: 14px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.payment-step-item span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2f9e44;
+  color: #fff;
+  font-size: 12px;
+  margin-right: 8px;
+}
+
+@media (max-width: 992px) {
+  .payment-qr-title {
+    font-size: 34px;
+  }
+
+  .payment-info-amount {
+    font-size: 30px;
+  }
+
+  .payment-steps {
+    grid-template-columns: 1fr;
+  }
+}

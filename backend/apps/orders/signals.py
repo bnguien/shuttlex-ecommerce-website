@@ -4,7 +4,8 @@ from django.core.mail import send_mail
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
-from apps.orders.models import Order, PaymentStatus, OrderHistory
+from apps.cart.models import Cart
+from apps.orders.models import Order, PaymentMethod, PaymentStatus, OrderHistory
 from apps.notifications.models import Notification
 
 #Tạo OrderHistory, gửi email xác nhận, tạo Notification loại ORDER_STATUS
@@ -63,8 +64,18 @@ def order_post_save(sender, instance: Order, created: bool, **kwargs):
                )
 
      if created and not instance.order_email_sent:
-          subject = f"[ShuttleX] Xác nhận đơn hàng {instance.code}"
-          message = "Cảm ơn bạn đã đặt hàng tại ShuttleX. Chúng tôi đang xử lý đơn hàng của bạn."
+          if instance.payment_method == PaymentMethod.BANK_TRANSFER:
+               subject = f"[ShuttleX] Đơn hàng {instance.code} đang chờ thanh toán"
+               message = (
+                    "Đơn hàng của bạn đã được tạo và đang chờ thanh toán chuyển khoản. "
+                    "Vui lòng hoàn tất thanh toán để chúng tôi bắt đầu xử lý đơn hàng."
+               )
+               notification_message = "Đơn hàng của bạn đang chờ thanh toán chuyển khoản."
+          else:
+               subject = f"[ShuttleX] Xác nhận đơn hàng {instance.code}"
+               message = "Cảm ơn bạn đã đặt hàng tại ShuttleX. Chúng tôi đang xử lý đơn hàng của bạn."
+               notification_message = "Đơn hàng của bạn đang chờ xử lý."
+
           _send_async_email(subject, message, [instance.user.email])
           instance.order_email_sent = True
           instance.save(update_fields=["order_email_sent"])
@@ -72,7 +83,7 @@ def order_post_save(sender, instance: Order, created: bool, **kwargs):
           Notification.objects.create(
                user=instance.user,
                title=f"Đơn hàng {instance.code} đã được tạo",
-               message="Đơn hàng của bạn đang chờ xử lý.",
+               message=notification_message,
                notification_type=Notification.NotificationType.ORDER_STATUS,
                link=f"/orders/{instance.id}",
           )
@@ -95,3 +106,5 @@ def order_post_save(sender, instance: Order, created: bool, **kwargs):
                notification_type=Notification.NotificationType.ORDER_STATUS,
                link=f"/orders/{instance.id}",
           )
+
+          Cart.objects.filter(user=instance.user, is_active=True).delete()
