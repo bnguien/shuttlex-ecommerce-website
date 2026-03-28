@@ -1,7 +1,6 @@
 import { NavLink, useNavigate, Link, useLocation } from "react-router-dom"
 import { useContext, useEffect, useState } from "react"
-import { FaChevronDown } from "react-icons/fa6"
-import { FaRightFromBracket } from "react-icons/fa6"
+import { FaChevronDown, FaUser, FaRightFromBracket } from "react-icons/fa6"
 import { AuthContext } from "../context/AuthContext.jsx"
 import api from "../../api"
 import styles from "./NavBarLink.module.css"
@@ -145,24 +144,16 @@ const NavBarLink = () => {
                                     isActive ? "nav-link active fw-semibold" : "nav-link fw-semibold"
                                 }
                             >
-                                Đăng nhập
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink
-                                to="/register"
-                                className={({ isActive }) =>
-                                    isActive ? "nav-link active fw-semibold" : "nav-link fw-semibold"
-                                }
-                            >
-                                Đăng ký
+                                <FaUser />
                             </NavLink>
                         </li>
                     </>
                 )}
                 {isAuthenticated && (
                     <>
-                        <li className="nav-item">
+                        <li
+                            className={`nav-item ${styles.accountMenu}`}
+                        >
                             <NavLink
                                 to="/profile"
                                 className={({ isActive }) =>
@@ -172,17 +163,23 @@ const NavBarLink = () => {
                             >
                                 Xin chào, {username}
                             </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <button
-                                onClick={handleLogout}
-                                className="btn btn-outline-light rounded-pill d-flex align-items-center justify-content-center"
-                                style={{ width: '40px', height: '40px' }}
-                                title="Đăng xuất"
-                                aria-label="Đăng xuất"
-                            >
-                                <FaRightFromBracket />
-                            </button>
+                            <div className={styles.accountDropdown}>
+                                <Link
+                                    to="/profile"
+                                    className={styles.accountItem}
+                                >
+                                    <FaUser />
+                                    <span>Profile</span>
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className={styles.accountItemButton}
+                                    type="button"
+                                >
+                                    <FaRightFromBracket />
+                                    <span>Logout</span>
+                                </button>
+                            </div>
                         </li>
                     </>
                 )}

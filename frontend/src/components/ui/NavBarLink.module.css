@@ -65,3 +65,61 @@
     color: #777777;
     font-size: 0.95rem;
 }
+
+.accountMenu {
+    position: relative;
+}
+
+.accountMenu::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 10px;
+}
+
+.accountDropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    min-width: 170px;
+    display: none;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 14px 35px rgba(20, 20, 20, 0.14);
+    padding: 10px;
+    z-index: 1300;
+}
+
+.accountMenu:hover .accountDropdown,
+.accountMenu:focus-within .accountDropdown {
+    display: flex;
+}
+
+.accountItem,
+.accountItemButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    background: transparent;
+    color: #2d2d2d;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 8px 10px;
+    text-align: left;
+    width: 100%;
+}
+
+.accountItem:hover,
+.accountItemButton:hover {
+    background: rgba(255, 77, 42, 0.12);
+    color: #ff4d2a;
+}
+
+.accountItemButton {
+    cursor: pointer;
+}
