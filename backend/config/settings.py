@@ -233,5 +233,9 @@ CELERY_BEAT_SCHEDULE = {
     'cancel-expired-orders-every-10-min': {
         'task': 'apps.orders.tasks.run_cancel_expired_orders',
         'schedule': crontab(minute='*/10'),
-    }
+    },
+    'sync-flash-sale-every-minute': {
+        'task': 'apps.promotions.tasks.run_flash_sale_scheduler',
+        'schedule': crontab(minute='*'),
+    },
 }

@@ -4,13 +4,13 @@ import { BASE_URL } from '../../api'
 import { formatCurrencyVND } from '../../utils/format'
 function HomeCard({ product }) {
     const renderPrice = () => {
-        const { price_min, price_max, base_price } = product;
+        const { price_min, price_max, price, base_price } = product;
 
-        if (price_min && price_max && price_min !== price_max) {
+        if (price_min != null && price_max != null && String(price_min) !== String(price_max)) {
             return `${formatCurrencyVND(price_min)} - ${formatCurrencyVND(price_max)}`;
         }
 
-        return formatCurrencyVND(price_min || base_price);
+        return formatCurrencyVND(price ?? price_min ?? base_price);
     };
 
     return (

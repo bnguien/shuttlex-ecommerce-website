@@ -1,14 +1,19 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useState } from 'react'
-import { FiBox, FiGrid, FiHome, FiShoppingBag, FiTag, FiUsers, FiChevronDown, FiLayers } from 'react-icons/fi'
+import { FiBox, FiGrid, FiHome, FiShoppingBag, FiTag, FiUsers, FiChevronDown, FiLayers, FiGift } from 'react-icons/fi'
 import styles from './SideBar.module.css'
 
 function SideBar() {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false)
+  const [isPromotionOpen, setIsPromotionOpen] = useState(false)
 
   const openCatalog = () => setIsCatalogOpen(true)
   const closeCatalog = () => setIsCatalogOpen(false)
   const toggleCatalog = () => setIsCatalogOpen(prev => !prev)
+
+  const openPromotion = () => setIsPromotionOpen(true)
+  const closePromotion = () => setIsPromotionOpen(false)
+  const togglePromotion = () => setIsPromotionOpen(prev => !prev)
 
   return (
     <div className={`d-flex flex-column p-4 h-100 w-100 ${styles.sidebar}`}>
@@ -74,6 +79,42 @@ function SideBar() {
               }
             >
               <FiBox /> Sản phẩm
+            </NavLink>
+          </div>
+        </div>
+        <div
+          className={styles.sidebarGroupWrapper}
+          onMouseEnter={openPromotion}
+          onMouseLeave={closePromotion}
+        >
+          <button
+            type="button"
+            className={styles.sidebarGroupToggle}
+            onClick={togglePromotion}
+          >
+            <span className={styles.sidebarGroupToggleInner}>
+              <span className={styles.sidebarGroupTitle}>
+                <FiGift /> Khuyến mãi
+              </span>
+              <FiChevronDown className={isPromotionOpen ? styles.catalogChevronOpen : styles.catalogChevron} />
+            </span>
+          </button>
+          <div className={`${styles.sidebarGroup} ${isPromotionOpen ? styles.sidebarGroupOpen : ""}`}>
+            <NavLink
+              to="/admin/vouchers"
+              className={({ isActive }) =>
+                `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${styles.sidebarSubLink} ${isActive ? styles.sidebarLinkActive : ""}`
+              }
+            >
+              <FiTag /> Mã giảm giá
+            </NavLink>
+            <NavLink
+              to="/admin/flash-sales"
+              className={({ isActive }) =>
+                `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${styles.sidebarSubLink} ${isActive ? styles.sidebarLinkActive : ""}`
+              }
+            >
+              <FiGift /> Flash Sale
             </NavLink>
           </div>
         </div>
