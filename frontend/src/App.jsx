@@ -22,6 +22,7 @@ import AdminProfilePage from "./components/admin/AdminProfilePage"
 import AdminOrdersPage from "./components/admin/orders/AdminOrdersPage"
 import AdminOrderDetailPage from "./components/admin/orders/AdminOrderDetailPage"
 import AdminLayout from "./components/dashboard/AdminLayout"
+import { VouchersPage, FlashSalesPage } from "./components/admin/promotions"
 import { AuthProvider } from "./components/context/AuthContext"
 import { ToastProvider } from "./components/ui/Toast"
 import "bootstrap/dist/css/bootstrap.min.css"
@@ -113,6 +114,8 @@ const App = () => {
             <Route path="users" element={<UsersPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
+            <Route path="vouchers" element={<VouchersPage />} />
+            <Route path="flash-sales" element={<FlashSalesPage />} />
             <Route path="profile" element={<AdminProfilePage />} />
             <Route path="change-password" element={<ChangePasswordPage />} />
           </Route>

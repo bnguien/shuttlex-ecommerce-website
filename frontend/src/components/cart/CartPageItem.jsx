@@ -14,8 +14,13 @@ function CartPageItem({ item, onRemove, onUpdate }) {
   const variantId = item.variant_id ?? item.variant?.id
   const imageUrl = item.image ? `${BASE_URL}${item.image}` : (item.product?.image ? `${BASE_URL}${item.product.image}` : null)
   const displayName = item.name ?? item.product?.name
-  const unitPrice = item.price_at_add ?? item.price ?? item.product?.price
-  const subtotal = item.subtotal != null ? item.subtotal : (Number(unitPrice) * (item.quantity || 0))
+  const qty = item.quantity || 0
+  const subtotalRaw = item.subtotal != null ? Number(item.subtotal) : null
+  const unitPrice =
+    subtotalRaw != null && qty > 0
+      ? subtotalRaw / qty
+      : Number(item.price_at_add ?? item.price ?? item.product?.price ?? 0)
+  const subtotal = subtotalRaw != null ? subtotalRaw : unitPrice * qty
 
   function remove_item() {
     if (!cartCode || !productId) return

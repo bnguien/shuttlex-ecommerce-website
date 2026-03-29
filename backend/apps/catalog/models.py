@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.db.models import Sum
 from django.utils import timezone
+from apps.promotions.models import FlashSale, FlashSaleItem
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -94,11 +95,16 @@ class Product(models.Model):
         return self.variants.filter(is_active=True).exists()
 
     def get_effective_price(self):
-        """
-        Giá “thấp nhất có thể mua” hiện tại:
-        - Nếu có variant active: min(get_effective_price() của variant)
-        - Nếu không: base_price
-        """
+
+        now = timezone.now()
+        flash_sale_items = FlashSaleItem.objects.select_related('flash_sale').filter(
+            product=self,
+            flash_sale__is_active=True,
+            flash_sale__start_time__lte=now,
+            flash_sale__end_time__gte=now
+        ).order_by('flash_sale__start_time')
+        if flash_sale_items.exists():
+            return flash_sale_items.first().sale_price
         active_variants = self.variants.filter(is_active=True)
         if active_variants.exists():
             prices = [v.get_effective_price() for v in active_variants]
@@ -106,25 +112,15 @@ class Product(models.Model):
         return self.base_price
 
     def get_price_range(self):
-        """
-        Trả khoảng giá (min, max) dựa trên tất cả variants active.
-        Nếu không có variants → (base_price, base_price).
-        """
         active_variants = self.variants.filter(is_active=True)
         if not active_variants.exists():
-            return (self.base_price, self.base_price)
+            effective = self.get_effective_price()
+            return (effective, effective)
 
         prices = [v.get_effective_price() for v in active_variants]
         return (min(prices), max(prices))
 
     def get_stock(self):
-        """
-        Returns the effective stock quantity:
-        - If product has active variants: sum of all active variant stocks
-        - If product has no variants: returns base_stock
-        
-        This ensures variants are the source of truth for inventory when they exist.
-        """
         if self.has_variants():
             total = self.variants.filter(is_active=True).aggregate(total=Sum("stock"))["total"]
             return int(total or 0)
@@ -197,9 +193,6 @@ class ProductVariant(models.Model):
         return " - ".join(parts)
 
     def is_on_sale(self):
-        """
-        Trả True nếu sale_price hợp lệ và chưa hết hạn.
-        """
         if self.sale_price is None:
             return False
         if self.sale_ends_at is None:
@@ -207,11 +200,15 @@ class ProductVariant(models.Model):
         return timezone.now() <= self.sale_ends_at
     
     def get_effective_price(self):
-        """
-        Giá dùng để bán:
-        - Nếu sale_price còn hiệu lực → sale_price
-        - Ngược lại: price nếu có, else product.base_price
-        """
+        now = timezone.now()
+        flash_sale_items = FlashSaleItem.objects.select_related('flash_sale').filter(
+            product=self.product,
+            flash_sale__is_active=True,
+            flash_sale__start_time__lte=now,
+            flash_sale__end_time__gte=now
+        ).order_by('flash_sale__start_time')
+        if flash_sale_items.exists():
+            return flash_sale_items.first().sale_price
         if self.is_on_sale():
             return self.sale_price
         if self.price is not None:

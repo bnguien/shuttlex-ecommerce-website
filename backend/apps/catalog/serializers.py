@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Product, Category, Brand, Size, ProductVariant
+from apps.promotions.models import FlashSale, FlashSaleItem
+from django.utils import timezone
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -219,7 +221,6 @@ class ProductVariantWriteSerializer(serializers.ModelSerializer):
 
         return attrs
     
-
 class ProductSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
@@ -261,8 +262,8 @@ class ProductSerializer(serializers.ModelSerializer):
         _, max_price = obj.get_price_range()
         return str(max_price)
 
-
 class ProductDetailSerializer(serializers.ModelSerializer):
+    flash_sale_info = serializers.SerializerMethodField()
     category = CategorySerializer(read_only=True)
     brand = BrandSerializer(read_only=True)
     variants = serializers.SerializerMethodField()
@@ -281,6 +282,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'slug',
             'image',
             'description',
+            'base_price',
             'price',
             'price_min',
             'price_max',
@@ -293,7 +295,28 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'similar_products',
             'created_at',
             'updated_at',
+            'flash_sale_info',
         ]
+    def get_flash_sale_info(self, obj):
+        now = timezone.now()
+        flash_sale_items = FlashSaleItem.objects.select_related('flash_sale').filter(
+            product=obj,
+            flash_sale__is_active=True,
+            flash_sale__start_time__lte=now,
+            flash_sale__end_time__gte=now
+        ).order_by('flash_sale__start_time')
+        if not flash_sale_items.exists():
+            return None
+        item = flash_sale_items.first()
+        return {
+            'flash_sale_id': item.flash_sale.id,
+            'name': item.flash_sale.name,
+            'sale_price': float(item.sale_price),
+            'original_price': float(item.original_price),
+            'discount_percent': item.flash_sale.discount_percent,
+            'start_time': item.flash_sale.start_time,
+            'end_time': item.flash_sale.end_time,
+        }
 
     def get_has_variants(self, obj):
         return obj.has_variants()
@@ -382,4 +405,3 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         return value
 
 
-    

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+﻿import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import api, { BASE_URL } from "../../api"
 import { formatCurrencyVND } from "../../utils/format"
@@ -19,6 +19,7 @@ function CheckoutPage({ setNumCartItems }) {
   const [paymentMethod, setPaymentMethod] = useState("CASH")
   const [shippingMethodCode, setShippingMethodCode] = useState("GHN")
   const [selectedAddressId, setSelectedAddressId] = useState("")
+  const [editingAddress, setEditingAddress] = useState(false)
 
   const [addressForm, setAddressForm] = useState({
     recipient_name: "",
@@ -29,6 +30,17 @@ function CheckoutPage({ setNumCartItems }) {
     district: "",
     province: "",
   })
+
+  const [availableVouchers, setAvailableVouchers] = useState([])
+  const [showVoucherPicker, setShowVoucherPicker] = useState(false)
+  const [productVoucherCode, setProductVoucherCode] = useState("")
+  const [shippingVoucherCode, setShippingVoucherCode] = useState("")
+  const [applyingProductVoucher, setApplyingProductVoucher] = useState(false)
+  const [applyingShippingVoucher, setApplyingShippingVoucher] = useState(false)
+  const [productDiscountAmount, setProductDiscountAmount] = useState(0)
+  const [shippingDiscountAmount, setShippingDiscountAmount] = useState(0)
+  const [appliedProductVoucher, setAppliedProductVoucher] = useState(null)
+  const [appliedShippingVoucher, setAppliedShippingVoucher] = useState(null)
 
   const cartCode = localStorage.getItem("cart_code")
 
@@ -46,8 +58,9 @@ function CheckoutPage({ setNumCartItems }) {
       api.get(`get_cart_items?cart_code=${encodeURIComponent(cartCode)}`),
       api.get("shipping-methods/"),
       api.get("order-addresses/"),
+      api.get("vouchers/"),
     ])
-      .then(([cartRes, methodRes, addressRes]) => {
+      .then(([cartRes, methodRes, addressRes, voucherRes]) => {
         if (cancelled) return
 
         const items = cartRes.data?.items || []
@@ -61,6 +74,9 @@ function CheckoutPage({ setNumCartItems }) {
 
         const allAddresses = addressRes.data || []
         setAddresses(allAddresses)
+
+        const vouchers = Array.isArray(voucherRes.data) ? voucherRes.data : (voucherRes.data?.results || [])
+        setAvailableVouchers(vouchers)
 
         if (allAddresses.length > 0) {
           const first = allAddresses[0]
@@ -102,8 +118,14 @@ function CheckoutPage({ setNumCartItems }) {
     return shippingMethods.find((m) => String(m.code) === String(shippingMethodCode))
   }, [shippingMethodCode, shippingMethods])
 
+  const selectedAddress = useMemo(() => {
+    if (!selectedAddressId) return null
+    return addresses.find((a) => String(a.id) === String(selectedAddressId)) || null
+  }, [addresses, selectedAddressId])
+
   const estimatedShippingFee = Number(currentShipping?.base_cost ?? 0)
-  const estimatedTotal = subtotal + estimatedShippingFee
+  const effectiveShippingDiscount = Math.min(shippingDiscountAmount, estimatedShippingFee)
+  const estimatedTotal = Math.max(0, subtotal + estimatedShippingFee - productDiscountAmount - effectiveShippingDiscount)
 
   const hasUnavailable = cartItems.some((item) => item.is_available === false)
 
@@ -114,6 +136,141 @@ function CheckoutPage({ setNumCartItems }) {
     if (code === "GHTK") return "Giao Hàng Tiết Kiệm (GHTK)"
     return method?.name || code
   }
+
+  function normalizeVoucherType(voucher) {
+    const source = voucher?.voucher_type
+    if (typeof source === "string") return source.toUpperCase()
+    if (typeof source === "object") return String(source?.code || "").toUpperCase()
+    return ""
+  }
+
+  const productVoucherSuggestions = useMemo(() => {
+    const now = new Date()
+    return availableVouchers.filter((voucher) => {
+      if (normalizeVoucherType(voucher) !== "PRODUCT") return false
+      const start = voucher?.start_date ? new Date(voucher.start_date) : null
+      const end = voucher?.end_date ? new Date(voucher.end_date) : null
+      if (start && !Number.isNaN(start.getTime()) && now < start) return false
+      if (end && !Number.isNaN(end.getTime()) && now > end) return false
+      return true
+    })
+  }, [availableVouchers])
+
+  const shippingVoucherSuggestions = useMemo(() => {
+    const now = new Date()
+    return availableVouchers.filter((voucher) => {
+      if (normalizeVoucherType(voucher) !== "SHIPPING") return false
+      const start = voucher?.start_date ? new Date(voucher.start_date) : null
+      const end = voucher?.end_date ? new Date(voucher.end_date) : null
+      if (start && !Number.isNaN(start.getTime()) && now < start) return false
+      if (end && !Number.isNaN(end.getTime()) && now > end) return false
+      return true
+    })
+  }, [availableVouchers])
+
+  async function applyVoucherCode(kind, explicitCode = "") {
+    const isShipping = kind === "shipping"
+    const rawCode = explicitCode || (isShipping ? shippingVoucherCode : productVoucherCode)
+    const code = rawCode.trim().toUpperCase()
+
+    if (!code) {
+      showToast("Vui lòng nhập mã voucher.", "error")
+      return
+    }
+
+    isShipping ? setApplyingShippingVoucher(true) : setApplyingProductVoucher(true)
+
+    try {
+      const payload = {
+        code,
+        order_subtotal: Number(subtotal.toFixed(2)),
+        shipping_fee: Number(estimatedShippingFee.toFixed(2)),
+      }
+      const res = await api.post("vouchers/apply/", payload)
+
+      const discountAmount = Number(res.data?.discount_amount || 0)
+      const voucher = res.data || null
+      const voucherType = normalizeVoucherType(voucher)
+
+      if (isShipping && voucherType !== "SHIPPING") {
+        throw new Error("Mã này không phải voucher vận chuyển.")
+      }
+      if (!isShipping && voucherType !== "PRODUCT") {
+        throw new Error("Mã này không phải voucher giảm giá sản phẩm.")
+      }
+
+      if (isShipping) {
+        setShippingVoucherCode(code)
+        setAppliedShippingVoucher(voucher)
+        setShippingDiscountAmount(discountAmount)
+      } else {
+        setProductVoucherCode(code)
+        setAppliedProductVoucher(voucher)
+        setProductDiscountAmount(discountAmount)
+      }
+
+      showToast("Áp dụng voucher thành công!", "success")
+
+    } catch (err) {
+      const msg = err?.response?.data?.error
+        || err?.response?.data?.detail
+        || err?.response?.data?.non_field_errors?.[0]
+        || err?.message
+        || "Không thể áp dụng voucher."
+
+      showToast(msg, "error")
+
+      if (isShipping) {
+        setAppliedShippingVoucher(null)
+        setShippingDiscountAmount(0)
+      } else {
+        setAppliedProductVoucher(null)
+        setProductDiscountAmount(0)
+      }
+    } finally {
+      isShipping ? setApplyingShippingVoucher(false) : setApplyingProductVoucher(false)
+    }
+  }
+  function removeVoucher(kind) {
+    if (kind === "shipping") {
+      setShippingVoucherCode("")
+      setAppliedShippingVoucher(null)
+      setShippingDiscountAmount(0)
+      return
+    }
+
+    setProductVoucherCode("")
+    setAppliedProductVoucher(null)
+    setProductDiscountAmount(0)
+  }
+
+  useEffect(() => {
+    if (appliedProductVoucher) {
+      setAppliedProductVoucher(null)
+      setProductDiscountAmount(0)
+      showToast("Giỏ hàng thay đổi, vui lòng áp dụng lại voucher sản phẩm.", "warning")
+    }
+  }, [subtotal])
+  useEffect(() => {
+    if (!appliedShippingVoucher) return
+
+    const recalculate = async () => {
+      try {
+        const res = await api.post("vouchers/apply/", {
+          code: appliedShippingVoucher.code,
+          order_subtotal: Number(subtotal.toFixed(2)),
+          shipping_fee: Number(estimatedShippingFee.toFixed(2)),
+        })
+        setShippingDiscountAmount(Number(res.data?.discount_amount || 0))
+      } catch {
+        setAppliedShippingVoucher(null)
+        setShippingDiscountAmount(0)
+        showToast("Voucher vận chuyển không còn hợp lệ.", "error")
+      }
+    }
+
+    recalculate()
+  }, [estimatedShippingFee])
 
   function selectAddress(value) {
     setSelectedAddressId(value)
@@ -128,6 +285,7 @@ function CheckoutPage({ setNumCartItems }) {
       district: addr.district || "",
       province: addr.province || "",
     })
+    setEditingAddress(false)
   }
 
   function parseAddressFromFull(fullAddress) {
@@ -141,7 +299,7 @@ function CheckoutPage({ setNumCartItems }) {
   }
 
   async function ensureAddressId() {
-    if (selectedAddressId) return Number(selectedAddressId)
+    if (selectedAddressId && !editingAddress) return Number(selectedAddressId)
 
     const recipient_name = addressForm.recipient_name.trim()
     const recipient_phone = addressForm.recipient_phone.trim()
@@ -166,6 +324,7 @@ function CheckoutPage({ setNumCartItems }) {
     const addr = created.data
     setAddresses((prev) => [addr, ...prev])
     setSelectedAddressId(String(addr.id))
+    setEditingAddress(false)
     return addr.id
   }
 
@@ -191,6 +350,8 @@ function CheckoutPage({ setNumCartItems }) {
         address_id: addressId,
         shipping_method_code: shippingMethodCode,
         payment_method: paymentMethod,
+        product_voucher_code: appliedProductVoucher?.code || undefined,
+        shipping_voucher_code: appliedShippingVoucher?.code || undefined,
       })
 
       const code = res.data?.code
@@ -220,154 +381,343 @@ function CheckoutPage({ setNumCartItems }) {
     return <div className="container py-5">Đang tải trang thanh toán...</div>
   }
 
+  const featuredCartItem = cartItems[0]
+
   return (
     <section className="checkout-page py-4 py-lg-5">
-      <div className="container">
+      <div className="container checkout-shell">
         <div className="mb-4">
           <h1 className="checkout-title mb-1">Thanh toán</h1>
-          <p className="text-muted mb-0">Kiểm tra thông tin đơn hàng trước khi xác nhận.</p>
+          <p className="checkout-subtitle mb-0">Hoàn tất đơn hàng của bạn với bước cuối cùng.</p>
         </div>
 
-        <div className="row g-4">
-          <div className="col-lg-8">
-            <div className="checkout-card mb-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h4 className="mb-0">Địa chỉ giao hàng</h4>
+        <div className="row g-4 align-items-start">
+          <div className="col-xl-7 col-lg-8">
+            <article className="checkout-card checkout-block mb-4">
+              <header className="checkout-section-header mb-3">
+                <h4 className="mb-0">Thông tin giao hàng</h4>
                 {addresses.length > 0 && (
-                  <select
-                    className="form-select w-auto"
-                    value={selectedAddressId}
-                    onChange={(e) => selectAddress(e.target.value)}
+                  <button
+                    type="button"
+                    className="checkout-text-link"
+                    onClick={() => setEditingAddress((prev) => !prev)}
                   >
-                    <option value="">Địa chỉ mới</option>
-                    {addresses.map((addr) => (
-                      <option key={addr.id} value={addr.id}>
-                        {addr.recipient_name} - {addr.recipient_phone}
-                      </option>
-                    ))}
-                  </select>
+                    {editingAddress ? "Đóng" : "Thay đổi"}
+                  </button>
+                )}
+              </header>
+
+              {!editingAddress && selectedAddress && (
+                <div className="checkout-address-card">
+                  <div className="checkout-address-name">{selectedAddress.recipient_name}</div>
+                  <div className="checkout-address-phone">{selectedAddress.recipient_phone}</div>
+                  <div className="checkout-address-full">{selectedAddress.full_address}</div>
+                </div>
+              )}
+
+              {(editingAddress || !selectedAddress) && (
+                <>
+                  {addresses.length > 0 && (
+                    <div className="mb-3">
+                      <label className="form-label">Chon dia chi da luu</label>
+                      <select
+                        className="form-select"
+                        value={selectedAddressId}
+                        onChange={(e) => selectAddress(e.target.value)}
+                      >
+                        <option value="">Tạo địa chỉ mới</option>
+                        {addresses.map((addr) => (
+                          <option key={addr.id} value={addr.id}>
+                            {addr.recipient_name} - {addr.recipient_phone}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Họ và tên</label>
+                      <input
+                        className="form-control"
+                        value={addressForm.recipient_name}
+                        onChange={(e) => setAddressForm((prev) => ({ ...prev, recipient_name: e.target.value }))}
+                        placeholder="Nguyễn Văn A"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Số điện thoại</label>
+                      <input
+                        className="form-control"
+                        value={addressForm.recipient_phone}
+                        onChange={(e) => setAddressForm((prev) => ({ ...prev, recipient_phone: e.target.value }))}
+                        placeholder="0392663097"
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label">Địa chỉ chi tiết</label>
+                      <input
+                        className="form-control"
+                        value={addressForm.full_address}
+                        onChange={(e) => setAddressForm((prev) => ({ ...prev, full_address: e.target.value }))}
+                        placeholder="K32/58 Ngô Sĩ Liên, Hòa Khánh Bắc, Liên Chiểu, Đà Nẵng"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </article>
+
+            <article className="checkout-card checkout-block mb-4">
+              <header className="checkout-section-header mb-3">
+                <h4 className="mb-0">Ưu đãi & Mã giảm giá</h4>
+                <button
+                  type="button"
+                  className="checkout-pill-toggle"
+                  onClick={() => setShowVoucherPicker((prev) => !prev)}
+                >
+                  {showVoucherPicker ? "Ẩn voucher" : "Chọn voucher"}
+                </button>
+              </header>
+
+              <div className="checkout-voucher-input-row mb-2">
+                <input
+                  className="form-control"
+                  value={productVoucherCode}
+                  onChange={(e) => setProductVoucherCode(e.target.value)}
+                  placeholder="Nhập mã voucher sản phẩm"
+                />
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => applyVoucherCode("product")}
+                  disabled={applyingProductVoucher || subtotal <= 0}
+                >
+                  {applyingProductVoucher ? "Đang áp..." : "Áp dụng"}
+                </button>
+              </div>
+
+              <div className="checkout-voucher-input-row mb-3">
+                <input
+                  className="form-control"
+                  value={shippingVoucherCode}
+                  onChange={(e) => setShippingVoucherCode(e.target.value)}
+                  placeholder="Nhập mã freeship"
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-success"
+                  onClick={() => applyVoucherCode("shipping")}
+                  disabled={applyingShippingVoucher || estimatedShippingFee <= 0}
+                >
+                  {applyingShippingVoucher ? "Đang áp..." : "Áp dụng"}
+                </button>
+              </div>
+
+              {showVoucherPicker && (
+                <div className="checkout-voucher-suggestions mb-3">
+                  <div className="checkout-voucher-group mb-2">
+                    <div className="checkout-voucher-group-title">Voucher sản phẩm</div>
+                    <div className="d-flex flex-wrap gap-2">
+                      {productVoucherSuggestions.length === 0 && <span className="text-muted small">Không có voucher phù hợp</span>}
+                      {productVoucherSuggestions.map((voucher) => (
+                        <button
+                          key={voucher.id ?? voucher.code}
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => {
+                            setProductVoucherCode(voucher.code)
+                            applyVoucherCode("product", voucher.code)
+                          }}
+                        >
+                          {voucher.code}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="checkout-voucher-group">
+                    <div className="checkout-voucher-group-title">Voucher vận chuyển</div>
+                    <div className="d-flex flex-wrap gap-2">
+                      {shippingVoucherSuggestions.length === 0 && <span className="text-muted small">Không có voucher phù hợp</span>}
+                      {shippingVoucherSuggestions.map((voucher) => (
+                        <button
+                          key={voucher.id ?? voucher.code}
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => {
+                            setShippingVoucherCode(voucher.code)
+                            applyVoucherCode("shipping", voucher.code)
+                          }}
+                        >
+                          {voucher.code}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="d-flex flex-column gap-2">
+                {appliedProductVoucher && (
+                  <div className="checkout-voucher-chip">
+                    <div>
+                      <div className="checkout-voucher-chip-code">{appliedProductVoucher.code}</div>
+                      <div className="checkout-voucher-chip-desc">
+                        {appliedProductVoucher.description?.trim() ? appliedProductVoucher.description : "Giảm giá cho đơn hàng của bạn"}
+                      </div>
+                    </div>
+                    <button type="button" className="checkout-chip-remove" onClick={() => removeVoucher("product")}>x</button>
+                  </div>
+                )}
+                {appliedShippingVoucher && (
+                  <div className="checkout-voucher-chip checkout-voucher-chip-shipping">
+                    <div>
+                      <div className="checkout-voucher-chip-code">{appliedShippingVoucher.code}</div>
+                      <div className="checkout-voucher-chip-desc">
+                        {appliedShippingVoucher.description?.trim() ? appliedShippingVoucher.description : "Miễn phí vận chuyển toàn quốc"}
+                      </div>
+                    </div>
+                    <button type="button" className="checkout-chip-remove" onClick={() => removeVoucher("shipping")}>x</button>
+                  </div>
                 )}
               </div>
+            </article>
 
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <label className="form-label">Họ và tên</label>
-                  <input
-                    className="form-control"
-                    value={addressForm.recipient_name}
-                    onChange={(e) => setAddressForm((prev) => ({ ...prev, recipient_name: e.target.value }))}
-                    placeholder="Nguyễn Văn A"
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label">Số điện thoại</label>
-                  <input
-                    className="form-control"
-                    value={addressForm.recipient_phone}
-                    onChange={(e) => setAddressForm((prev) => ({ ...prev, recipient_phone: e.target.value }))}
-                    placeholder="0901234567"
-                  />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Địa chỉ chi tiết</label>
-                  <input
-                    className="form-control"
-                    value={addressForm.full_address}
-                    onChange={(e) => setAddressForm((prev) => ({ ...prev, full_address: e.target.value }))}
-                    placeholder="72 Lê Thanh Tôn, Quận 1, TP.HCM"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="checkout-card mb-4">
-              <h4 className="mb-3">Phương thức thanh toán</h4>
-              <div className="checkout-option" onClick={() => setPaymentMethod("CASH") }>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "CASH"}
-                  onChange={() => setPaymentMethod("CASH")}
-                />
-                <div>
-                  <div className="fw-semibold">Thanh toán khi nhận hàng (COD)</div>
-                  <small className="text-muted">Thanh toán khi nhận hàng.</small>
-                </div>
-              </div>
-              <div className="checkout-option" onClick={() => setPaymentMethod("BANK_TRANSFER") }>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "BANK_TRANSFER"}
-                  onChange={() => setPaymentMethod("BANK_TRANSFER")}
-                />
-                <div>
-                  <div className="fw-semibold">Chuyển khoản ngân hàng</div>
-                  <small className="text-muted">Chuyển khoản ngân hàng.</small>
-                </div>
-              </div>
-
-              <div className="mt-3">
-                <label className="form-label">Phương thức vận chuyển</label>
-                <select
-                  className="form-select"
-                  value={shippingMethodCode}
-                  onChange={(e) => setShippingMethodCode(e.target.value)}
-                >
-                  {shippingMethods.map((method) => (
-                    <option key={method.id ?? method.code} value={method.code}>
-                      {getShippingMethodLabel(method)} ({formatCurrencyVND(method.base_cost)})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="checkout-card">
-              <h4 className="mb-3">Sản phẩm của bạn</h4>
-              <div className="d-flex flex-column gap-3">
-                {cartItems.map((item) => {
-                  const imageUrl = item.image ? `${BASE_URL}${item.image}` : ""
-                  const price = Number(item.subtotal ?? item.total ?? ((item.price_at_add ?? item.price ?? 0) * (item.quantity || 0)))
+            <article className="checkout-card checkout-block mb-4">
+              <header className="checkout-section-header mb-3">
+                <h4 className="mb-0">Phương thức vận chuyển</h4>
+              </header>
+              <div className="d-flex flex-column gap-2">
+                {shippingMethods.map((method) => {
+                  const isActive = String(shippingMethodCode) === String(method.code)
                   return (
-                    <div className="checkout-product" key={item.id}>
-                      <img src={imageUrl} alt={item.name} />
-                      <div className="flex-grow-1">
-                        <div className="fw-semibold">{item.name}</div>
-                        <small className="text-muted">Số lượng: {item.quantity}</small>
+                    <button
+                      type="button"
+                      key={method.id ?? method.code}
+                      className={`checkout-choice-card ${isActive ? "is-active" : ""}`}
+                      onClick={() => setShippingMethodCode(method.code)}
+                    >
+                      <div>
+                        <div className="checkout-choice-title-wrap">
+                          <span className="checkout-choice-title">{getShippingMethodLabel(method)}</span>
+                          {String(method.code).toUpperCase() === "GHN" && (
+                            <span className="checkout-fast-badge">Nhanh nhất</span>
+                          )}
+                        </div>
+                        <div className="checkout-choice-subtitle">Dự kiến giao: {method.estimate_delivery_days || 1} - {(method.estimate_delivery_days || 1) + 2} ngày</div>
                       </div>
-                      <div className="fw-semibold">{formatCurrencyVND(price)}</div>
-                    </div>
+                      <div className="checkout-choice-right">
+                        <div className="checkout-choice-price">{formatCurrencyVND(method.base_cost)}</div>
+                      </div>
+                    </button>
                   )
                 })}
               </div>
-            </div>
+            </article>
+
+            <article className="checkout-card checkout-block">
+              <header className="checkout-section-header mb-3">
+                <h4 className="mb-0">Phương thức thanh toán</h4>
+              </header>
+
+              <div className="row g-2">
+                <div className="col-md-6">
+                  <button
+                    type="button"
+                    className={`checkout-choice-card checkout-choice-card-payment ${paymentMethod === "CASH" ? "is-active" : ""}`}
+                    onClick={() => setPaymentMethod("CASH")}
+                  >
+                    <div>
+                      <div className="checkout-choice-title">Thanh toán khi nhận hàng (COD)</div>
+                      <div className="checkout-choice-subtitle">Trả tiền mặt khi giao hàng</div>
+                    </div>
+                  </button>
+                </div>
+                <div className="col-md-6">
+                  <button
+                    type="button"
+                    className={`checkout-choice-card checkout-choice-card-payment ${paymentMethod === "BANK_TRANSFER" ? "is-active" : ""}`}
+                    onClick={() => setPaymentMethod("BANK_TRANSFER")}
+                  >
+                    <div>
+                      <div className="checkout-choice-title">Chuyển khoản ngân hàng</div>
+                      <div className="checkout-choice-subtitle">Xử lý nhanh qua mã QR</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </article>
           </div>
 
-          <div className="col-lg-4">
-            <div className="checkout-summary sticky-lg-top">
+          <div className="col-xl-5 col-lg-4">
+            <aside className="checkout-summary sticky-lg-top">
               <h4 className="mb-3">Tóm tắt đơn hàng</h4>
-              <div className="d-flex justify-content-between mb-2">
+
+              {featuredCartItem && (
+                <div className="checkout-product preview mb-3">
+                  <img src={featuredCartItem.image ? `${BASE_URL}${featuredCartItem.image}` : ""} alt={featuredCartItem.name} />
+                  <div className="flex-grow-1">
+                    <div className="fw-semibold">{featuredCartItem.name}</div>
+                    <small className="text-muted">
+                      {featuredCartItem.size ? `Size: ${featuredCartItem.size}` : ""}
+                      {featuredCartItem.color ? ` | Màu: ${featuredCartItem.color}` : ""}
+                    </small>
+                    <div className="checkout-item-price">
+                      {formatCurrencyVND(Number(featuredCartItem.subtotal ?? featuredCartItem.total ?? 0))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="d-flex justify-content-between mb-2 checkout-price-row">
                 <span>Tạm tính</span>
                 <span>{formatCurrencyVND(subtotal)}</span>
               </div>
-              <div className="d-flex justify-content-between mb-3">
-                <span>Phí vận chuyển</span>
+              <div className="d-flex justify-content-between mb-2 checkout-price-row">
+                <span>Phí vận chuyển ({currentShipping?.code || "GHN"})</span>
                 <span>{formatCurrencyVND(estimatedShippingFee)}</span>
               </div>
+              <div className="d-flex justify-content-between mb-2 checkout-price-row discount">
+                <span>Giảm giá voucher</span>
+                <span>-{formatCurrencyVND(productDiscountAmount)}</span>
+              </div>
+              <div className="d-flex justify-content-between mb-3 checkout-price-row discount">
+                <span>Giảm giá vận chuyển</span>
+                <span>-{formatCurrencyVND(effectiveShippingDiscount)}</span>
+              </div>
               <hr />
-              <div className="d-flex justify-content-between mb-4 fs-5 fw-bold">
-                <span>Tổng cộng</span>
-                <span>{formatCurrencyVND(estimatedTotal)}</span>
+              <div className="d-flex justify-content-between mb-4 checkout-total-row">
+                <div>
+                  <span>TỔNG CỘNG</span>
+                  <div className="checkout-vat-note">(Đã bao gồm VAT)</div>
+                </div>
+                <span className="checkout-total-value">{formatCurrencyVND(estimatedTotal)}</span>
               </div>
               <button
-                className="btn btn-success w-100"
+                className="btn checkout-place-order-btn w-100"
                 onClick={placeOrder}
                 disabled={placingOrder || cartItems.length === 0 || hasUnavailable}
               >
-                {placingOrder ? "Đang xử lý..." : "Đặt hàng"}
+                {placingOrder ? "Đang xử lý..." : "ĐẶT HÀNG NGAY"}
               </button>
-            </div>
+
+              <div className="checkout-summary-note mt-3">
+                Bằng cách đặt hàng, bạn đồng ý với điều khoản dịch vụ của ShuttleX.
+              </div>
+
+              <div className="checkout-benefits mt-3">
+                <div className="checkout-benefit-item">Chính hãng 100%</div>
+                <div className="checkout-benefit-item">Đổi trả 7 ngày</div>
+                <div className="checkout-benefit-item">Hỗ trợ 24/7</div>
+              </div>
+
+              {hasUnavailable && (
+                <div className="alert alert-warning mt-3 mb-0">
+                  Có sản phẩm không khả dụng trong giỏ. Vui lòng quay lại giỏ hàng để cập nhật.
+                </div>
+              )}
+            </aside>
           </div>
         </div>
       </div>

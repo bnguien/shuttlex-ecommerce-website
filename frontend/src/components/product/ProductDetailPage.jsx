@@ -17,15 +17,30 @@ function ProductDetailPage({ setNumCartItems }) {
     const [inCart, setInCart] = useState(false)
     const [adding, setAdding] = useState(false)
     const [cartCode, setCartCode] = useState(() => localStorage.getItem("cart_code"))
+    const [promotionHighlights, setPromotionHighlights] = useState([])
 
     const getDisplayPrice = () => {
+        const fs = product.flash_sale_info
+        const flashBlock = fs ? (
+            <div className="d-flex align-items-center gap-2">
+                <span className="text-decoration-line-through text-muted">
+                    {formatCurrencyVND(fs.original_price)}
+                </span>
+                <span className="text-danger fw-bold fs-4">
+                    {formatCurrencyVND(fs.sale_price)}
+                </span>
+            </div>
+        ) : null
+
         if (selectedVariant) {
+            if (fs) return flashBlock
             const isSale = selectedVariant.is_on_sale || (
                 selectedVariant.sale_price &&
                 (!selectedVariant.sale_ends_at || new Date(selectedVariant.sale_ends_at) > new Date())
             )
             const originalPrice = selectedVariant.price ?? product.base_price
-            const displayPrice = selectedVariant.display_price ?? selectedVariant.sale_price ?? originalPrice
+            const displayPrice =
+                selectedVariant.display_price ?? selectedVariant.sale_price ?? originalPrice
             if (isSale) {
                 return (
                     <div className="d-flex align-items-center gap-2">
@@ -41,11 +56,21 @@ function ProductDetailPage({ setNumCartItems }) {
             return <span className="fw-bold fs-4">{formatCurrencyVND(displayPrice)}</span>
         }
 
-        const { price_min, price_max, base_price } = product
+        if (fs) return flashBlock
+
+        const { price_min, price_max, base_price, price: effectivePrice } = product
         if (price_min != null && price_max != null && String(price_min) !== String(price_max)) {
-            return <span className="fw-bold fs-4 text-primary">{formatCurrencyVND(price_min)} – {formatCurrencyVND(price_max)}</span>
+            return (
+                <span className="fw-bold fs-4 text-primary">
+                    {formatCurrencyVND(price_min)} – {formatCurrencyVND(price_max)}
+                </span>
+            )
         }
-        return <span className="fw-bold fs-4">{formatCurrencyVND(price_min ?? base_price)}</span>
+        return (
+            <span className="fw-bold fs-4">
+                {formatCurrencyVND(effectivePrice ?? price_min ?? base_price)}
+            </span>
+        )
     }
 
     useEffect(() => {
@@ -108,6 +133,73 @@ function ProductDetailPage({ setNumCartItems }) {
         return () => { cancelled = true }
     }, [slug])
 
+    useEffect(() => {
+        if (!product?.id) {
+            setPromotionHighlights([])
+            return
+        }
+
+        let cancelled = false
+
+        Promise.all([
+            api.get("flash-sales/active/"),
+            api.get("vouchers/"),
+        ])
+            .then(([flashRes, voucherRes]) => {
+                if (cancelled) return
+
+                const flashSales = Array.isArray(flashRes.data) ? flashRes.data : (flashRes.data?.results || [])
+                const vouchers = Array.isArray(voucherRes.data) ? voucherRes.data : (voucherRes.data?.results || [])
+                const now = new Date()
+                const highlights = []
+
+                flashSales.forEach((sale) => {
+                    const item = (sale.items || []).find(
+                        (i) => Number(i.product) === Number(product.id)
+                    )
+                    if (item) {
+                        highlights.push({
+                            id: `flash-${sale.id}-${item.id}`,
+                            text: `FLASH SALE: ${sale.name} - giảm ${sale.discount_percent}% cho sản phẩm này`,
+                        })
+                    }
+                })
+
+                vouchers.forEach((voucher) => {
+                    const voucherTypeCode = typeof voucher.voucher_type === "object"
+                        ? String(voucher.voucher_type?.code || "").toUpperCase()
+                        : String(voucher.voucher_type || "").toUpperCase()
+                    if (voucherTypeCode !== "PRODUCT") return
+
+                    const start = voucher.start_date ? new Date(voucher.start_date) : null
+                    const end = voucher.end_date ? new Date(voucher.end_date) : null
+                    if (start && !Number.isNaN(start.getTime()) && now < start) return
+                    if (end && !Number.isNaN(end.getTime()) && now > end) return
+
+                    const discountTypeCode = typeof voucher.discount_type === "object"
+                        ? String(voucher.discount_type?.code || "").toUpperCase()
+                        : String(voucher.discount_type || "").toUpperCase()
+                    const isPercent = discountTypeCode === "PERCENTAGE"
+                    const discountText = isPercent
+                        ? `giảm ${voucher.value}%`
+                        : `giảm ${formatCurrencyVND(voucher.value)}`
+                    highlights.push({
+                        id: `voucher-${voucher.id ?? voucher.code}`,
+                        text: `${voucher.code}: ${discountText}`,
+                    })
+                })
+
+                setPromotionHighlights(highlights.slice(0, 4))
+            })
+            .catch(() => {
+                if (!cancelled) setPromotionHighlights([])
+            })
+
+        return () => {
+            cancelled = true
+        }
+    }, [product?.id])
+
     if (loading) {
         return <ProductPagePlaceHolder />
     }
@@ -139,6 +231,16 @@ function ProductDetailPage({ setNumCartItems }) {
                             <p className="lead mb-4">
                                 {product.description}
                             </p>
+
+                            {promotionHighlights.length > 0 && (
+                                <div className="mb-4 d-flex flex-column gap-2">
+                                    {promotionHighlights.map((promotion) => (
+                                        <div key={promotion.id} className="p-2 px-3 rounded-3 border border-success-subtle bg-success-subtle text-success-emphasis fw-semibold small">
+                                            {promotion.text}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                             {product.variants?.length > 0 && (
                                 <div className="mb-4">

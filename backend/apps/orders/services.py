@@ -6,7 +6,8 @@ from decimal import Decimal
 from contextlib import contextmanager
 from typing import Optional
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
+from django.db.models import F
 from django.utils import timezone
 
 try:
@@ -26,12 +27,47 @@ from apps.orders.models import (
      OrderHistory, 
      ShippingMethod
 )
-from apps.promotions.models import Voucher
+from apps.promotions.models import FlashSaleItem, Voucher, VoucherUsage
 
 logger = logging.getLogger(__name__)
 
 CHECKOUT_LOCK_TIMEOUT_MS = int(os.getenv("CHECKOUT_LOCK_TIMEOUT_MS", "15000"))
 CHECKOUT_LOCK_BLOCKING_SEC = float(os.getenv("CHECKOUT_LOCK_BLOCKING_SEC", "3"))
+
+
+def _find_active_flash_sale_item(*, product_id: int, now):
+     return (
+          FlashSaleItem.objects.select_related("flash_sale")
+          .select_for_update()
+          .filter(
+               product_id=product_id,
+               flash_sale__is_active=True,
+               flash_sale__start_time__lte=now,
+               flash_sale__end_time__gte=now,
+          )
+          .order_by("flash_sale__end_time", "id")
+          .first()
+     )
+
+
+def _validate_voucher_for_user(*, voucher: Voucher, user, subtotal: Decimal, shipping_fee: Decimal):
+     if VoucherUsage.objects.filter(voucher=voucher, user=user).exists():
+          raise ValueError("Bạn đã sử dụng voucher này rồi.")
+
+     if voucher.new_customer_only:
+          has_previous_orders = user.orders.exclude(status=OrderStatus.CANCELLED).exists()
+          if has_previous_orders:
+               raise ValueError("Voucher này chỉ áp dụng cho khách hàng đặt đơn lần đầu.")
+
+     if voucher.voucher_type.code == "SHIPPING":
+          discount_amount = voucher.calculate_discount(subtotal, shipping_fee)
+     else:
+          discount_amount = voucher.calculate_discount(subtotal)
+
+     if discount_amount <= 0:
+          raise ValueError(f"Voucher {voucher.code} không hợp lệ cho đơn hàng này.")
+
+     return discount_amount
 
 
 def _get_redis_client():
@@ -252,6 +288,7 @@ def create_order(
      shipping_voucher_code: Optional[str]=None,  
      note: str = "",
 ) -> Order:
+     now = timezone.now()
      cart_items = list(
           CartItem.objects
           .select_related("product", "variant")
@@ -275,14 +312,32 @@ def create_order(
 
           subtotal = Decimal("0")
           order_items_data = []
+          flash_sale_usage_map = {}
 
           for ci in cart_items:
                if ci.variant_id:
                     variant = variant_map[ci.variant_id]
+                    product = variant.product
                     unit_price = variant.get_effective_price()
                else:
                     product = product_map[ci.product_id]
                     unit_price = product.get_effective_price()
+
+               flash_item = _find_active_flash_sale_item(product_id=product.id, now=now)
+               if flash_item:
+                    remaining = flash_item.stock_limit - flash_item.sold_count
+                    if remaining < ci.quantity:
+                         raise ValueError(
+                              f"Flash sale của sản phẩm {product.name} không đủ số lượng (còn {max(remaining, 0)})."
+                         )
+                    unit_price = min(unit_price, flash_item.sale_price)
+                    flash_sale_usage_map[flash_item.id] = flash_sale_usage_map.get(flash_item.id, 0) + ci.quantity
+
+               snapshot_price = ci.price if ci.price is not None else unit_price
+               if snapshot_price != unit_price:
+                    raise ValueError(
+                         f"Giá sản phẩm {product.name} đã thay đổi. Vui lòng kiểm tra lại giỏ hàng."
+                    )
                
                line_total = unit_price * ci.quantity
                subtotal += line_total
@@ -305,24 +360,39 @@ def create_order(
           shipping_voucher = None
           product_discount_amount = Decimal("0")
           shipping_discount_amount = Decimal("0")
+          applied_vouchers = []
 
           if product_voucher_code:
-               product_voucher = Voucher.objects.filter(
+               product_voucher = Voucher.objects.select_related("voucher_type", "discount_type").select_for_update().filter(
                     code=product_voucher_code,
-                    voucher_type=Voucher.VoucherType.PRODUCT,
+                    voucher_type__code="PRODUCT",
+                    is_active=True,
                ).first()
-               if product_voucher:
-                    product_discount_amount = product_voucher.calculate_discount(subtotal)
+               if not product_voucher:
+                    raise ValueError("Không tìm thấy voucher giảm giá sản phẩm hợp lệ.")
+               product_discount_amount = _validate_voucher_for_user(
+                    voucher=product_voucher,
+                    user=user,
+                    subtotal=subtotal,
+                    shipping_fee=shipping_fee,
+               )
+               applied_vouchers.append(product_voucher)
           
           if shipping_voucher_code:
-               shipping_voucher = Voucher.objects.filter(
+               shipping_voucher = Voucher.objects.select_related("voucher_type", "discount_type").select_for_update().filter(
                     code=shipping_voucher_code,
-                    voucher_type=Voucher.VoucherType.SHIPPING,
+                    voucher_type__code="SHIPPING",
+                    is_active=True,
                ).first()
-               if shipping_voucher:
-                    shipping_discount_amount = shipping_voucher.calculate_discount(
-                         order_subtotal=subtotal, shipping_fee=shipping_fee
-                    )
+               if not shipping_voucher:
+                    raise ValueError("Không tìm thấy voucher vận chuyển hợp lệ.")
+               shipping_discount_amount = _validate_voucher_for_user(
+                    voucher=shipping_voucher,
+                    user=user,
+                    subtotal=subtotal,
+                    shipping_fee=shipping_fee,
+               )
+               applied_vouchers.append(shipping_voucher)
           discount_amount = product_discount_amount + shipping_discount_amount
 
           total = subtotal + shipping_fee - discount_amount
@@ -387,6 +457,22 @@ def create_order(
                     variant_display_snapshot=str(variant) if ci.variant_id else "",
                     line_total=line_total,
                )
+
+          for flash_item_id, quantity in flash_sale_usage_map.items():
+               updated = FlashSaleItem.objects.filter(
+                    id=flash_item_id,
+                    sold_count__lte=F("stock_limit") - quantity,
+               ).update(sold_count=F("sold_count") + quantity)
+               if not updated:
+                    raise ValueError("Flash sale vừa hết lượt. Vui lòng đặt lại đơn.")
+
+          for voucher in {v.id: v for v in applied_vouchers}.values():
+               if not voucher.increase_usage():
+                    raise ValueError(f"Voucher {voucher.code} đã hết lượt sử dụng.")
+               try:
+                    VoucherUsage.objects.create(voucher=voucher, user=user, order=order)
+               except IntegrityError:
+                    raise ValueError("Bạn đã sử dụng voucher này rồi.")
 
           OrderHistory.objects.create(
                order=order,
