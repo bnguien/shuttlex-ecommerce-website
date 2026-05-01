@@ -8,6 +8,7 @@ function ProductPage() {
   const [products, setProducts] = useState([])
   const [searchParams] = useSearchParams()
   const category = searchParams.get("category")
+  const searchQuery = searchParams.get("search")
   const [categoryName, setCategoryName] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -43,7 +44,7 @@ function ProductPage() {
       ...prev,
       sizes: []
     }))
-  }, [category])
+  }, [category, searchQuery])
 
   useEffect(() => {
     setPage(1)
@@ -62,6 +63,7 @@ function ProductPage() {
       page,
       page_size: pageSize,
       ...(category ? { category } : {}),
+      ...(searchQuery ? { search: searchQuery } : {}),
       ...(filters.brands.length > 0 ? { brands: filters.brands.join(",") } : {}),
       ...(filters.sizes.length > 0 ? { sizes: filters.sizes.join(",") } : {}),
       ...(filters.minPrice ? { min_price: filters.minPrice } : {}),
@@ -88,7 +90,7 @@ function ProductPage() {
         setError(err.message)
       }
     )
-  }, [category, page, filters])
+  }, [category, searchQuery, page, filters])
 
   const getPageNumbers = () => {
     if (totalPages <= 1) return []
