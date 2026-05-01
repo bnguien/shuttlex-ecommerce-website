@@ -1,13 +1,15 @@
-import { FaCartShopping, FaUser } from "react-icons/fa6"
+import { FaCartShopping, FaUser, FaMagnifyingGlass, FaRegBell } from "react-icons/fa6"
 /*Search react icon để biết thêm nhiều icon*/
 import { Link } from "react-router-dom"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { AuthContext } from "../context/AuthContext"
 import styles from "./NavBar.module.css"
 import NavLink from "./NavBarLink.jsx"
+import SearchBar from "./SearchBar.jsx"
 
 const NavBar = ({numCartItems, transparent = false}) => {
     useContext(AuthContext)
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     
     return (
         <nav
@@ -17,7 +19,7 @@ const NavBar = ({numCartItems, transparent = false}) => {
                 : {background: 'radial-gradient(circle, #66c064 0%, #429241 40%, #2f6f2e 100%)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'}
             }
         >
-            <div className="container">
+            <div className="container position-relative">
                 <Link className="navbar-brand fw-bold fs-4" to="/" style={transparent ? {color: '#ffffff'} : {color: '#b6d985'}}>
                     ShuttleX
                 </Link>
@@ -35,18 +37,53 @@ const NavBar = ({numCartItems, transparent = false}) => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarContent">
                     <NavLink />
-                    <Link to="/cart" className={`btn btn-outline-light ms-3 rounded-pill position-relative ${styles.responsiveCart}`}>
-                        <FaCartShopping />
-                        {numCartItems > 0 && <span
-                            className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                            style={{ fontSize: "0.85rem", padding: "0.5em 0.65em", backgroundColor: "#1b0f4a" }}
+
+                    <div className="d-flex align-items-center ms-3 gap-3">
+                        <button
+                            id="search-toggle-btn"
+                            className={`btn btn-link p-0 border-0 ${isSearchOpen ? 'text-white' : 'text-light'}`}
+                            style={{ 
+                                opacity: isSearchOpen ? 1 : 0.8,
+                                transform: isSearchOpen ? 'scale(1.1)' : 'scale(1)',
+                                transition: 'all 0.2s'
+                            }}
+                            onClick={() => setIsSearchOpen(!isSearchOpen)}
                         >
-                            {numCartItems}
-                        </span>}
-                    </Link>
-                    
+                            <FaMagnifyingGlass size={20} />
+                        </button>
+                        
+                        <button className="btn btn-link text-light p-0 border-0 position-relative" style={{ opacity: 0.8 }}>
+                            <FaRegBell size={20}/>
+                            {/* Chỉ hiện số lượng khi > 0, bo tròn đỏ đẹp mắt */}
+                            {/* Demo tạm số 3, sau này bạn đổi thành biến numNotifications */}
+                            {3 > 0 && (
+                                <span 
+                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                                    style={{ fontSize: "0.6rem", padding: "0.3em 0.5em" }}
+                                >
+                                    3
+                                </span>
+                            )}
+                        </button>
+
+                        <Link to="/cart" className={`btn btn-outline-light ms-3 rounded-pill position-relative ${styles.responsiveCart}`}>
+                            <FaCartShopping />
+                            {numCartItems > 0 && <span
+                                className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                                style={{ fontSize: "0.85rem", padding: "0.5em 0.65em", backgroundColor: "#1b0f4a" }}
+                            >
+                                {numCartItems}
+                            </span>}
+                        </Link>
+                    </div>
                 </div>
             </div>
+
+            <SearchBar
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                transparent={transparent}
+            />
         </nav>
     )
 }

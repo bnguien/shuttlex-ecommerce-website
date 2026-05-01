@@ -1,0 +1,243 @@
+/* BAO BỌC TOÀN BỘ PANEL (Overlay mờ trượt xuống) */
+.searchOverlay {
+    position: absolute;
+    top: 100%; /* Đẩy xuống mép dưới của Navbar */
+    left: 0;
+    right: 0;
+    background-color: #2f6f2e; /* Trùng màu Navbar */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 1020;
+    
+    /* Animation kéo xuống mượt mà */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, padding 0.3s ease;
+}
+
+/* Trạng thái Mở */
+.searchOverlayOpen {
+    max-height: 400px;
+    opacity: 1;
+    overflow: visible; /* Để dropdown bên trong có thể tràn ra ngoài */
+    padding: 20px 0;
+}
+
+/* Wrapper giới hạn chiều rộng căn giữa */
+.searchExpandedWrapper {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Ô Form Tìm kiếm */
+.searchForm {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.searchIconLeft {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 1.1rem;
+    z-index: 2;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 14px 45px 14px 50px;
+    border-radius: 999px;
+    border: none;
+    outline: none;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background-color: #ffffff;
+    color: #333;
+    transition: box-shadow 0.2s;
+}
+
+.searchInput:focus {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.searchInput::placeholder {
+    color: #999;
+}
+
+/* Nút xóa (X) */
+.clearButton {
+    position: absolute;
+    right: 120px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    color: #888;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background 0.15s, color 0.15s;
+    z-index: 2;
+}
+
+.clearButton:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+/* Nút Tìm Kiếm nằm trong input */
+.searchButton {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #2f6f2e;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 2;
+}
+
+.searchButton:hover {
+    background-color: #245723;
+}
+
+/* --- DROPDOWN GỢI Ý SẢN PHẨM --- */
+.dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 15px;
+    right: 15px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+    z-index: 1050;
+}
+
+.dropdownHeader {
+    padding: 12px 20px 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdownList {
+    max-height: 280px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
+
+/* Thanh cuộn Webkit */
+.dropdownList::-webkit-scrollbar {
+    width: 6px;
+}
+.dropdownList::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+}
+
+.suggestionItem {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f8f9fa;
+    transition: background-color 0.15s;
+}
+
+.suggestionItem:last-child {
+    border-bottom: none;
+}
+
+.suggestionItem:hover, .suggestionItem.active {
+    background-color: #f1f8f1;
+}
+
+.suggestionImg {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+}
+
+.suggestionInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.suggestionName {
+    font-size: 0.95rem;
+    color: #222;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.suggestionSub {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.suggestionPrice {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e53935; /* Màu đỏ cho giá tiền để nổi bật */
+    margin-left: auto; /* Đẩy giá tiền sang tít bên phải */
+}
+
+.dropdownFooter {
+    padding: 12px 20px;
+    background-color: #fcfcfc;
+    border-top: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    color: #444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s;
+}
+
+.dropdownFooter:hover {
+    background-color: #f0f5f0;
+}
+
+.highlight {
+    background-color: rgba(47, 111, 46, 0.15);
+    color: #2f6f2e;
+    font-weight: 600;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    .dropdown {
+        left: 0;
+        right: 0;
+        border-radius: 0 0 12px 12px;
+    }
+}
