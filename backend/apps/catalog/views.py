@@ -121,6 +121,25 @@ def products(request):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+def search_suggestions(request):
+    q = request.GET.get("q", "").strip()
+    if len(q) < 2:
+        return Response([])
+    
+    products = Product.objects.filter(name__icontains=q, is_active=True)[:8]
+    results = []
+    for p in products:
+        results.append({
+            "name": p.name,
+            "slug": p.slug,
+            "category": p.category.name if p.category else "",
+            "price": p.price_min if hasattr(p, 'price_min') else getattr(p, 'base_price', 0),
+            "image": f"/img/{p.image}" if p.image else None
+        })
+    return Response(results)
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def product_detail(request, slug):
     product = get_object_or_404(
         Product.objects.select_related("category", "brand")
