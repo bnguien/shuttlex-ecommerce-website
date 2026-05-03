@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import api, { BASE_URL } from "../../api"
 import { formatCurrencyVND } from "../../utils/format"
@@ -391,7 +391,7 @@ function CheckoutPage({ setNumCartItems }) {
           <p className="checkout-subtitle mb-0">Hoàn tất đơn hàng của bạn với bước cuối cùng.</p>
         </div>
 
-        <div className="row g-4 align-items-start">
+        <div className="row g-4">
           <div className="col-xl-7 col-lg-8">
             <article className="checkout-card checkout-block mb-4">
               <header className="checkout-section-header mb-3">
@@ -654,21 +654,24 @@ function CheckoutPage({ setNumCartItems }) {
             <aside className="checkout-summary sticky-lg-top">
               <h4 className="mb-3">Tóm tắt đơn hàng</h4>
 
-              {featuredCartItem && (
-                <div className="checkout-product preview mb-3">
-                  <img src={featuredCartItem.image ? `${BASE_URL}${featuredCartItem.image}` : ""} alt={featuredCartItem.name} />
-                  <div className="flex-grow-1">
-                    <div className="fw-semibold">{featuredCartItem.name}</div>
-                    <small className="text-muted">
-                      {featuredCartItem.size ? `Size: ${featuredCartItem.size}` : ""}
-                      {featuredCartItem.color ? ` | Màu: ${featuredCartItem.color}` : ""}
-                    </small>
-                    <div className="checkout-item-price">
-                      {formatCurrencyVND(Number(featuredCartItem.subtotal ?? featuredCartItem.total ?? 0))}
+              <div className="checkout-products-scroll mb-3">
+                {cartItems.map((item, index) => (
+                  <div key={index} className="checkout-product preview mb-2">
+                    <img src={item.image ? `${BASE_URL}${item.image}` : ""} alt={item.name} />
+                    <div className="flex-grow-1">
+                      <div className="fw-semibold">{item.name}</div>
+                      <small className="text-muted">
+                        {item.size ? `Size: ${item.size}` : ""}
+                        {item.color ? ` | Màu: ${item.color}` : ""}
+                        {` | SL: ${item.quantity}`}
+                      </small>
+                      <div className="checkout-item-price">
+                        {formatCurrencyVND(Number(item.subtotal ?? item.total ?? 0))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
 
               <div className="d-flex justify-content-between mb-2 checkout-price-row">
                 <span>Tạm tính</span>
