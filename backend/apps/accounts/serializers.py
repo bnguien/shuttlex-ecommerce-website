@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, UserAddress
 from django.db import IntegrityError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -202,3 +202,33 @@ class UserWriteSerializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+
+class UserAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = [
+            'id', 'receiver_name', 'phone', 
+            'province', 'ward', 'street_detail',
+            'latitude', 'longtitude',
+            'is_default', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+        
+    def validate_phone(self, value):
+        import re 
+        if not re.match(r'^0[35789]\d{8}$', value):
+            raise serializers.ValidationError("Số điện thoại không hợp lệ.")
+        return value
+    
+    def create(self, validated_data):
+        user = self.context['request'].user
+        if user.addresses.count() >= 5:
+            raise serializers.ValidationError("Bạn chỉ được tạo tối đa 5 địa chỉ.")
+        if not user.addresses.exists():
+            validated_data['is_default'] = True
+        if validated_data.get('is_default'):
+            user.addresses.filter(is_default=True).update(is_default=False)
+        validated_data['user'] = user
+        return super().create(validated_data)
+    
+    

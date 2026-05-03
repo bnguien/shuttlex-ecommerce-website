@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, EmailOrUsernameTokenObtainPairSerializer, UserListSerializer, UserWriteSerializer
+from .serializers import UserSerializer, EmailOrUsernameTokenObtainPairSerializer, UserListSerializer, UserWriteSerializer, UserAddressSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
@@ -171,3 +171,42 @@ def delete_user(request, user_id):
         return Response({"detail": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except CustomUser.DoesNotExist:
         return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def user_addresses(request):
+    if request.method == 'GET':
+        addreses = request.user.addresses.all()
+        return Response(UserAddressSerializer(addreses, many=True).data)
+    serializer = UserAddressSerializer(data=request.data, context={'request': request})
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def user_address_detail(request, address_id):
+    address = request.user.addresses.filter(id=address_id).first()
+    if not address:
+        return Response(
+            {'detail': 'Không tìm thấy.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    if request.method == 'DELETE':
+        address.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    serializer = UserAddressSerializer(address, data=request.data, partial=True, context={'request': request})
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def set_default_address(request, address_id):
+    address = request.user.addresses.filter(id=address_id).first()
+    if not address:
+        return Response({"detail": "Không tìm thấy."}, status=status.HTTP_404_NOT_FOUND)
+    request.user.addresses.filter(is_default=True).update(is_default=False)
+    address.is_default = True
+    address.save()
+    return Response({"detail": "Đã đặt thành địa chỉ mặc định."})

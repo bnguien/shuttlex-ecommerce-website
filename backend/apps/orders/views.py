@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from .models import Order, OrderAddress, ShippingMethod, OrderStatus
 from .serializers import CheckoutSerializer, OrderAddressSerializer, OrderSerializer, AdminOrderSerializer
+from .utils import calculate_distance, calculate_shipping_fee
 
 # Define status transition rules: map each status to allowed next statuses
 STATUS_TRANSITIONS = {
@@ -170,3 +171,16 @@ def admin_order_detail(request, order_id):
 
 	order.delete()
 	return Response(status=http_status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def calculate_shipping_fee_view(request):
+     lat = request.data.get('latitude')
+     lng = request.data.get('longitude')
+     cart_total = request.data.get('cart_total', 0)
+     
+     SHOP_LAT, SHOP_LNG = 16.069411, 108.149258
+     
+     distance = calculate_distance(SHOP_LAT, SHOP_LNG, float(lat), float(lng))
+     result = calculate_shipping_fee(distance, float(cart_total))
+     return Response(result)
