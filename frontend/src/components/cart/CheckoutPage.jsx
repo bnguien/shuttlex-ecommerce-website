@@ -4,6 +4,7 @@ import api, { BASE_URL } from "../../api"
 import { formatCurrencyVND } from "../../utils/format"
 import { useToast } from "../ui/Toast"
 import "./CheckoutPage.css"
+import AddressFormModal from "../address/AddressFormModal"
 
 function CheckoutPage({ setNumCartItems }) {
   const navigate = useNavigate()
@@ -14,22 +15,16 @@ function CheckoutPage({ setNumCartItems }) {
 
   const [cartItems, setCartItems] = useState([])
   const [shippingMethods, setShippingMethods] = useState([])
-  const [addresses, setAddresses] = useState([])
-
   const [paymentMethod, setPaymentMethod] = useState("CASH")
   const [shippingMethodCode, setShippingMethodCode] = useState("GHN")
-  const [selectedAddressId, setSelectedAddressId] = useState("")
-  const [editingAddress, setEditingAddress] = useState(false)
+  const [dynamicShippingFee, setDynamicShippingFee] = useState(0)
 
-  const [addressForm, setAddressForm] = useState({
-    recipient_name: "",
-    recipient_phone: "",
-    full_address: "",
-    street: "",
-    ward: "",
-    district: "",
-    province: "",
-  })
+  const [userAddresses, setUserAddresses] = useState([])
+  const [selectedAddress, setSelectedAddress] = useState(null)
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
+  const [editingAddress, setEditingAddress] = useState(false)
+  
+  const [isGift, setIsGift] = useState(false)
 
   const [availableVouchers, setAvailableVouchers] = useState([])
   const [showVoucherPicker, setShowVoucherPicker] = useState(false)
@@ -57,7 +52,7 @@ function CheckoutPage({ setNumCartItems }) {
     Promise.all([
       api.get(`get_cart_items?cart_code=${encodeURIComponent(cartCode)}`),
       api.get("shipping-methods/"),
-      api.get("order-addresses/"),
+      api.get("addresses/"),
       api.get("vouchers/"),
     ])
       .then(([cartRes, methodRes, addressRes, voucherRes]) => {
@@ -73,23 +68,14 @@ function CheckoutPage({ setNumCartItems }) {
         }
 
         const allAddresses = addressRes.data || []
-        setAddresses(allAddresses)
+        setUserAddresses(allAddresses)
 
         const vouchers = Array.isArray(voucherRes.data) ? voucherRes.data : (voucherRes.data?.results || [])
         setAvailableVouchers(vouchers)
 
         if (allAddresses.length > 0) {
-          const first = allAddresses[0]
-          setSelectedAddressId(String(first.id))
-          setAddressForm({
-            recipient_name: first.recipient_name || "",
-            recipient_phone: first.recipient_phone || "",
-            full_address: first.full_address || "",
-            street: first.street || "",
-            ward: first.ward || "",
-            district: first.district || "",
-            province: first.province || "",
-          })
+          const defaultAddr = allAddresses.find(a => a.is_default) || allAddresses[0];
+          setSelectedAddress(defaultAddr);
         }
       })
       .catch(() => {
@@ -114,16 +100,35 @@ function CheckoutPage({ setNumCartItems }) {
     }, 0)
   }, [cartItems])
 
+  useEffect(() => {
+    if (selectedAddress && selectedAddress.latitude && subtotal > 0) {
+      api.post('calculate-shipping-fee/', {
+          latitude: selectedAddress.latitude,
+          longitude: selectedAddress.longtitude,
+          cart_total: subtotal
+      }).then(res => {
+          setDynamicShippingFee(res.data.shipping_fee);
+      }).catch(err => {
+          console.error("Lỗi tính phí ship:", err);
+      });
+    } else {
+      setDynamicShippingFee(0);
+    }
+  }, [selectedAddress, subtotal]);
+
+  // Vô hiệu hóa COD nếu là quà tặng
+  useEffect(() => {
+    if (isGift && paymentMethod === 'CASH') {
+        setPaymentMethod('BANK_TRANSFER');
+    }
+  }, [isGift]);
+
   const currentShipping = useMemo(() => {
     return shippingMethods.find((m) => String(m.code) === String(shippingMethodCode))
   }, [shippingMethodCode, shippingMethods])
 
-  const selectedAddress = useMemo(() => {
-    if (!selectedAddressId) return null
-    return addresses.find((a) => String(a.id) === String(selectedAddressId)) || null
-  }, [addresses, selectedAddressId])
 
-  const estimatedShippingFee = Number(currentShipping?.base_cost ?? 0)
+  const estimatedShippingFee = dynamicShippingFee > 0 ? dynamicShippingFee : Number(currentShipping?.base_cost ?? 0)
   const effectiveShippingDiscount = Math.min(shippingDiscountAmount, estimatedShippingFee)
   const estimatedTotal = Math.max(0, subtotal + estimatedShippingFee - productDiscountAmount - effectiveShippingDiscount)
 
@@ -167,6 +172,8 @@ function CheckoutPage({ setNumCartItems }) {
       return true
     })
   }, [availableVouchers])
+
+  
 
   async function applyVoucherCode(kind, explicitCode = "") {
     const isShipping = kind === "shipping"
@@ -272,60 +279,26 @@ function CheckoutPage({ setNumCartItems }) {
     recalculate()
   }, [estimatedShippingFee])
 
-  function selectAddress(value) {
-    setSelectedAddressId(value)
-    const addr = addresses.find((a) => String(a.id) === String(value))
-    if (!addr) return
-    setAddressForm({
-      recipient_name: addr.recipient_name || "",
-      recipient_phone: addr.recipient_phone || "",
-      full_address: addr.full_address || "",
-      street: addr.street || "",
-      ward: addr.ward || "",
-      district: addr.district || "",
-      province: addr.province || "",
-    })
-    setEditingAddress(false)
-  }
-
-  function parseAddressFromFull(fullAddress) {
-    const parts = (fullAddress || "").split(",").map((p) => p.trim()).filter(Boolean)
-    return {
-      street: parts[0] || fullAddress || "",
-      ward: parts[1] || "Chưa rõ",
-      district: parts[2] || "Chưa rõ",
-      province: parts[3] || "Chưa rõ",
-    }
-  }
 
   async function ensureAddressId() {
-    if (selectedAddressId && !editingAddress) return Number(selectedAddressId)
-
-    const recipient_name = addressForm.recipient_name.trim()
-    const recipient_phone = addressForm.recipient_phone.trim()
-    const full_address = addressForm.full_address.trim()
-
-    if (!recipient_name || !recipient_phone || !full_address) {
-      throw new Error("Vui lòng nhập họ tên, số điện thoại và địa chỉ.")
+    if (!selectedAddress) {
+      throw new Error("Vui lòng chọn địa chỉ giao hàng.")
     }
 
-    const fallback = parseAddressFromFull(full_address)
     const payload = {
-      recipient_name,
-      recipient_phone,
-      full_address,
-      street: addressForm.street.trim() || fallback.street,
-      ward: addressForm.ward.trim() || fallback.ward,
-      district: addressForm.district.trim() || fallback.district,
-      province: addressForm.province.trim() || fallback.province,
+      recipient_name: selectedAddress.receiver_name,
+      recipient_phone: selectedAddress.phone,
+      full_address: selectedAddress.full_address || `${selectedAddress.street_detail}, ${selectedAddress.ward}, ${selectedAddress.province}`,
+      street: selectedAddress.street_detail,
+      ward: selectedAddress.ward,
+      district: selectedAddress.ward, 
+      province: selectedAddress.province,
+      latitude: selectedAddress.latitude,
+      longitude: selectedAddress.longtitude
     }
 
     const created = await api.post("order-addresses/", payload)
-    const addr = created.data
-    setAddresses((prev) => [addr, ...prev])
-    setSelectedAddressId(String(addr.id))
-    setEditingAddress(false)
-    return addr.id
+    return created.data.id
   }
 
   async function placeOrder() {
@@ -352,6 +325,7 @@ function CheckoutPage({ setNumCartItems }) {
         payment_method: paymentMethod,
         product_voucher_code: appliedProductVoucher?.code || undefined,
         shipping_voucher_code: appliedShippingVoucher?.code || undefined,
+        is_gift: isGift,
       })
 
       const code = res.data?.code
@@ -381,7 +355,7 @@ function CheckoutPage({ setNumCartItems }) {
     return <div className="container py-5">Đang tải trang thanh toán...</div>
   }
 
-  const featuredCartItem = cartItems[0]
+
 
   return (
     <section className="checkout-page py-4 py-lg-5">
@@ -396,76 +370,88 @@ function CheckoutPage({ setNumCartItems }) {
             <article className="checkout-card checkout-block mb-4">
               <header className="checkout-section-header mb-3">
                 <h4 className="mb-0">Thông tin giao hàng</h4>
-                {addresses.length > 0 && (
+                <div className="d-flex gap-3">
+                  {userAddresses.length > 0 && (
+                    <button
+                      type="button"
+                      className="checkout-text-link"
+                      onClick={() => setEditingAddress((prev) => !prev)}
+                    >
+                      {editingAddress ? "Đóng" : "Thay đổi"}
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="checkout-text-link"
-                    onClick={() => setEditingAddress((prev) => !prev)}
+                    style={{ color: "#0d6efd" }}
+                    onClick={() => {
+                      if (userAddresses.length >= 5) {
+                        showToast("Sổ địa chỉ của bạn đã đầy (tối đa 5). Vui lòng Sửa hoặc Xóa bớt ở trang cá nhân.", "warning");
+                        return;
+                      }
+                      setIsAddressModalOpen(true);
+                    }}
                   >
-                    {editingAddress ? "Đóng" : "Thay đổi"}
+                    + Thêm mới
                   </button>
-                )}
+                </div>
               </header>
 
-              {!editingAddress && selectedAddress && (
+              {!editingAddress && selectedAddress ? (
                 <div className="checkout-address-card">
-                  <div className="checkout-address-name">{selectedAddress.recipient_name}</div>
-                  <div className="checkout-address-phone">{selectedAddress.recipient_phone}</div>
+                  <div className="checkout-address-name">{selectedAddress.receiver_name}</div>
+                  <div className="checkout-address-phone">{selectedAddress.phone}</div>
                   <div className="checkout-address-full">{selectedAddress.full_address}</div>
                 </div>
-              )}
+              ) : !editingAddress && !selectedAddress ? (
+                <div className="alert alert-warning mb-0">Vui lòng thêm địa chỉ giao hàng.</div>
+              ) : null}
 
-              {(editingAddress || !selectedAddress) && (
-                <>
-                  {addresses.length > 0 && (
-                    <div className="mb-3">
-                      <label className="form-label">Chon dia chi da luu</label>
-                      <select
-                        className="form-select"
-                        value={selectedAddressId}
-                        onChange={(e) => selectAddress(e.target.value)}
+              {editingAddress && (
+                <div className="mb-3 mt-3">
+                  <label className="form-label text-muted small">Chọn địa chỉ từ Sổ địa chỉ của bạn:</label>
+                  <div className="d-flex flex-column gap-2">
+                    {userAddresses.map((addr) => (
+                      <div 
+                        key={addr.id} 
+                        className={`p-3 border rounded ${selectedAddress?.id === addr.id ? 'border-success bg-success-subtle' : ''}`}
+                        style={{ cursor: "pointer", transition: "0.2s" }}
+                        onClick={() => {
+                          setSelectedAddress(addr);
+                          setEditingAddress(false);
+                        }}
                       >
-                        <option value="">Tạo địa chỉ mới</option>
-                        {addresses.map((addr) => (
-                          <option key={addr.id} value={addr.id}>
-                            {addr.recipient_name} - {addr.recipient_phone}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div className="row g-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Họ và tên</label>
-                      <input
-                        className="form-control"
-                        value={addressForm.recipient_name}
-                        onChange={(e) => setAddressForm((prev) => ({ ...prev, recipient_name: e.target.value }))}
-                        placeholder="Nguyễn Văn A"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">Số điện thoại</label>
-                      <input
-                        className="form-control"
-                        value={addressForm.recipient_phone}
-                        onChange={(e) => setAddressForm((prev) => ({ ...prev, recipient_phone: e.target.value }))}
-                        placeholder="0392663097"
-                      />
-                    </div>
-                    <div className="col-12">
-                      <label className="form-label">Địa chỉ chi tiết</label>
-                      <input
-                        className="form-control"
-                        value={addressForm.full_address}
-                        onChange={(e) => setAddressForm((prev) => ({ ...prev, full_address: e.target.value }))}
-                        placeholder="K32/58 Ngô Sĩ Liên, Hòa Khánh Bắc, Liên Chiểu, Đà Nẵng"
-                      />
-                    </div>
+                        <div className="fw-bold">{addr.receiver_name} - {addr.phone} {addr.is_default && <span className="badge bg-success ms-2">Mặc định</span>}</div>
+                        <div className="text-muted small mt-1">{addr.full_address}</div>
+                      </div>
+                    ))}
                   </div>
-                </>
+                </div>
               )}
+            </article>
+
+            <article className="checkout-card checkout-block mb-4">
+              <header className="checkout-section-header mb-3">
+                <h4 className="mb-0">Tặng quà</h4>
+              </header>
+              <div className="form-check d-flex align-items-center gap-2">
+                <input 
+                  className="form-check-input mt-0" 
+                  type="checkbox" 
+                  id="giftCheckbox" 
+                  checked={isGift}
+                  onChange={(e) => {
+                      setIsGift(e.target.checked);
+                      if (e.target.checked && paymentMethod === 'CASH') {
+                          showToast("Đơn hàng quà tặng shop sẽ chuẩn bị cẩn thận hơn, vui lòng thanh toán trước nha.", "info");
+                      }
+                  }}
+                  style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }}
+                />
+                <label className="form-check-label ms-1" htmlFor="giftCheckbox" style={{ fontSize: "0.95rem", color: "#333", cursor: "pointer" }}>
+                  Đánh dấu đơn hàng này là quà tặng (Shop sẽ nâng niu, tri ân và đóng gói đặc biệt hơn)
+                </label>
+              </div>
             </article>
 
             <article className="checkout-card checkout-block mb-4">
@@ -625,8 +611,12 @@ function CheckoutPage({ setNumCartItems }) {
                 <div className="col-md-6">
                   <button
                     type="button"
-                    className={`checkout-choice-card checkout-choice-card-payment ${paymentMethod === "CASH" ? "is-active" : ""}`}
-                    onClick={() => setPaymentMethod("CASH")}
+                    className={`checkout-choice-card checkout-choice-card-payment ${paymentMethod === "CASH" ? "is-active" : ""} ${isGift ? 'opacity-50' : ''}`}
+                    onClick={() => {
+                        if (!isGift) setPaymentMethod("CASH")
+                        else showToast("Vui lòng thanh toán trước đối với đơn hàng Quà tặng.", "warning")
+                    }}
+                    style={isGift ? { cursor: 'not-allowed' } : {}}
                   >
                     <div>
                       <div className="checkout-choice-title">Thanh toán khi nhận hàng (COD)</div>
@@ -724,6 +714,19 @@ function CheckoutPage({ setNumCartItems }) {
           </div>
         </div>
       </div>
+
+      <AddressFormModal 
+        isOpen={isAddressModalOpen} 
+        onClose={() => setIsAddressModalOpen(false)}
+        onSaved={() => {
+          api.get("addresses/").then(res => {
+             setUserAddresses(res.data);
+             if (res.data.length > 0) {
+                setSelectedAddress(res.data.find(a => a.is_default) || res.data[0]);
+             }
+          });
+        }}
+      />
     </section>
   )
 }

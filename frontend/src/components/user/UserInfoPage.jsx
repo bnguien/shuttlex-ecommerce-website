@@ -3,18 +3,31 @@ import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext.jsx'
 import { FiUser, FiMail, FiMapPin, FiShoppingBag, FiLock, FiEdit3 } from 'react-icons/fi'
 import api from '../../api'
+import AddressFormModal from '../address/AddressFormModal'
+import { useToast } from '../ui/Toast'
 
 function UserInfoPage() {
     const {username, last_name, first_name, email, isLoading} = useContext(AuthContext)
     const navigate = useNavigate()
+    const showToast = useToast()
     const [orderStats, setOrderStats] = useState({
       total: 0,
       pending: 0,
       processing: 0,
       completed: 0
     })
+    const [addresses, setAddresses] = useState([])
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
+    const [editingAddress, setEditingAddress] = useState(null)
+
+    const fetchAddresses = () => {
+      api.get('addresses/')
+        .then(res => setAddresses(res.data))
+        .catch(() => {})
+    }
 
     useEffect(() => {
+      fetchAddresses()
       api.get('my-orders/')
         .then(res => {
           const orders = Array.isArray(res.data) ? res.data : []
@@ -43,6 +56,27 @@ function UserInfoPage() {
         </div>
       </div>
     )
+  }
+
+  const handleSetDefault = async (id) => {
+    try {
+      await api.patch(`addresses/${id}/set-default/`)
+      showToast("Đã đặt làm địa chỉ mặc định", "success")
+      fetchAddresses()
+    } catch (err) {
+      showToast("Có lỗi xảy ra", "error")
+    }
+  }
+
+  const handleDeleteAddress = async (id) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa địa chỉ này?")) return
+    try {
+      await api.delete(`addresses/${id}/`)
+      showToast("Đã xóa địa chỉ", "success")
+      fetchAddresses()
+    } catch (err) {
+      showToast("Có lỗi xảy ra", "error")
+    }
   }
     
   return (
@@ -119,20 +153,82 @@ function UserInfoPage() {
             </div>
 
             <div className="card shadow-sm border-0">
-              <div className="card-header bg-white border-bottom py-3">
+              <div className="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                 <h5 className="mb-0 d-flex align-items-center">
                   <FiMapPin className="me-2" />
                   Sổ địa chỉ
                 </h5>
+                <button 
+                  className="btn btn-sm btn-outline-success"
+                  onClick={() => {
+                    setEditingAddress(null)
+                    setIsAddressModalOpen(true)
+                  }}
+                >
+                  + Thêm mới
+                </button>
               </div>
               <div className="card-body p-4">
-                <div className="text-center py-4 text-muted">
-                  <FiMapPin size={48} className="mb-3 opacity-50" />
-                  <p className="mb-3">Chưa có địa chỉ nào được lưu</p>
-                  <button className="btn btn-outline-success">
-                    Thêm địa chỉ
-                  </button>
-                </div>
+                {addresses.length === 0 ? (
+                  <div className="text-center py-4 text-muted">
+                    <FiMapPin size={48} className="mb-3 opacity-50" />
+                    <p className="mb-3">Chưa có địa chỉ nào được lưu</p>
+                    <button 
+                      className="btn btn-outline-success"
+                      onClick={() => {
+                        setEditingAddress(null)
+                        setIsAddressModalOpen(true)
+                      }}
+                    >
+                      Thêm địa chỉ
+                    </button>
+                  </div>
+                ) : (
+                  <div className="d-flex flex-column gap-3">
+                    {addresses.map(addr => (
+                      <div key={addr.id} className={`p-3 border rounded ${addr.is_default ? 'border-success bg-success-subtle' : ''}`}>
+                        <div className="d-flex justify-content-between align-items-start mb-2">
+                          <div>
+                            <span className="fw-bold">{addr.receiver_name}</span>
+                            <span className="mx-2 text-muted">|</span>
+                            <span className="text-muted">{addr.phone}</span>
+                            {addr.is_default && <span className="badge bg-success ms-2">Mặc định</span>}
+                          </div>
+                          <div className="d-flex gap-2 align-items-center">
+                            {!addr.is_default && (
+                              <button 
+                                className="btn btn-sm btn-outline-secondary py-0 px-2"
+                                style={{fontSize: '12px'}}
+                                onClick={() => handleSetDefault(addr.id)}
+                              >
+                                Thiết lập mặc định
+                              </button>
+                            )}
+                            <button 
+                              className="btn btn-sm text-primary p-0 mx-1"
+                              onClick={() => {
+                                setEditingAddress(addr)
+                                setIsAddressModalOpen(true)
+                              }}
+                            >
+                              Sửa
+                            </button>
+                            {!addr.is_default && (
+                              <button 
+                                className="btn btn-sm text-danger p-0"
+                                onClick={() => handleDeleteAddress(addr.id)}
+                              >
+                                Xóa
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-muted small mb-1">{addr.street_detail}</div>
+                        <div className="text-muted small">{addr.ward}, {addr.province}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -240,6 +336,12 @@ function UserInfoPage() {
           </div>
         </div>
       </div>
+      <AddressFormModal 
+        isOpen={isAddressModalOpen}
+        onClose={() => setIsAddressModalOpen(false)}
+        onSaved={fetchAddresses}
+        editAddress={editingAddress}
+      />
     </>
   )
 }

@@ -34,7 +34,6 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
     province: "",
     ward: "",
     street_detail: "",        
-    address_detail: "",       
     full_address: "",         
     latitude: null,
     longtitude: null,
@@ -50,8 +49,7 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
       setForm({
         ...editAddress,
         street_detail: editAddress.street_detail || "",
-        address_detail: editAddress.address_detail || "",
-        full_address: editAddress.full_address || "",
+        full_address: "",
       });
     } else {
       setForm({
@@ -60,7 +58,6 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
         province: "",
         ward: "",
         street_detail: "",
-        address_detail: "",
         full_address: "",
         latitude: null,
         longtitude: null,
@@ -93,7 +90,6 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
 
   useEffect(() => {
     const parts = [
-      form.address_detail?.trim(),
       form.street_detail?.trim(),
       form.ward?.trim(),
       form.province?.trim(),
@@ -103,7 +99,7 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
       ...prev,
       full_address: parts.join(", "),
     }));
-  }, [form.address_detail, form.street_detail, form.ward, form.province]);
+  }, [form.street_detail, form.ward, form.province]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({
@@ -111,6 +107,10 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
       [field]: value,
       ...(field === "province" && {
         ward: "",
+        latitude: null,
+        longtitude: null,
+      }),
+      ...(field === "ward" && {
         latitude: null,
         longtitude: null,
       }),
@@ -174,7 +174,7 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
         phone: form.phone,
         province: form.province,
         ward: form.ward,
-        street_detail: form.full_address, 
+        street_detail: form.street_detail, 
         latitude: form.latitude,
         longtitude: form.longtitude,
         is_default: form.is_default,
@@ -319,27 +319,12 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Tên đường</label>
+            <label className="form-label">Số nhà, Tên đường</label>
             <input
               className="form-control"
               value={form.street_detail}
               onChange={(e) => handleChange("street_detail", e.target.value)}
-              placeholder="VD: Nguyễn Văn Linh"
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">
-              Chi tiết{" "}
-              <span style={{ color: "#888", fontWeight: 400, fontSize: 12 }}>
-                (số nhà, kiệt, tầng...)
-              </span>
-            </label>
-            <input
-              className="form-control"
-              value={form.address_detail}
-              onChange={(e) => handleChange("address_detail", e.target.value)}
-              placeholder="VD: 123 kiệt 5, tầng 2"
+              placeholder="VD: 123 kiệt 5, tầng 2, Nguyễn Văn Linh"
             />
           </div>
 
@@ -369,7 +354,7 @@ function AddressFormModal({ isOpen, onClose, onSaved, editAddress }) {
               center={defaultCenter}
               markerPos={markerPos}
               onChange={handleMapChange}
-              flyTo={flyToCoords}
+              flyTo={markerPos}
             />
             {form.latitude && (
               <small className="text-muted mt-1 d-block">

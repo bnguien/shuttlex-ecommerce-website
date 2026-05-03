@@ -230,3 +230,5 @@ class UserAddressSerializer(serializers.ModelSerializer):
             user.addresses.filter(is_default=True).update(is_default=False)
         validated_data['user'] = user
         return super().create(validated_data)
+    
+    
