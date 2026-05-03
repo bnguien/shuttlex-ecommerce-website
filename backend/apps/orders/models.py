@@ -212,6 +212,9 @@ class Order(models.Model):
      payment_provider = models.CharField(max_length=50, blank=True)
      payment_provider_response = models.JSONField(default= dict, blank=True)
      note = models.TextField(blank=True)
+     
+     is_gift = models.BooleanField(default=False)
+     gift_note = models.TextField(blank=True, default="", help_text="Lời nhắn tặng quà")
 
      order_email_sent = models.BooleanField(default=False)
      payment_email_sent = models.BooleanField(default=False)

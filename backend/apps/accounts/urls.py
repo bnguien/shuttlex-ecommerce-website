@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     UserRegisterView, get_username, get_first_name, get_last_name, get_email, get_user_role,
-    list_users, get_user, create_user, update_user, delete_user
+    list_users, get_user, create_user, update_user, delete_user,
+    user_addresses, user_address_detail, set_default_address
 )
 
 urlpatterns = [
@@ -17,4 +18,8 @@ urlpatterns = [
     path('users/create/', create_user, name='create-user'),
     path('users/<int:user_id>/update/', update_user, name='update-user'),
     path('users/<int:user_id>/delete/', delete_user, name='delete-user'),
+    
+    path('addresses/', user_addresses, name='user-addresses'),
+    path('addresses/<int:address_id>/', user_address_detail, name='user-address-detail'),
+    path('addresses/<int:address_id>/set-default/', set_default_address, name='set-default-address'),
 ]
