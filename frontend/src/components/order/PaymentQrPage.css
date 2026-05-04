@@ -125,3 +125,54 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* === Demo Mode Banner === */
+.demo-banner {
+  background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+  border: 1px solid #ffe082;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.demo-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #e65100;
+  letter-spacing: 0.05em;
+}
+
+.demo-banner-icon {
+  font-size: 18px;
+}
+
+.demo-banner-text {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #5d4037;
+}
+
+.demo-diff {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  color: #795548;
+  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.demo-diff strong {
+  color: #4e342e;
+}
+
+.demo-diff-sep {
+  color: #bcaaa4;
+  margin: 0 2px;
+}
