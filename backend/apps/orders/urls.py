@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .webhooks import SepayWebhookView
 
 urlpatterns = [
 	path("shipping-methods/", views.shipping_methods),
@@ -10,4 +11,5 @@ urlpatterns = [
 	path("admin-orders/", views.admin_orders),
 	path("admin-orders/<int:order_id>/", views.admin_order_detail),
  	path("calculate-shipping-fee/", views.calculate_shipping_fee_view),
+	path("sepay-webhook/", SepayWebhookView.as_view(), name="sepay-webhook"),
 ]

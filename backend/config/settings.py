@@ -41,7 +41,8 @@ ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
     "127.0.0.1,localhost"
 ).split(",")
-
+ALLOWED_HOSTS = ['*', 'expansion-joyfully-elevate.ngrok-free.dev'] 
+CSRF_TRUSTED_ORIGINS = ['https://expansion-joyfully-elevate.ngrok-free.dev']
 
 # Application definition
 
