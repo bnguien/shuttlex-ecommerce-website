@@ -47,6 +47,8 @@ CSRF_TRUSTED_ORIGINS = ['https://expansion-joyfully-elevate.ngrok-free.dev']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -238,5 +240,20 @@ CELERY_BEAT_SCHEDULE = {
     'sync-flash-sale-every-minute': {
         'task': 'apps.promotions.tasks.run_flash_sale_scheduler',
         'schedule': crontab(minute='*'),
+    },
+    'cleanup-old-notifications-daily': {
+        'task': 'apps.notifications.tasks.cleanup_old_notifications',
+        'schedule': crontab(hour=2, minute=0),
+    },
+}
+
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1")],
+        },
     },
 }

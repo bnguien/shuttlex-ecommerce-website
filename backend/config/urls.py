@@ -51,7 +51,6 @@ urlpatterns = [
     path("", include("apps.cart.urls")),
     path("", include("apps.orders.urls")),
     path("", include("apps.promotions.urls")),
-    
     path("", include("apps.notifications.urls")),
 ]
 
