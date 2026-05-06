@@ -21,6 +21,7 @@ function ProductPage() {
     sizes: [],
     minPrice: "",
     maxPrice: "",
+    isFlashSale: false,
     sort: "newest"
   })
   const pageSize = 12
@@ -68,6 +69,7 @@ function ProductPage() {
       ...(filters.sizes.length > 0 ? { sizes: filters.sizes.join(",") } : {}),
       ...(filters.minPrice ? { min_price: filters.minPrice } : {}),
       ...(filters.maxPrice ? { max_price: filters.maxPrice } : {}),
+      ...(filters.isFlashSale ? { is_flash_sale: "true" } : {}),
       ...(apiSort ? { sort: apiSort } : {})
     }
     api.get("products", { params })
@@ -88,6 +90,9 @@ function ProductPage() {
         console.error(err)
         setLoading(false)
         setError(err.message)
+        setProducts([])
+        setTotalCount(0)
+        setTotalPages(0)
       }
     )
   }, [category, searchQuery, page, filters])
@@ -117,7 +122,7 @@ function ProductPage() {
         <div className="flex-grow-1 d-flex flex-column p-3 ps-0" style={{minWidth: 0, maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden"}}>
           <div className="p-3 d-flex flex-row ">
             <h3 className="fw-semibold">
-              {categoryName || "Tất cả sản phẩm"}
+              {filters.isFlashSale ? "Flash Sale" : (categoryName || "Tất cả sản phẩm")}
             </h3>
             <div className="ms-auto d-flex align-items-center gap-2">
               <span className="fw-medium">Sắp xếp theo:</span>

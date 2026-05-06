@@ -3,7 +3,7 @@ import styles from "./CartPageItem.module.css"
 import { useState } from "react"
 import { formatCurrencyVND } from "../../utils/format"
 
-function CartPageItem({ item, onRemove, onUpdate }) {
+function CartPageItem({ item, isSelected, onToggleSelect, onRemove, onUpdate }) {
   const [quantity, setQuantity] = useState(item?.quantity ?? 1)
   const cartCode = localStorage.getItem("cart_code")
   const unavailable = item?.is_available === false
@@ -51,6 +51,15 @@ function CartPageItem({ item, onRemove, onUpdate }) {
       className={`d-flex align-items-center py-3 border-bottom ${unavailable ? "opacity-50" : ""}`}
       style={unavailable ? { backgroundColor: "var(--bs-light)" } : {}}
     >
+      <div className="me-3">
+        <input 
+            type="checkbox" 
+            className="form-check-input mt-0" 
+            checked={isSelected} 
+            onChange={onToggleSelect} 
+            disabled={unavailable}
+        />
+      </div>
       <div className={styles.cardImgWrapper}>
         <img src={imageUrl || ""} alt={displayName} />
       </div>

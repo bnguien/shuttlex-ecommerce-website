@@ -48,11 +48,12 @@ class Command(BaseCommand):
                     flash_item = (
                          FlashSaleItem.objects.filter(
                               product_id=item.product_id,
+                              variant_id=item.variant_id,
                               sale_price=item.price_at_purchase,
                               flash_sale__start_time__lte=order.created_at,
                               flash_sale__end_time__gt=order.created_at,
                          )
-                         .order_by("flash_sale__end_time", "id")
+                         .order_by("variant_id", "flash_sale__end_time", "id")
                          .first()
                     )
                     if flash_item:

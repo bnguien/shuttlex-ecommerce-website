@@ -96,9 +96,8 @@ function PaymentQrPage() {
         if (latest?.payment_status === "PAID") {
           navigate(`/orders/${code}`, { replace: true })
         }
-      } catch {
-      }
-    }, 300)
+      } catch { /* empty */ }
+    }, 1000)
 
     return () => clearInterval(pollingId)
   }, [order, timeLeft, code, navigate])

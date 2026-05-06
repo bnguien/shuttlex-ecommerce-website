@@ -135,6 +135,7 @@ class VoucherResponseSerializer(serializers.ModelSerializer):
 
 class FlashSaleItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
+    product_slug = serializers.CharField(source="product.slug", read_only=True)
     product_image = serializers.ImageField(source="product.image", read_only=True)
 
     class Meta:
@@ -142,7 +143,9 @@ class FlashSaleItemSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "product",
+            "variant",
             "product_name",
+            "product_slug",
             "product_image",
             "original_price",
             "sale_price",
@@ -152,7 +155,7 @@ class FlashSaleItemSerializer(serializers.ModelSerializer):
 
 class FlashSaleSerializer(serializers.ModelSerializer):
     items = FlashSaleItemSerializer(
-        source="flashsaleitem_set", many=True, read_only=True
+        many=True, read_only=True
     )
     is_ongoing = serializers.SerializerMethodField()
 
@@ -244,6 +247,7 @@ class FlashSaleWriteSerializer(serializers.ModelSerializer):
             item, _ = FlashSaleItem.objects.update_or_create(
                 flash_sale=flash_sale,
                 product=product,
+                variant=None,
                 defaults={
                     "original_price": product.base_price,
                     "sale_price": sale_price,

@@ -35,8 +35,9 @@ CHECKOUT_LOCK_TIMEOUT_MS = int(os.getenv("CHECKOUT_LOCK_TIMEOUT_MS", "15000"))
 CHECKOUT_LOCK_BLOCKING_SEC = float(os.getenv("CHECKOUT_LOCK_BLOCKING_SEC", "3"))
 
 
-def _find_active_flash_sale_item(*, product_id: int, now):
-     return (
+def _find_active_flash_sale_item(*, product_id: int, variant_id: int | None = None, now):
+     from django.db import models
+     qs = (
           FlashSaleItem.objects.select_related("flash_sale")
           .select_for_update()
           .filter(
@@ -45,9 +46,9 @@ def _find_active_flash_sale_item(*, product_id: int, now):
                flash_sale__start_time__lte=now,
                flash_sale__end_time__gte=now,
           )
-          .order_by("flash_sale__end_time", "id")
-          .first()
      )
+     qs = qs.filter(models.Q(variant_id=variant_id) | models.Q(variant__isnull=True))
+     return qs.order_by("variant_id", "flash_sale__end_time", "id").first()
 
 
 def _validate_voucher_for_user(*, voucher: Voucher, user, subtotal: Decimal, shipping_fee: Decimal):
@@ -286,14 +287,14 @@ def create_order(
      payment_method: str,
      product_voucher_code: Optional[str]=None,
      shipping_voucher_code: Optional[str]=None,  
+     item_ids: Optional[list[int]] = None,
      note: str = "",
 ) -> Order:
      now = timezone.now()
-     cart_items = list(
-          CartItem.objects
-          .select_related("product", "variant")
-          .filter(cart=cart)
-     )
+     qs = CartItem.objects.select_related("product", "variant").filter(cart=cart)
+     if item_ids:
+          qs = qs.filter(id__in=item_ids)
+     cart_items = list(qs)
 
      if not cart_items:
           raise ValueError("Giỏ hàng trống.")
@@ -323,7 +324,7 @@ def create_order(
                     product = product_map[ci.product_id]
                     unit_price = product.get_effective_price()
 
-               flash_item = _find_active_flash_sale_item(product_id=product.id, now=now)
+               flash_item = _find_active_flash_sale_item(product_id=product.id, variant_id=variant.id if variant else None, now=now)
                if flash_item:
                     remaining = flash_item.stock_limit - flash_item.sold_count
                     if remaining < ci.quantity:
@@ -483,6 +484,9 @@ def create_order(
                note="Đơn hàng được tạo.",
           )
           if payment_method != PaymentMethod.BANK_TRANSFER:
-               cart.items.all().delete()
+               if item_ids:
+                    cart.items.filter(id__in=item_ids).delete()
+               else:
+                    cart.items.all().delete()
           return order
 

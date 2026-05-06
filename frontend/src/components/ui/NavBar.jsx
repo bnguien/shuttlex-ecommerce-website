@@ -6,6 +6,7 @@ import { AuthContext } from "../context/AuthContext"
 import styles from "./NavBar.module.css"
 import NavLink from "./NavBarLink.jsx"
 import SearchBar from "./SearchBar.jsx"
+import NotificationBell from './NotificationBell'
 
 const NavBar = ({numCartItems, transparent = false}) => {
     useContext(AuthContext)
@@ -52,19 +53,7 @@ const NavBar = ({numCartItems, transparent = false}) => {
                             <FaMagnifyingGlass size={20} />
                         </button>
                         
-                        <button className="btn btn-link text-light p-0 border-0 position-relative" style={{ opacity: 0.8 }}>
-                            <FaRegBell size={20}/>
-                            {/* Chỉ hiện số lượng khi > 0, bo tròn đỏ đẹp mắt */}
-                            {/* Demo tạm số 3, sau này bạn đổi thành biến numNotifications */}
-                            {3 > 0 && (
-                                <span 
-                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                                    style={{ fontSize: "0.6rem", padding: "0.3em 0.5em" }}
-                                >
-                                    3
-                                </span>
-                            )}
-                        </button>
+                        <NotificationBell />
 
                         <Link to="/cart" className={`btn btn-outline-light ms-3 rounded-pill position-relative ${styles.responsiveCart}`}>
                             <FaCartShopping />
