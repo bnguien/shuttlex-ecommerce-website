@@ -32,6 +32,7 @@ import ContactPage from "./components/contact/ContactPage"
 import PaymentQrPage from "./components/order/PaymentQrPage"
 import OrderHistoryPage from "./components/order/OrderHistoryPage"
 import OrderDetailPage from "./components/order/OrderDetailPage"
+import PromotionsPage from "./components/promotion/PromotionsPage"
 import { useEffect, useState } from "react"
 import api from "./api"
 import ProtectedRoute from "./components/ui/ProtectedRoute"
@@ -88,6 +89,7 @@ const App = () => {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/cart" element={<ProtectedRoute><CartPage setNumCartItems={setNumCartItems} /></ProtectedRoute>} />
             <Route path="/checkout" element={<ProtectedRoute><CheckoutPage setNumCartItems={setNumCartItems} /></ProtectedRoute>} />
+            <Route path="/promotions" element={<PromotionsPage />} />
             <Route path="/payment/qr/:code" element={<ProtectedRoute><PaymentQrPage /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
             <Route path="/orders/:code" element={<ProtectedRoute><OrderDetailPage /></ProtectedRoute>} />

@@ -22,8 +22,8 @@ class OrderAddressSerializer(serializers.ModelSerializer):
           read_only_fields = ["id"]
 
 class OrderItemReadSerializer(serializers.Serializer):
-     product_name = serializers.CharField(source="product_name_snapshot")
-     variant_display = serializers.CharField(source="variant_display_snapshot")
+     product_name = serializers.CharField(source="product_name_snapshot", allow_null=True, allow_blank=True)
+     variant_display = serializers.CharField(source="variant_display_snapshot", allow_null=True, allow_blank=True)
      quantity = serializers.IntegerField()
      price_at_purchase = serializers.DecimalField(max_digits=10, decimal_places=2)
      line_total = serializers.DecimalField(max_digits=12, decimal_places=2)
@@ -105,6 +105,9 @@ class CheckoutSerializer(serializers.Serializer):
      payment_method = serializers.ChoiceField(
           choices=PaymentMethod.choices
      )
+     item_ids = serializers.ListField(
+          child=serializers.IntegerField(), required=False, allow_empty=True
+     )
      note = serializers.CharField(required=False, allow_blank=True)
 
      def validate(self, attrs):
@@ -137,6 +140,7 @@ class CheckoutSerializer(serializers.Serializer):
           product_voucher_code = validated_data.get("product_voucher_code") or None
           shipping_voucher_code = validated_data.get("shipping_voucher_code") or None
           payment_method = validated_data["payment_method"]
+          item_ids = validated_data.get("item_ids")
           note = validated_data.get("note", "")
 
           order = services.create_order(
@@ -147,6 +151,7 @@ class CheckoutSerializer(serializers.Serializer):
                payment_method=payment_method,
                product_voucher_code=product_voucher_code,
                shipping_voucher_code=shipping_voucher_code,
+               item_ids=item_ids,
                note=note,
           )
           return order

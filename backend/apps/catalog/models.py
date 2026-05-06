@@ -57,6 +57,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     image = models.ImageField(upload_to="products/", blank=True, null=True)
+    sku = models.CharField(max_length=64, unique=True, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     base_price = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(0)]
@@ -99,6 +100,7 @@ class Product(models.Model):
         now = timezone.now()
         flash_sale_items = FlashSaleItem.objects.select_related('flash_sale').filter(
             product=self,
+            variant__isnull=True,
             flash_sale__is_active=True,
             flash_sale__start_time__lte=now,
             flash_sale__end_time__gte=now
@@ -125,6 +127,29 @@ class Product(models.Model):
             total = self.variants.filter(is_active=True).aggregate(total=Sum("stock"))["total"]
             return int(total or 0)
         return int(self.base_stock)
+
+    def is_on_sale(self):
+        now = timezone.now()
+        if FlashSaleItem.objects.filter(
+            product=self,
+            variant__isnull=True,
+            flash_sale__is_active=True,
+            flash_sale__start_time__lte=now,
+            flash_sale__end_time__gte=now
+        ).exists():
+            return True
+        active_variants = self.variants.filter(is_active=True)
+        for v in active_variants:
+            if v.is_on_sale():
+                return True
+        return False
+
+    def save(self, *args, **kwargs):
+        if not self.sku:
+            brand = (self.brand.slug if self.brand else "na").upper()
+            slug = (self.slug or str(self.id)).replace(" ", "-").upper()
+            self.sku = f"{brand}-{slug}"[:64]
+        super().save(*args, **kwargs)
 
 
 class ProductVariant(models.Model):
@@ -193,6 +218,16 @@ class ProductVariant(models.Model):
         return " - ".join(parts)
 
     def is_on_sale(self):
+        now = timezone.now()
+        if FlashSaleItem.objects.filter(
+            models.Q(variant=self) | models.Q(variant__isnull=True),
+            product=self.product,
+            flash_sale__is_active=True,
+            flash_sale__start_time__lte=now,
+            flash_sale__end_time__gte=now
+        ).exists():
+            return True
+
         if self.sale_price is None:
             return False
         if self.sale_ends_at is None:
@@ -202,11 +237,12 @@ class ProductVariant(models.Model):
     def get_effective_price(self):
         now = timezone.now()
         flash_sale_items = FlashSaleItem.objects.select_related('flash_sale').filter(
+            models.Q(variant=self) | models.Q(variant__isnull=True),
             product=self.product,
             flash_sale__is_active=True,
             flash_sale__start_time__lte=now,
             flash_sale__end_time__gte=now
-        ).order_by('flash_sale__start_time')
+        ).order_by('variant', 'flash_sale__start_time')
         if flash_sale_items.exists():
             return flash_sale_items.first().sale_price
         if self.is_on_sale():
