@@ -181,15 +181,23 @@ class FlashSale(models.Model):
 
 
 class FlashSaleItem(models.Model):
-    flash_sale = models.ForeignKey(FlashSale, on_delete=models.CASCADE)
-    product = models.ForeignKey("catalog.Product", on_delete=models.CASCADE)
+    flash_sale = models.ForeignKey(FlashSale, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey("catalog.Product", on_delete=models.CASCADE, related_name="flash_sale_items")
+    variant = models.ForeignKey(
+        "catalog.ProductVariant",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="flash_sale_items",
+        help_text="Nếu chọn variant, Flash Sale chỉ áp dụng cho biến thể này. Nếu để trống, áp dụng cho toàn bộ sản phẩm."
+    )
     original_price = models.DecimalField(max_digits=12, decimal_places=2)
     sale_price = models.DecimalField(max_digits=12, decimal_places=2)
     stock_limit = models.PositiveIntegerField()
     sold_count = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ("flash_sale", "product")
+        unique_together = ("flash_sale", "product", "variant")
 
     def save(self, *args, **kwargs):
         if (self.sale_price is None or self.sale_price == 0) and self.original_price and self.flash_sale_id:

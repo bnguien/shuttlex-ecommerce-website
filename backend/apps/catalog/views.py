@@ -2,6 +2,7 @@ from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Case, DecimalField, F, Min, Q, When
 from django.db.models.functions import Coalesce
 from django.db.models.deletion import ProtectedError
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -58,6 +59,19 @@ def products(request):
         qs = qs.filter(effective_price__gte=min_price) #(__gte >= , __lte <=)
     if max_price:
         qs = qs.filter(effective_price__lte=max_price)
+
+    # Lọc flash sale
+    is_flash_sale = request.GET.get("is_flash_sale")
+    if is_flash_sale == "true":
+        now = timezone.now()
+        qs = qs.filter(
+            Q(flash_sale_items__flash_sale__is_active=True,
+              flash_sale_items__flash_sale__start_time__lte=now,
+              flash_sale_items__flash_sale__end_time__gte=now) |
+            Q(variants__flash_sale_items__flash_sale__is_active=True,
+              variants__flash_sale_items__flash_sale__start_time__lte=now,
+              variants__flash_sale_items__flash_sale__end_time__gte=now)
+        ).distinct()
 
     #Search by name 
     search_query = request.GET.get("search")

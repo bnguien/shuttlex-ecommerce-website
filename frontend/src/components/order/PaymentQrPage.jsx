@@ -4,13 +4,31 @@ import api from "../../api"
 import { formatCurrencyVND } from "../../utils/format"
 import "./PaymentQrPage.css"
 
-const BANK_INFO = {
-  bankName: "Vietcombank",
-  bankCode: "VCB",
-  accountName: "SHUTTLEX KINETIC PRECISION",
-  accountNumber: "998812345678",
+const DEV_BANKS = {
+  DEV1: {
+    bankCode: import.meta.env.VITE_BANK_CODE_DEV1,
+    accountNumber: import.meta.env.VITE_BANK_ACC_DEV1,
+    accountName: import.meta.env.VITE_BANK_NAME_DEV1,
+    bankName: import.meta.env.VITE_BANK_DISPLAY_NAME_DEV1,
+  },
+  DEV2: {
+    bankCode: import.meta.env.VITE_BANK_CODE_DEV2,
+    accountNumber: import.meta.env.VITE_BANK_ACC_DEV2,
+    accountName: import.meta.env.VITE_BANK_NAME_DEV2,
+    bankName: import.meta.env.VITE_BANK_DISPLAY_NAME_DEV2,
+  },
 }
 
+const activeDev = import.meta.env.VITE_ACTIVE_DEV
+const BANK_INFO = DEV_BANKS[activeDev] || {
+  bankCode: "VCB",
+  accountNumber: "998812345678",
+  accountName: "SHUTTLEX KINETIC PRECISION",
+  bankName: "Vietcombank",
+}
+
+const isDemo = !!activeDev
+const DEMO_AMOUNT = 2000
 const EXPIRE_SECONDS = 10 * 60
 
 function formatCountdown(seconds) {
@@ -32,7 +50,7 @@ function PaymentQrPage() {
   const [timeLeft, setTimeLeft] = useState(EXPIRE_SECONDS)
 
   const qrUrl = useMemo(() => {
-    const amount = Number(order?.total || 0)
+    const amount = isDemo ? DEMO_AMOUNT : Number(order?.total || 0)
     const transferContent = encodeURIComponent(`Thanh toan ${code || ""}`)
     const accountName = encodeURIComponent(BANK_INFO.accountName)
     return `https://img.vietqr.io/image/${BANK_INFO.bankCode}-${BANK_INFO.accountNumber}-compact2.png?amount=${amount}&addInfo=${transferContent}&accountName=${accountName}`
@@ -78,9 +96,8 @@ function PaymentQrPage() {
         if (latest?.payment_status === "PAID") {
           navigate(`/orders/${code}`, { replace: true })
         }
-      } catch {
-      }
-    }, 5000)
+      } catch { /* empty */ }
+    }, 1000)
 
     return () => clearInterval(pollingId)
   }, [order, timeLeft, code, navigate])
@@ -121,6 +138,25 @@ function PaymentQrPage() {
         </div>
 
         {error && <div className="alert alert-warning">{error}</div>}
+
+        {isDemo && order && (
+          <div className="demo-banner">
+            <div className="demo-banner-header">
+              <span className="demo-banner-icon">⚠️</span>
+              <strong>CHẾ ĐỘ DEMO</strong>
+            </div>
+            <p className="demo-banner-text">
+              Chuyển khoản mặc định <strong>{formatCurrencyVND(DEMO_AMOUNT)}</strong> để test thanh toán tự động.
+            </p>
+            <div className="demo-diff">
+              <span>Giá trị thật: <strong>{formatCurrencyVND(order?.total || 0)}</strong></span>
+              <span className="demo-diff-sep">·</span>
+              <span>CK demo: <strong>{formatCurrencyVND(DEMO_AMOUNT)}</strong></span>
+              <span className="demo-diff-sep">·</span>
+              <span>Chênh lệch: <strong>{formatCurrencyVND(Number(order?.total || 0) - DEMO_AMOUNT)}</strong></span>
+            </div>
+          </div>
+        )}
 
         <div className="row g-4 align-items-stretch">
           <div className="col-lg-5">

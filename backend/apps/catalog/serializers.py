@@ -228,6 +228,7 @@ class ProductSerializer(serializers.ModelSerializer):
     stock = serializers.SerializerMethodField()
     price_min = serializers.SerializerMethodField()
     price_max = serializers.SerializerMethodField()
+    is_on_sale = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -240,6 +241,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'price', 
             'price_min',
             'price_max',
+            'sku',
+            'is_on_sale',
             'stock', 
             'is_active',
             'category',
@@ -247,6 +250,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'created_at', 
             'updated_at'
         ]
+
+    def get_is_on_sale(self, obj):
+        return obj.is_on_sale()
 
     def get_price(self, obj):
         return str(obj.get_effective_price())
@@ -268,6 +274,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only=True)
     variants = serializers.SerializerMethodField()
     similar_products = serializers.SerializerMethodField()
+    is_on_sale = serializers.SerializerMethodField()
     has_variants = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
     stock = serializers.SerializerMethodField()
@@ -282,6 +289,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'slug',
             'image',
             'description',
+            'sku',
+            'is_on_sale',
             'base_price',
             'price',
             'price_min',
@@ -297,10 +306,13 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'updated_at',
             'flash_sale_info',
         ]
+    def get_is_on_sale(self, obj):
+        return obj.is_on_sale()
     def get_flash_sale_info(self, obj):
         now = timezone.now()
         flash_sale_items = FlashSaleItem.objects.select_related('flash_sale').filter(
             product=obj,
+            variant__isnull=True,
             flash_sale__is_active=True,
             flash_sale__start_time__lte=now,
             flash_sale__end_time__gte=now

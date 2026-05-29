@@ -3,7 +3,7 @@
   "model": "catalog.category",
   "pk": 1,
   "fields": {
-    "name": "Rackets",
+    "name": "Vợt cầu lông",
     "slug": "rackets",
     "image": "categories/racket.jpg",
     "is_active": true,
@@ -15,7 +15,7 @@
   "model": "catalog.category",
   "pk": 2,
   "fields": {
-    "name": "Shoes",
+    "name": "Giày cầu lông",
     "slug": "shoes",
     "image": "categories/shoes.jpg",
     "is_active": true,
@@ -27,7 +27,7 @@
   "model": "catalog.category",
   "pk": 3,
   "fields": {
-    "name": "Apparel",
+    "name": "Quần áo",
     "slug": "apparel",
     "image": "categories/apparel.jpg",
     "is_active": true,
@@ -39,7 +39,7 @@
   "model": "catalog.category",
   "pk": 4,
   "fields": {
-    "name": "Accessories",
+    "name": "Phụ kiện cầu lông",
     "slug": "accessories",
     "image": "categories/accessories.jpg",
     "is_active": true,
@@ -51,7 +51,7 @@
   "model": "catalog.category",
   "pk": 5,
   "fields": {
-    "name": "Bags",
+    "name": "Túi cầu lông",
     "slug": "bags",
     "image": "categories/bags.jpg",
     "is_active": true,
@@ -63,7 +63,7 @@
   "model": "catalog.category",
   "pk": 6,
   "fields": {
-    "name": "Shuttlecock",
+    "name": "Quả cầu lông",
     "slug": "shuttlecock",
     "image": "categories/shuttlecock.jpg",
     "is_active": true,

@@ -359,7 +359,87 @@ npm run dev
 
 ---
 
+## 💳 Cài đặt SePay — Thanh toán tự động qua QR
+
+Hệ thống sử dụng **SePay** để tự động xác nhận thanh toán chuyển khoản ngân hàng. Khi người dùng chuyển khoản qua mã QR, SePay sẽ gọi webhook về backend để cập nhật trạng thái đơn hàng thành **PAID**.
+
+### Bước 1: Đăng ký SePay & lấy API Key
+
+1. Truy cập **https://my.sepay.vn/register**, tạo tài khoản
+2. Kết nối tài khoản ngân hàng vào SePay
+3. Vào **Cấu hình Công ty → API Access → + Thêm API**
+4. Đặt tên (VD: `ShuttleX`) → trạng thái **Hoạt động** → Lưu
+5. Copy **API Token** → dán vào `backend/.env`:
+
+```env
+SEPAY_API_KEY=<paste_token_here>
+```
+
+### Bước 2: Cài ngrok (bắt buộc cho local dev)
+
+SePay cần gọi webhook từ internet về backend. Localhost không reachable → cần **ngrok** tạo tunnel.
+
+**Cài đặt ngrok:**
+```bash
+# Windows (winget)
+winget install ngrok
+
+# Hoặc tải từ https://ngrok.com/download
+```
+
+Đăng ký tài khoản miễn phí tại **https://ngrok.com** và kết nối authtoken:
+```bash
+ngrok config add-authtoken <your_token>
+```
+
+### Bước 3: Chạy ngrok & cấu hình webhook
+
+```bash
+ngrok http 8000
+```
+
+Copy URL public (VD: `https://abc123.ngrok-free.app`), rồi vào **SePay dashboard**:
+
+1. **Cấu hình Công ty → Webhook → + Thêm**
+2. **URL:** `https://abc123.ngrok-free.app/api/sepay-webhook/`
+3. **Authorization:** Dán API Token
+4. Lưu lại
+
+> ⚠️ **Lưu ý:** Ngrok free tạo URL random mỗi lần chạy. Mỗi lần restart ngrok cần vào SePay cập nhật URL mới.
+
+### Bước 4: Cấu hình bank info cho dev
+
+Mỗi dev tự điền STK cá nhân vào `frontend/.env` để test:
+
+```env
+# Chọn dev đang test (DEV1 hoặc DEV2)
+VITE_ACTIVE_DEV=DEV2
+
+# === Dev 1 ===
+VITE_BANK_CODE_DEV1=VCB
+VITE_BANK_ACC_DEV1=###
+VITE_BANK_NAME_DEV1=SHUTTLEX DEV1
+
+# === Dev 2 ===
+VITE_BANK_CODE_DEV2=BIDV
+VITE_BANK_ACC_DEV2=###
+VITE_BANK_NAME_DEV2=SHUTTLEX DEV2
+```
+
+> Khi `VITE_ACTIVE_DEV` có giá trị → QR tự động dùng **2.000₫ (demo mode)** thay vì giá thật. Trang thanh toán sẽ hiện banner cảnh báo demo + chênh lệch giá trị.
+
+### Bước 5: Test end-to-end
+
+1. Chạy backend: `docker compose up --build`
+2. Chạy ngrok: `ngrok http 8000` → cập nhật URL lên SePay
+3. Chạy frontend: `cd frontend && npm run dev`
+4. Trên web: đặt hàng → chọn chuyển khoản → quét QR → CK 2.000₫
+5. Đợi 5-10 giây → trang tự redirect sang chi tiết đơn hàng = **thành công** ✅
+
+---
+
 ## 📁 Cấu trúc dự án
+
 
 ```
 shuttlex-ecommerce-website/

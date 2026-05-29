@@ -100,6 +100,27 @@ function FilterSideBar({ category, filters, onChange }) {
       </div>
       
       <div className="mb-4">
+        <h5 className="fw-bold">Khuyến mãi</h5>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="flashSaleFilter"
+            checked={!!filters.isFlashSale}
+            onChange={(e) => 
+              onChange(prev => ({
+                ...prev,
+                isFlashSale: e.target.checked
+              }))
+            }
+          />
+          <label className="form-check-label" htmlFor="flashSaleFilter">
+            Flash Sale
+          </label>
+        </div>
+      </div>
+
+      <div className="mb-4">
         <h5 className="">Thương hiệu</h5>
         {brands.map((brand, index) => {
           const brandValue = brand.slug || brand.name

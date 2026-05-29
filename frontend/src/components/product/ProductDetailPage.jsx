@@ -12,6 +12,7 @@ function ProductDetailPage({ setNumCartItems }) {
     const showToast = useToast()
     const [product, setProduct] = useState({})
     const [selectedVariant, setSelectedVariant] = useState(null)
+    const [quantity, setQuantity] = useState(1)
     const [similarProducts, setSimilarProducts] = useState([])
     const [loading, setLoading] = useState(false)
     const [inCart, setInCart] = useState(false)
@@ -38,10 +39,12 @@ function ProductDetailPage({ setNumCartItems }) {
                 selectedVariant.sale_price &&
                 (!selectedVariant.sale_ends_at || new Date(selectedVariant.sale_ends_at) > new Date())
             )
-            const originalPrice = selectedVariant.price ?? product.base_price
-            const displayPrice =
-                selectedVariant.display_price ?? selectedVariant.sale_price ?? originalPrice
-            if (isSale) {
+            const originalPrice = Number(selectedVariant.price ?? product.base_price)
+            const displayPrice = Number(selectedVariant.display_price ?? selectedVariant.sale_price ?? originalPrice)
+            
+            const showSale = isSale && displayPrice < originalPrice
+
+            if (showSale) {
                 return (
                     <div className="d-flex align-items-center gap-2">
                         <span className="text-decoration-line-through text-muted">
@@ -96,7 +99,7 @@ function ProductDetailPage({ setNumCartItems }) {
             cart_code: cartCode || undefined,
             product_id: product.id,
             variant_id: selectedVariant ? selectedVariant.id : null,
-            quantity: 1,
+            quantity: quantity,
         }
 
         setAdding(true)
@@ -107,7 +110,7 @@ function ProductDetailPage({ setNumCartItems }) {
                     setCartCode(res.data.cart_code)
                 }
                 setInCart(true)
-                if (setNumCartItems) setNumCartItems((n) => n + 1)
+                if (setNumCartItems) setNumCartItems((n) => n + quantity)
                 showToast("Đã thêm vào giỏ hàng.", "success")
             })
             .catch((err) => {
@@ -158,9 +161,17 @@ function ProductDetailPage({ setNumCartItems }) {
                         (i) => Number(i.product) === Number(product.id)
                     )
                     if (item) {
+                        let text = `FLASH SALE: ${sale.name} - giảm ${sale.discount_percent}% cho sản phẩm này`
+                        if (item.variant) {
+                            const v = (product.variants || []).find(v => v.id === item.variant)
+                            if (v) {
+                                const variantDesc = [v.size?.name, v.color].filter(Boolean).join(" - ")
+                                text = `FLASH SALE: ${sale.name} - giảm ${sale.discount_percent}% cho ${variantDesc}`
+                            }
+                        }
                         highlights.push({
                             id: `flash-${sale.id}-${item.id}`,
-                            text: `FLASH SALE: ${sale.name} - giảm ${sale.discount_percent}% cho sản phẩm này`,
+                            text: text,
                         })
                     }
                 })
@@ -262,14 +273,39 @@ function ProductDetailPage({ setNumCartItems }) {
                                 </div>
                             )}
 
-                            <div className="d-flex">
-                                <button className="btn btn-outline-dark flex-shrink-0"
+                            <div className="d-flex align-items-center">
+                                <div className="input-group me-3" style={{ width: "130px" }}>
+                                    <button 
+                                        className="btn btn-outline-secondary" 
+                                        type="button"
+                                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                        disabled={inCart || adding}
+                                    >-</button>
+                                    <input 
+                                        type="number" 
+                                        className="form-control text-center" 
+                                        value={quantity}
+                                        onChange={(e) => {
+                                            const val = parseInt(e.target.value)
+                                            if (!isNaN(val) && val >= 1) setQuantity(val)
+                                        }}
+                                        min="1"
+                                        disabled={inCart || adding}
+                                    />
+                                    <button 
+                                        className="btn btn-outline-secondary" 
+                                        type="button"
+                                        onClick={() => setQuantity(q => q + 1)}
+                                        disabled={inCart || adding}
+                                    >+</button>
+                                </div>
+                                <button className="btn btn-dark flex-shrink-0"
                                     type="button"
                                     onClick={add_item}
                                     disabled={inCart || adding}
                                 >
                                     <i className="bi-cart-fill me-1"></i>
-                                    {inCart ? "Product added to Cart" : "Add to cart"}
+                                    {inCart ? "Đã thêm vào giỏ" : "Thêm vào giỏ"}
                                 </button>
                             </div>
                         </div>

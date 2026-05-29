@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import api, { BASE_URL } from "../../api"
 import { formatCurrencyVND } from "../../utils/format"
 import { useToast } from "../ui/Toast"
@@ -8,7 +8,10 @@ import AddressFormModal from "../address/AddressFormModal"
 
 function CheckoutPage({ setNumCartItems }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const showToast = useToast()
+
+  const selectedItemIds = location.state?.selectedItems || []
 
   const [loading, setLoading] = useState(true)
   const [placingOrder, setPlacingOrder] = useState(false)
@@ -58,7 +61,10 @@ function CheckoutPage({ setNumCartItems }) {
       .then(([cartRes, methodRes, addressRes, voucherRes]) => {
         if (cancelled) return
 
-        const items = cartRes.data?.items || []
+        let items = cartRes.data?.items || []
+        if (selectedItemIds.length > 0) {
+            items = items.filter(item => selectedItemIds.includes(item.id))
+        }
         setCartItems(items)
 
         const methods = methodRes.data || []
@@ -326,20 +332,26 @@ function CheckoutPage({ setNumCartItems }) {
         product_voucher_code: appliedProductVoucher?.code || undefined,
         shipping_voucher_code: appliedShippingVoucher?.code || undefined,
         is_gift: isGift,
+        item_ids: selectedItemIds.length > 0 ? selectedItemIds : undefined,
       })
 
       const code = res.data?.code
       if (code && paymentMethod === "BANK_TRANSFER") {
+        setCartItems([])
+        if (setNumCartItems) setNumCartItems(0)
+        window.dispatchEvent(new Event("cart:refresh"))
         showToast("Đơn hàng đã được tạo, vui lòng quét QR để hoàn tất thanh toán.", "success")
         navigate(`/payment/qr/${code}`, { state: { order: res.data } })
       } else if (code) {
         setCartItems([])
         if (setNumCartItems) setNumCartItems(0)
+        window.dispatchEvent(new Event("cart:refresh"))
         showToast(`Đặt hàng thành công (${code}).`, "success")
         navigate(`/orders/${code}`)
       } else {
         setCartItems([])
         if (setNumCartItems) setNumCartItems(0)
+        window.dispatchEvent(new Event("cart:refresh"))
         showToast("Đặt hàng thành công.", "success")
         navigate("/profile")
       }

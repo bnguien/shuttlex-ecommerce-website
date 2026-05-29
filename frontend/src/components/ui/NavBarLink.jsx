@@ -11,6 +11,7 @@ const NavBarLink = () => {
     const location = useLocation()
     const [categories, setCategories] = useState([])
     const [isProductsOpen, setIsProductsOpen] = useState(false)
+    const [isPromosOpen, setIsPromosOpen] = useState(false)
 
     useEffect(() => {
         let isMounted = true
@@ -118,6 +119,45 @@ const NavBarLink = () => {
                                     {category.name}
                                 </Link>
                             ))}
+                        </div>
+                    </div>
+                </li>
+                <li
+                    className={`nav-item ${styles.productsMenu} ${isPromosOpen ? styles.dropdownOpen : ""}`}
+                    onMouseEnter={() => setIsPromosOpen(true)}
+                    onMouseLeave={() => setIsPromosOpen(false)}
+                >
+                    <NavLink
+                        to="/promotions"
+                        className={({ isActive }) =>
+                            isActive ? "nav-link active fw-semibold" : "nav-link fw-semibold"
+                        }
+                        onClick={() => setIsPromosOpen(false)}
+                    >
+                        Khuyến mãi
+                        <span
+                            className={`${styles.productsArrow} ${isPromosOpen ? styles.productsArrowOpen : ""}`}
+                            aria-hidden="true"
+                        >
+                            <FaChevronDown />
+                        </span>
+                    </NavLink>
+                    <div className={styles.dropdown}>
+                        <div className={styles.dropdownGrid}>
+                            <Link
+                                to="/promotions#flash-sale"
+                                className={styles.dropdownItem}
+                                onClick={() => setIsPromosOpen(false)}
+                            >
+                                Flash Sale
+                            </Link>
+                            <Link
+                                to="/promotions#vouchers"
+                                className={styles.dropdownItem}
+                                onClick={() => setIsPromosOpen(false)}
+                            >
+                                Voucher
+                            </Link>
                         </div>
                     </div>
                 </li>
