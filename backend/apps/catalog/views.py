@@ -76,9 +76,13 @@ def products(request):
     #Search by name 
     search_query = request.GET.get("search")
     if search_query:
-        terms = search_query.split()
-        for term in terms:
-            qs = qs.filter(name__icontains=term)
+        exact_qs = qs.filter(name__icontains=search_query)
+        if exact_qs.exists():
+            qs = exact_qs
+        else:
+            terms = search_query.split()
+            for term in terms:
+                qs = qs.filter(name__icontains=term)
 
     #Search by status 
     status_filter = request.GET.get("status")
@@ -143,9 +147,14 @@ def search_suggestions(request):
         return Response([])
     
     qs = Product.objects.filter(is_active=True)
-    terms = q.split()
-    for term in terms:
-        qs = qs.filter(name__icontains=term)
+    exact_qs = qs.filter(name__icontains=q)
+    
+    if exact_qs.exists():
+        qs = exact_qs
+    else:
+        terms = q.split()
+        for term in terms:
+            qs = qs.filter(name__icontains=term)
         
     products = qs[:8]
     results = []
