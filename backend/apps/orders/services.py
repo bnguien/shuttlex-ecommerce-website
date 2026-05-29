@@ -289,6 +289,7 @@ def create_order(
      shipping_voucher_code: Optional[str]=None,  
      item_ids: Optional[list[int]] = None,
      note: str = "",
+     is_gift: bool = False,
 ) -> Order:
      now = timezone.now()
      qs = CartItem.objects.select_related("product", "variant").filter(cart=cart)
@@ -321,6 +322,7 @@ def create_order(
                     product = variant.product
                     unit_price = variant.get_effective_price()
                else:
+                    variant = None
                     product = product_map[ci.product_id]
                     unit_price = product.get_effective_price()
 
@@ -427,6 +429,7 @@ def create_order(
                payment_method=payment_method,
                reservation_expires_at=reservation_expires_at,
                note=note,
+               is_gift=is_gift,
           )
 
           for item_data in order_items_data:

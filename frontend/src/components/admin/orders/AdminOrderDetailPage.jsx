@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import api from "../../../api"
 import { formatCurrencyVND } from "../../../utils/format"
@@ -78,8 +78,15 @@ function AdminOrderDetailPage() {
     try {
       const res = await api.patch(`admin-orders/${orderId}/`, { status: nextStatus })
       setOrder(res.data)
-    } catch {
-      alert("Không thể cập nhật trạng thái đơn hàng.")
+    } catch (err) {
+      console.error(err)
+      let detail = err.response?.data?.detail;
+      if (!detail && typeof err.response?.data === 'string' && err.response.data.includes('<title>')) {
+        const match = err.response.data.match(/<title>(.*?)<\/title>/);
+        if (match) detail = match[1];
+      }
+      detail = detail || err.message || "Không thể cập nhật trạng thái đơn hàng.";
+      alert(`Lỗi: ${detail}`);
     } finally {
       setUpdating(false)
     }

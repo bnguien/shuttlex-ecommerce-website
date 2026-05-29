@@ -1,9 +1,8 @@
-import { useContext } from "react"
 import { Navigate } from "react-router-dom"
-import { AuthContext } from "../context/AuthContext"
+import { useAuthStore } from "../../store/authStore"
 
 function AdminRoute({ children }) {
-  const { isAuthenticated, isStaff, isLoading } = useContext(AuthContext)
+  const { isAuthenticated, isStaff, isLoading } = useAuthStore()
   
   // Chờ AuthContext load xong
   if (isLoading) {

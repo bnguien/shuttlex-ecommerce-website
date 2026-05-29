@@ -1,32 +1,17 @@
 import { NavLink, useNavigate, Link, useLocation } from "react-router-dom"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { FaChevronDown, FaUser, FaRightFromBracket } from "react-icons/fa6"
-import { AuthContext } from "../context/AuthContext.jsx"
-import api from "../../api"
+import { useAuthStore } from "../../store/authStore"
+import { useCategories } from "../../hooks/useCatalog"
 import styles from "./NavBarLink.module.css"
 
 const NavBarLink = () => {
-    const { isAuthenticated, username, logout } = useContext(AuthContext)
+    const { isAuthenticated, username, logout } = useAuthStore()
     const navigate = useNavigate()
     const location = useLocation()
-    const [categories, setCategories] = useState([])
+    const { data: categories = [] } = useCategories()
     const [isProductsOpen, setIsProductsOpen] = useState(false)
     const [isPromosOpen, setIsPromosOpen] = useState(false)
-
-    useEffect(() => {
-        let isMounted = true
-        api.get('categories/')
-            .then((res) => {
-                if (isMounted) {
-                    setCategories(Array.isArray(res.data) ? res.data : [])
-                }
-            })
-            .catch(() => {})
-
-        return () => {
-            isMounted = false
-        }
-    }, [])
 
     const handleLogout = async () => {
         await logout()

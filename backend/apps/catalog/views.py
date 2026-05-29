@@ -20,10 +20,11 @@ def products(request):
     if category_query:
         qs = qs.filter(category__slug=category_query)
 
-    #Lọc brand theo tên
+    #Lọc brand theo tên hoặc slug
     brands_query = request.GET.get("brands")
     if brands_query:
-        qs = qs.filter(brand__name__istartswith=brands_query)
+        brand_items = [b.strip() for b in brands_query.split(',') if b.strip()]
+        qs = qs.filter(Q(brand__slug__in=brand_items) | Q(brand__name__in=brand_items))
 
     #Lọc size
     size_param = request.GET.get("sizes")
