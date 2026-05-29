@@ -109,6 +109,7 @@ class CheckoutSerializer(serializers.Serializer):
           child=serializers.IntegerField(), required=False, allow_empty=True
      )
      note = serializers.CharField(required=False, allow_blank=True)
+     is_gift = serializers.BooleanField(required=False, default=False)
 
      def validate(self, attrs):
           user = self.context["request"].user
@@ -142,6 +143,7 @@ class CheckoutSerializer(serializers.Serializer):
           payment_method = validated_data["payment_method"]
           item_ids = validated_data.get("item_ids")
           note = validated_data.get("note", "")
+          is_gift = validated_data.get("is_gift", False)
 
           order = services.create_order(
                user=user,
@@ -153,5 +155,6 @@ class CheckoutSerializer(serializers.Serializer):
                shipping_voucher_code=shipping_voucher_code,
                item_ids=item_ids,
                note=note,
+               is_gift=is_gift,
           )
           return order

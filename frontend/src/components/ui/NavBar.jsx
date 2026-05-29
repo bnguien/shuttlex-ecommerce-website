@@ -1,15 +1,15 @@
 import { FaCartShopping, FaUser, FaMagnifyingGlass, FaRegBell } from "react-icons/fa6"
 /*Search react icon để biết thêm nhiều icon*/
 import { Link } from "react-router-dom"
-import { useContext, useState } from "react"
-import { AuthContext } from "../context/AuthContext"
+import { useState } from "react"
+import { useAuthStore } from "../../store/authStore"
 import styles from "./NavBar.module.css"
 import NavLink from "./NavBarLink.jsx"
 import SearchBar from "./SearchBar.jsx"
 import NotificationBell from './NotificationBell'
 
 const NavBar = ({ numCartItems, transparent = false }) => {
-    const { isAuthenticated } = useContext(AuthContext)
+    const { isAuthenticated } = useAuthStore()
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     return (

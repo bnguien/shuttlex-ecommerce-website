@@ -1,13 +1,13 @@
-import { useContext, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext.jsx'
+import { useAuthStore } from '../../store/authStore'
 import { FiUser, FiMail, FiMapPin, FiShoppingBag, FiLock, FiEdit3 } from 'react-icons/fi'
 import api from '../../api'
 import AddressFormModal from '../address/AddressFormModal'
 import { useToast } from '../ui/Toast'
 
 function UserInfoPage() {
-    const {username, last_name, first_name, email, isLoading} = useContext(AuthContext)
+    const {username, last_name, first_name, email, isLoading} = useAuthStore()
     const navigate = useNavigate()
     const showToast = useToast()
     const [orderStats, setOrderStats] = useState({

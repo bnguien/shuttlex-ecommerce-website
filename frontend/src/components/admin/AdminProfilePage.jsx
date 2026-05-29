@@ -1,10 +1,10 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext.jsx'
+import { useAuthStore } from '../../store/authStore'
 import { FiUser, FiMail, FiShield, FiLock } from 'react-icons/fi'
 
 function AdminProfilePage() {
-  const { username, last_name, first_name, email, isStaff, isLoading } = useContext(AuthContext)
+  const { username, last_name, first_name, email, isStaff, isLoading } = useAuthStore()
   const navigate = useNavigate()
 
   if (isLoading) {

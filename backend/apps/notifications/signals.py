@@ -5,19 +5,19 @@ from .utils import send_notification
 
 ORDER_STATUS_MESSAGES = {
     OrderStatus.CONFIRMED: (
-        "✅ Đơn hàng đã xác nhận",
+        "Đơn hàng đã xác nhận",
         "Đơn hàng {code} với {count} sản phẩm đang được chuẩn bị."
     ),
     OrderStatus.PACKING: (
-        "📦 Đang đóng gói",
+        "Đang đóng gói",
         "Đơn hàng {code} đang đóng gói với {count} sản phẩm."
     ),
     OrderStatus.DELIVERED: (
-        "🎉 Giao hàng thành công",
+        "Giao hàng thành công",
         "Đơn hàng {code} đã được giao thành công. Hãy đánh giá sản phẩm!"
     ),
     OrderStatus.CANCELLED: (
-        "❌ Đơn hàng đã hủy",
+        "Đơn hàng đã hủy",
         "Đơn hàng {code} đã bị hủy. Nhấn để xem chi tiết!"
     ),
 }
@@ -30,7 +30,7 @@ def on_order_save(sender, instance, created, **kwargs):
     if created:
         send_notification(
             user=order.user,
-            title="🛒 Đặt hàng thành công",
+            title="Đặt hàng thành công",
             message=f"Đơn hàng {order.code} đã được đặt. Vui lòng thanh toán để xử lý.",
             notif_type="ORDER",
             link=link,
@@ -42,7 +42,7 @@ def on_order_save(sender, instance, created, **kwargs):
         if order.payment_status == PaymentStatus.PAID:
             send_notification(
                 user=order.user,
-                title="💳 Thanh toán thành công",
+                title="Thanh toán thành công",
                 message=f"Đơn hàng {order.code} đã được thanh toán. Cảm ơn bạn đã lựa chọn ShuttleX!",
                 notif_type="ORDER",
                 link=link,
@@ -50,10 +50,11 @@ def on_order_save(sender, instance, created, **kwargs):
             
         if order.status in ORDER_STATUS_MESSAGES:
             title_tpl, msg_tpl = ORDER_STATUS_MESSAGES[order.status]
+            count = order.items.count() if hasattr(order, 'items') else 0
             send_notification(
                 user=order.user,
                 title=title_tpl,
-                message=msg_tpl.format(code=order.code),
+                message=msg_tpl.format(code=order.code, count=count),
                 notif_type="ORDER",
                 link=link,
             )

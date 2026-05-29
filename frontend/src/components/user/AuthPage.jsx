@@ -1,9 +1,9 @@
 import "./AuthPage.css";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api, { authApi } from "../../api";
 import Error from "../ui/Error";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext.jsx";
+import { useAuthStore } from "../../store/authStore";
 import {
   doPasswordsMatch,
   getPasswordMatchMessage,
@@ -16,7 +16,7 @@ import {
 
 function AuthPage({ initialMode = "login" }) {
   const { setIsAuthenticated, refreshUserData } =
-    useContext(AuthContext);
+    useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
 

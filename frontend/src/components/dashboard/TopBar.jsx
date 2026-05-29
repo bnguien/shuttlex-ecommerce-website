@@ -1,8 +1,8 @@
 import { NavLink, useNavigate, Link } from "react-router-dom"
-import { useContext } from "react"
-import { AuthContext } from "../context/AuthContext.jsx"
+
+import { useAuthStore } from "../../store/authStore"
 function TopBar() {
-  const { isAuthenticated, username, logout } = useContext(AuthContext)
+  const { isAuthenticated, username, logout } = useAuthStore()
   const navigate = useNavigate()
   const getGreeting = () => {
     const hour = new Date().getHours();

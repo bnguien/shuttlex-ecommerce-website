@@ -356,8 +356,18 @@ function CheckoutPage({ setNumCartItems }) {
         navigate("/profile")
       }
     } catch (err) {
-      const msg = err.response?.data?.detail || "Không thể tạo đơn hàng."
-      showToast(msg, "error")
+      console.error(err)
+      let msg = err.response?.data?.detail;
+      if (!msg && err.response?.data) {
+        if (typeof err.response.data === 'object') {
+          msg = Object.values(err.response.data).flat().join(', ');
+        } else if (typeof err.response.data === 'string' && err.response.data.includes('<title>')) {
+          const match = err.response.data.match(/<title>(.*?)<\/title>/);
+          if (match) msg = match[1];
+        }
+      }
+      msg = msg || err.message || "Không thể tạo đơn hàng.";
+      showToast(`Lỗi: ${msg}`, "error")
     } finally {
       setPlacingOrder(false)
     }
