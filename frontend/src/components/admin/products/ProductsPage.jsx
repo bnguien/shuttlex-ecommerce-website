@@ -4,10 +4,20 @@ import ProductFilters from "./ProductFilters"
 import ProductModal from "./ProductModal"
 import ProductDeleteDialog from "./ProductDeleteDialog"
 import VariantModal from "./VariantModal"
-import api from "../../../api"
+import { 
+  useProducts, 
+  useBrands, 
+  useCategories, 
+  useSizes,
+  useCreateProduct,
+  useUpdateProduct,
+  useDeleteProduct,
+  useCreateVariant,
+  useUpdateVariant,
+  useDeleteVariant 
+} from "../../../hooks/useCatalog"
 
 function ProductsPage() {
-  const [products, setProducts] = useState([])
   const [filters, setFilters] = useState({
     search: "",
     category: "",
@@ -19,60 +29,51 @@ function ProductsPage() {
   const [deletingProduct, setDeletingProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isVariantModalOpen, setIsVariantModalOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [brands, setBrands] = useState([])
-  const [categories, setCategories] = useState([])
-  const [sizes, setSizes] = useState([])
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalCount, setTotalCount] = useState(0)
   const pageSize = 12
   const tableRef = useRef()
 
-  const loadProducts = useCallback(() => {
-    setLoading(true)
-    setError("")
-    return api.get("products", { params: { page, page_size: pageSize, search: filters.search, category: filters.category, brands: filters.brand, status: filters.status } })
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setProducts(res.data)
-          setTotalCount(res.data.length)
-          setTotalPages(1)
-        } else {
-          setProducts(res.data.results || [])
-          setTotalCount(res.data.count || 0)
-          setTotalPages(res.data.total_pages || 1)
-        }
-      })
-      .catch(err => {
-        console.error(err)
-        setError("Không thể tải danh sách sản phẩm.")
-      })
-      .finally(() => setLoading(false))
-  }, [page, pageSize, filters.search, filters.category, filters.brand, filters.status])
+  const { data: brands = [] } = useBrands()
+  const { data: categories = [] } = useCategories()
+  const { data: sizes = [] } = useSizes()
+  
+  const { 
+    data: productsData, 
+    isLoading: loadingProducts, 
+    isError: errorProducts,
+    error: fetchError 
+  } = useProducts({
+    page,
+    page_size: pageSize,
+    search: filters.search,
+    category: filters.category,
+    brands: filters.brand,
+    status: filters.status
+  })
 
-  useEffect(() => {
-    loadProducts()
-  }, [loadProducts])
+  const products = productsData?.results || []
+  const totalCount = productsData?.count || 0
+  const totalPages = productsData?.total_pages || 1
 
-  useEffect(() => {
-    api.get("brands/")
-      .then(res => setBrands(Array.isArray(res.data) ? res.data : []))
-      .catch(err => console.error(err))
-  }, [])
+  const createProduct = useCreateProduct()
+  const updateProduct = useUpdateProduct()
+  const deleteProduct = useDeleteProduct()
+  
+  const createVariant = useCreateVariant()
+  const updateVariant = useUpdateVariant()
+  const deleteVariant = useDeleteVariant()
 
-  useEffect(() => {
-    api.get("categories/")
-      .then(res => setCategories(Array.isArray(res.data) ? res.data : []))
-      .catch(err => console.error(err))
-  }, [])
-
-  useEffect(() => {
-    api.get("sizes/")
-      .then(res => setSizes(Array.isArray(res.data) ? res.data : []))
-      .catch(err => console.error(err))
-  }, [])
+  const loading = loadingProducts || createProduct.isLoading || updateProduct.isLoading || deleteProduct.isLoading || createVariant.isLoading || updateVariant.isLoading || deleteVariant.isLoading
+  const error = (errorProducts ? (fetchError?.message || "Không thể tải danh sách sản phẩm.") : "") || 
+                (createProduct.isError ? "Không thể tạo sản phẩm." : "") ||
+                (updateProduct.isError ? "Không thể cập nhật sản phẩm." : "") ||
+                (deleteProduct.isError ? "Không thể xóa sản phẩm." : "") ||
+                (createVariant.isError ? "Không thể tạo biến thể." : "") ||
+                (updateVariant.isError ? "Không thể cập nhật biến thể." : "") ||
+                (deleteVariant.isError ? "Không thể xóa biến thể." : "")
+                
+  const [formError, setFormError] = useState("")
+  const displayError = formError || error
 
   const handleCreate = () => {
     setEditingProduct(null)
@@ -115,27 +116,19 @@ function ProductsPage() {
     const confirmed = window.confirm("Bạn có chắc muốn xóa biến thể này?")
     if (!confirmed) return
 
-    setLoading(true)
-    setError("")
+    setFormError("")
     try {
-      // Find product before API call
       const product = variant.product ? products.find(p => p.id === variant.product) : null
       
-      await api.delete(`delete_variant/${variant.id}/`)
+      await deleteVariant.mutateAsync(variant.id)
       
-      // Clear cache and refetch variants for this product
       if (product && tableRef.current) {
         tableRef.current.clearVariantCache(product.id)
         await tableRef.current.refetchVariants(product)
       }
-      
-      // Reload products to update stock in main table
-      await loadProducts()
     } catch (err) {
       console.error(err)
-      setError("Không thể xóa biến thể.")
-    } finally {
-      setLoading(false)
+      setFormError("Không thể xóa biến thể.")
     }
   }
 
@@ -153,8 +146,7 @@ function ProductsPage() {
   }
 
   const handleSave = async (data) => {
-    setLoading(true)
-    setError("")
+    setFormError("")
 
     const formData = new FormData()
     const appendIfPresent = (key, value) => {
@@ -186,24 +178,17 @@ function ProductsPage() {
 
     try {
       if (data.id) {
-        await api.patch(`update_product/${data.id}/`, formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        })
+        await updateProduct.mutateAsync({ id: data.id, formData })
       } else {
-        await api.post("create_product/", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        })
+        await createProduct.mutateAsync(formData)
       }
 
       setIsModalOpen(false)
       setEditingProduct(null)
-      await loadProducts()
     } catch (err) {
       console.error(err)
       const message = err?.response?.data || "Không thể lưu sản phẩm."
-      setError(typeof message === "string" ? message : "Không thể lưu sản phẩm.")
-    } finally {
-      setLoading(false)
+      setFormError(typeof message === "string" ? message : "Không thể lưu sản phẩm.")
     }
   }
 
@@ -216,7 +201,7 @@ function ProductsPage() {
 
     const stockValue = Number(data.stock)
     if (Number.isNaN(stockValue) || stockValue < 0) {
-      setError("Tồn kho biến thể phải là số >= 0.")
+      setFormError("Tồn kho biến thể phải là số >= 0.")
       return
     }
 
@@ -231,42 +216,31 @@ function ProductsPage() {
       is_active: Boolean(data.is_active),
     }
 
-    setLoading(true)
-    setError("")
+    setFormError("")
     try {
-      // Find product before API call
       const product = data.product ? products.find(p => p.id === data.product) : null
       
       if (data.id) {
-        // Update existing variant
-        await api.patch(`update_variant/${data.id}/`, payload)
+        await updateVariant.mutateAsync({ id: data.id, payload })
       } else {
-        // Create new variant
         if (!data.product) {
-          setError("Cần có ID sản phẩm để tạo biến thể.")
-          setLoading(false)
+          setFormError("Cần có ID sản phẩm để tạo biến thể.")
           return
         }
-        await api.post(`create_variant/${data.product}/`, payload)
+        await createVariant.mutateAsync({ productId: data.product, payload })
       }
       
       setIsVariantModalOpen(false)
       setEditingVariant(null)
       
-      // Clear cache and refetch variants immediately
       if (product && tableRef.current) {
         tableRef.current.clearVariantCache(product.id)
         await tableRef.current.refetchVariants(product)
       }
-      
-      // Reload products to update stock in main table
-      await loadProducts()
     } catch (err) {
       console.error(err)
       const action = data.id ? "cập nhật" : "tạo"
-      setError(`Không thể ${action} biến thể.`)
-    } finally {
-      setLoading(false)
+      setFormError(`Không thể ${action} biến thể.`)
     }
   }
 
@@ -276,12 +250,10 @@ function ProductsPage() {
       return
     }
 
-    setLoading(true)
-    setError("")
+    setFormError("")
     try {
-      await api.delete(`delete_product/${deletingProduct.id}/`)
+      await deleteProduct.mutateAsync(deletingProduct.id)
       setDeletingProduct(null)
-      await loadProducts()
     } catch (err) {
       console.error(err)
       const payload = err?.response?.data
@@ -305,9 +277,7 @@ function ProductsPage() {
           : fallback
       }
 
-      setError(message)
-    } finally {
-      setLoading(false)
+      setFormError(message)
     }
   }
 
@@ -335,8 +305,8 @@ function ProductsPage() {
 
       <div className="card">
         <div className="card-body">
-          {loading && <div className="text-muted">Đang tải sản phẩm...</div>}
-          {error && <div className="text-danger mb-3">{error}</div>}
+          {loading && <div className="text-muted">Đang xử lý...</div>}
+          {displayError && <div className="text-danger mb-3">{displayError}</div>}
           <ProductsTable
             ref={tableRef}
             products={products}

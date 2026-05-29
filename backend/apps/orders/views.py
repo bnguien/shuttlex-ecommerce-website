@@ -167,7 +167,7 @@ def admin_order_detail(request, order_id):
 			order.status = new_status
 			order.save()
 
-		return Response(AdminOrderSerializer(order).data)
+		return Response(OrderSerializer(order).data)
 
 	order.delete()
 	return Response(status=http_status.HTTP_204_NO_CONTENT)

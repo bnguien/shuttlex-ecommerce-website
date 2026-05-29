@@ -23,8 +23,10 @@ import AdminOrdersPage from "./components/admin/orders/AdminOrdersPage"
 import AdminOrderDetailPage from "./components/admin/orders/AdminOrderDetailPage"
 import AdminLayout from "./components/dashboard/AdminLayout"
 import { VouchersPage, FlashSalesPage } from "./components/admin/promotions"
-import { AuthProvider } from "./components/context/AuthContext"
-import { ToastProvider } from "./components/ui/Toast"
+import { useAuthStore } from "./store/authStore"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ToastContainer } from "./components/ui/Toast"
 import "bootstrap/dist/css/bootstrap.min.css"
 import NotFoundPage from "./components/ui/NotFoundPage"
 import AboutPage from './components/about/AboutPage'
@@ -40,7 +42,18 @@ import AdminRoute from "./components/ui/AdminRoute"
 
 const CART_CODE_KEY = "cart_code"
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+})
+
 const App = () => {
+  const initAuth = useAuthStore(state => state.initAuth)
   const [numCartItems, setNumCartItems] = useState(0)
 
   const refreshCartStat = () => {
@@ -62,8 +75,9 @@ const App = () => {
   }
 
   useEffect(() => {
+    initAuth()
     refreshCartStat()
-  }, [])
+  }, [initAuth])
 
   useEffect(() => {
     const handleCartReset = () => setNumCartItems(0)
@@ -77,8 +91,8 @@ const App = () => {
   }, [])
 
   return (
-    <AuthProvider>
-      <ToastProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastContainer />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout numCartItems={numCartItems} />}>
@@ -123,8 +137,8 @@ const App = () => {
           </Route>
         </Routes>
       </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   )
 }
 
