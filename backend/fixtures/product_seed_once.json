@@ -1,601 +1,650 @@
-[
-{
-  "model": "catalog.brand",
-  "pk": 1,
-  "fields": {
-    "name": "Yonex",
-    "slug": "yonex",
-    "logo": "",
-    "is_active": true,
-    "created_at": "2026-02-10T14:12:08.808Z",
-    "updated_at": "2026-02-10T14:12:08.808Z"
-  }
-},
-{
-  "model": "catalog.brand",
-  "pk": 2,
-  "fields": {
-    "name": "Lining",
-    "slug": "lining",
-    "logo": "",
-    "is_active": true,
-    "created_at": "2026-02-10T14:12:15.212Z",
-    "updated_at": "2026-02-10T14:12:15.212Z"
-  }
-},
-{
-  "model": "catalog.brand",
-  "pk": 3,
-  "fields": {
-    "name": "Victor",
-    "slug": "victor",
-    "logo": "",
-    "is_active": true,
-    "created_at": "2026-02-10T14:12:21.769Z",
-    "updated_at": "2026-02-10T14:12:21.769Z"
-  }
-},
-{
-  "model": "catalog.brand",
-  "pk": 4,
-  "fields": {
-    "name": "Mizuno",
-    "slug": "mizuno",
-    "logo": "",
-    "is_active": true,
-    "created_at": "2026-02-10T14:12:38.877Z",
-    "updated_at": "2026-02-10T14:12:38.877Z"
-  }
-},
-{
-  "model": "catalog.brand",
-  "pk": 5,
-  "fields": {
-    "name": "VS",
-    "slug": "vs",
-    "logo": "",
-    "is_active": true,
-    "created_at": "2026-02-11T14:32:44.514Z",
-    "updated_at": "2026-02-11T14:32:44.514Z"
-  }
-},
-{
-  "model": "catalog.brand",
-  "pk": 6,
-  "fields": {
-    "name": "Other",
-    "slug": "other",
-    "logo": "",
-    "is_active": true,
-    "created_at": "2026-02-11T15:05:30.115Z",
-    "updated_at": "2026-02-11T15:05:30.115Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 1,
-  "fields": {
-    "name": "Yonex Astrox 22 Badminton Racket",
-    "slug": "yonex-astrox-22",
-    "image": "products/yonex-astrox-22.jpg",
-    "description": "Yonex Astrox 22 is a lightweight badminton racket weighing approximately 78g (5U), featuring a head-light balance and medium flex shaft for fast swing speed and excellent control. Constructed from high-quality graphite for both frame and shaft, it supports string tension of up to 30 lbs, making it suitable for intermediate to advanced players who prefer quick handling, defensive play, and precise shot placement.",
-    "base_price": "2818000.00",
-    "base_stock": 30,
-    "is_active": true,
-    "category": 1,
-    "brand": 1,
-    "created_at": "2026-02-09T15:25:02.319Z",
-    "updated_at": "2026-02-10T14:15:49.168Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 2,
-  "fields": {
-    "name": "Yonex Nanoflare Junior Cyan Badminton Racket",
-    "slug": "yonex-nanoflare-junior-cyan",
-    "image": "products/yonex-nanoflare-junior-cyan.jpg",
-    "description": "Yonex Nanoflare Junior Cyan is a lightweight badminton racket specially designed for junior players and beginners. Featuring a head-light balance and flexible shaft, it offers easy handling, smooth swings, and better control. The durable graphite construction ensures stability and comfort, helping young players develop proper technique and confidence on the court.",
-    "base_price": "1719000.00",
-    "base_stock": 25,
-    "is_active": true,
-    "category": 1,
-    "brand": 1,
-    "created_at": "2026-02-09T15:28:22.802Z",
-    "updated_at": "2026-02-10T14:15:40.971Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 3,
-  "fields": {
-    "name": "Victor P8500 NitroLite ZSW/DX Badminton Shoes",
-    "slug": "victor-p8500-nitrolite-zsw-dx",
-    "image": "products/victor-p8500-nitrolite-zsw-dx.jpg",
-    "description": "Victor P8500 NitroLite ZSW/DX Badminton Shoes are designed for high-performance badminton players who demand stability, comfort, and explosive movement on court. Featuring NitroLite cushioning technology, these shoes provide excellent shock absorption and energy return. The reinforced upper and stable sole structure enhance foot support during fast lateral movements, while the non-marking rubber outsole ensures strong grip and durability on indoor courts.",
-    "base_price": "2680000.00",
-    "base_stock": 15,
-    "is_active": true,
-    "category": 2,
-    "brand": 3,
-    "created_at": "2026-02-09T15:31:46.672Z",
-    "updated_at": "2026-02-10T14:15:34.893Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 4,
-  "fields": {
-    "name": "Yonex Cascade Drive 3 Badminton Shoes",
-    "slug": "yonex-cascade-drive-3",
-    "image": "products/yonex-cascade-drive-3-peacock.jpg",
-    "description": "Yonex Cascade Drive 3 Badminton Shoes are designed for players seeking comfort, stability, and smooth movement on the court. With a lightweight construction and supportive cushioning, these shoes help reduce impact during fast footwork. The durable upper provides a secure fit, while the non-marking rubber outsole ensures reliable grip and balance on indoor badminton courts, making them suitable for both training and match play.",
-    "base_price": "2450000.00",
-    "base_stock": 10,
-    "is_active": true,
-    "category": 2,
-    "brand": 1,
-    "created_at": "2026-02-09T15:34:31.739Z",
-    "updated_at": "2026-02-10T14:15:29.335Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 5,
-  "fields": {
-    "name": "Li-Ning 6613 Women’s Badminton Shirt – White",
-    "slug": "lining-6613-womens-badminton-shirt-white",
-    "image": "products/lining-6613-womens-badminton-shirt-white.jpg",
-    "description": "Lightweight and breathable women’s badminton shirt designed for comfort and active play.",
-    "base_price": "160000.00",
-    "base_stock": 75,
-    "is_active": true,
-    "category": 3,
-    "brand": 2,
-    "created_at": "2026-02-09T15:36:25.788Z",
-    "updated_at": "2026-02-10T14:21:19.741Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 6,
-  "fields": {
-    "name": "Yonex TSM2721 Badminton Shorts – Jet Black",
-    "slug": "yonex-tsm2721-badminton-shorts-jet-black",
-    "image": "products/yonex-tsm2721-badminton-shorts-jet-black.jpg",
-    "description": "Lightweight and breathable badminton shorts designed for comfort and unrestricted movement.",
-    "base_price": "439000.00",
-    "base_stock": 99,
-    "is_active": true,
-    "category": 3,
-    "brand": 1,
-    "created_at": "2026-02-09T15:38:39.843Z",
-    "updated_at": "2026-02-10T14:20:24.029Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 7,
-  "fields": {
-    "name": "Victor DriveX 12 WT25 Badminton Racket",
-    "slug": "victor-drivex-12-wt25",
-    "image": "products/victor-drivex-12-wt25.jpg",
-    "description": "Victor DriveX 12 WT25 Badminton Racket features a balanced frame, medium flex shaft, and an approximate weight of 85g (4U) for stable and controlled performance. Made from high-quality graphite and supporting string tension up to 30 lbs, this racket is ideal for intermediate to advanced players in both singles and doubles play.",
-    "base_price": "4449000.00",
-    "base_stock": 105,
-    "is_active": true,
-    "category": 1,
-    "brand": 3,
-    "created_at": "2026-02-09T15:40:48.652Z",
-    "updated_at": "2026-02-10T14:15:07.896Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 8,
-  "fields": {
-    "name": "Yonex B1408 Badminton Backpack",
-    "slug": "yonex-b1408-badminton-backpack",
-    "image": "products/yonex-b1408-badminton-backpack.jpg",
-    "description": "Yonex B1408 Badminton Backpack offers a practical and lightweight design with spacious compartments for rackets, apparel, and accessories. Made from durable materials with comfortable shoulder straps, this backpack is ideal for daily training and easy transport to the court.",
-    "base_price": "750000.00",
-    "base_stock": 200,
-    "is_active": true,
-    "category": 5,
-    "brand": 1,
-    "created_at": "2026-02-09T15:43:10.572Z",
-    "updated_at": "2026-02-10T14:15:02.196Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 9,
-  "fields": {
-    "name": "Li-Ning Halbertec Motor Pro Badminton Racket",
-    "slug": "lining-halbertec-motor-pro",
-    "image": "products/lining-halbertec-motor-pro.jpg",
-    "description": "Li-Ning Halbertec Motor Pro Badminton Racket features a head-heavy balance, stiff shaft, and an approximate weight of 85g (4U), delivering powerful smashes with solid control. Constructed from high-quality carbon fiber for both frame and shaft, it supports string tension up to 30 lbs, ensuring durability and stability. This racket is well suited for intermediate to advanced players in both singles and doubles play.",
-    "base_price": "2100000.00",
-    "base_stock": 50,
-    "is_active": true,
-    "category": 1,
-    "brand": 2,
-    "created_at": "2026-02-09T15:46:27.340Z",
-    "updated_at": "2026-02-10T14:14:55.668Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 10,
-  "fields": {
-    "name": "Yonex Astrox 88D Pro 2024 Badminton Racket",
-    "slug": "yonex-astrox-88d-pro-2024",
-    "image": "products/yonex-astrox-88d-pro-2024.jpg",
-    "description": "Yonex Astrox 88D Pro 2024 Badminton Racket features a head-heavy balance, stiff shaft, and an approximate weight of 85g (4U), designed to maximize power and steep attacking shots from the rear court. Built with high-modulus graphite and advanced Astrox technology, it supports string tension up to 28–30 lbs, delivering excellent stability, control, and explosive performance. This racket is ideal for advanced players who specialize in powerful singles and rear-court doubles play.",
-    "base_price": "5039000.00",
-    "base_stock": 7,
-    "is_active": true,
-    "category": 1,
-    "brand": 1,
-    "created_at": "2026-02-09T15:59:26.785Z",
-    "updated_at": "2026-02-10T14:19:26.856Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 11,
-  "fields": {
-    "name": "Mizuno Carbo Pro 835 Badminton Racket",
-    "slug": "mizuno-carbo-pro-835",
-    "image": "products/mizuno-carbo-pro-835.jpg",
-    "description": "Mizuno Carbo Pro 835 Badminton Racket features an even balance, medium flex shaft, and an approximate weight of 83–85g (4U), offering a smooth blend of control and power. Built with durable carbon graphite and supporting string tension up to 28 lbs, it delivers stable performance and quick handling, ideal for intermediate to advanced all-round players.",
-    "base_price": "1040000.00",
-    "base_stock": 20,
-    "is_active": true,
-    "category": 1,
-    "brand": 4,
-    "created_at": "2026-02-11T13:22:44.940Z",
-    "updated_at": "2026-02-11T13:22:44.940Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 12,
-  "fields": {
-    "name": "Mizuno Acrospeed 8 Badminton Racket",
-    "slug": "mizuno-acrospeed-8",
-    "image": "products/mizuno-acrospeed-8.jpg",
-    "description": "Mizuno Acrospeed 8 Badminton Racket features a head-light balance, flexible shaft, and an approximate weight of 83–85g (4U), delivering fast swing speed and excellent maneuverability. Built with high-quality carbon graphite and supporting string tension up to 28 lbs, it offers responsive feel and smooth control, ideal for intermediate players seeking quick defense and agile net play.",
-    "base_price": "3150000.00",
-    "base_stock": 15,
-    "is_active": true,
-    "category": 1,
-    "brand": 4,
-    "created_at": "2026-02-11T13:24:05.321Z",
-    "updated_at": "2026-02-11T13:24:05.321Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 13,
-  "fields": {
-    "name": "Victor Thruster Goku GB F Badminton Racket Set – Dragon Ball Z 2025",
-    "slug": "victor-thruster-goku-gb-f-ndash-dragonball-z-2025",
-    "image": "products/victor-thruster-goku-gb-f-ndash-dragonball-z-2025.jpg",
-    "description": "Victor Thruster Goku GB F Badminton Racket Set – Dragon Ball Z 2025 features a head-heavy balance, stiff shaft, and an approximate weight of 83g (4U) for powerful, steep smashes. Built with high-modulus graphite and supporting string tension up to 30 lbs, it delivers excellent stability and explosive rear-court performance—ideal for advanced attacking players and Dragon Ball Z collectors.",
-    "base_price": "4800000.00",
-    "base_stock": 5,
-    "is_active": true,
-    "category": 1,
-    "brand": 3,
-    "created_at": "2026-02-11T13:28:01.309Z",
-    "updated_at": "2026-02-11T13:28:01.309Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 14,
-  "fields": {
-    "name": "Victor Spider-Man Limited Badminton Racket Set",
-    "slug": "victor-spider-man-limited-set",
-    "image": "products/victor-spider-man-limited.jpg",
-    "description": "Victor Spider-Man Limited Badminton Racket Set features a balanced to head-heavy design with a responsive shaft and an approximate weight of 83–85g (4U), delivering quick swing speed and solid power. Built with high-quality graphite and supporting string tension up to 30 lbs, it offers stable control and dynamic performance—perfect for players seeking versatile play and Spider-Man themed exclusivity.",
-    "base_price": "5500000.00",
-    "base_stock": 3,
-    "is_active": true,
-    "category": 1,
-    "brand": 3,
-    "created_at": "2026-02-11T13:30:11.545Z",
-    "updated_at": "2026-02-11T13:30:11.545Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 15,
-  "fields": {
-    "name": "Yonex Nanoflare 001C 2024 Badminton Racket",
-    "slug": "yonex-nanoflare-001c-2024",
-    "image": "products/yonex-nanoflare-001c-2024.jpg",
-    "description": "Yonex Nanoflare 001C 2024 (5U) features a head-light balance and an ultra-lightweight design of approximately 78–80g (5U), delivering exceptional swing speed and effortless maneuverability. Built with high-quality graphite and supporting stable string tension, it offers quick defense and smooth control—ideal for beginners and players who prioritize speed and easy handling.",
-    "base_price": "959000.00",
-    "base_stock": 30,
-    "is_active": true,
-    "category": 1,
-    "brand": 1,
-    "created_at": "2026-02-11T13:33:55.577Z",
-    "updated_at": "2026-02-11T13:33:55.577Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 16,
-  "fields": {
-    "name": "Li-Ning Halbertec 8000 Badminton Racket Set",
-    "slug": "li-ning-halbertec-8000-set",
-    "image": "products/li-ning-halbertec-8000-set.jpg",
-    "description": "Li-Ning Halbertec 8000 Badminton Racket Set features a balanced to slightly head-heavy design with a stiff shaft and an approximate weight of 85–87g (3U/4U), delivering powerful smashes and precise shot control. Built with high-modulus carbon fiber and supporting high string tension, it offers excellent stability and responsiveness—ideal for advanced players seeking aggressive all-round performance.",
-    "base_price": "5520000.00",
-    "base_stock": 2,
-    "is_active": true,
-    "category": 1,
-    "brand": 2,
-    "created_at": "2026-02-11T14:31:17.869Z",
-    "updated_at": "2026-02-11T14:31:17.870Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 17,
-  "fields": {
-    "name": "VS Kimetsu no Yaiba 10 – Kamado Tanjiro Badminton Racket",
-    "slug": "vs-kimetsu-no-yaiba-10-ndash-kamado-tanjiro",
-    "image": "products/vs-kimetsu-no-yaiba-10-ndash-kamado-tanjiro.jpg",
-    "description": "VS Kimetsu no Yaiba 10 – Kamado Tanjiro Badminton Racket features a dynamic design inspired by Tanjiro Kamado, paired with a balanced build and responsive shaft to deliver quick maneuverability and reliable power. Built with high-quality graphite and supporting stable string tension, it offers excellent control and versatile performance—ideal for intermediate players seeking both agility and impactful play with a unique anime-themed style.",
-    "base_price": "1250000.00",
-    "base_stock": 5,
-    "is_active": true,
-    "category": 1,
-    "brand": 5,
-    "created_at": "2026-02-11T14:36:13.006Z",
-    "updated_at": "2026-02-11T14:36:13.006Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 18,
-  "fields": {
-    "name": "VS Dragon Badminton Racket Set",
-    "slug": "vs-dragon-set",
-    "image": "products/vs-dragon-set.jpg",
-    "description": "VS Dragon Badminton Racket Set (3U / 4U) features a choice of 3U for powerful smashes and solid driving play, or 4U for faster swing speed and agile defense. Both versions deliver balanced performance with a lightweight build and responsive shaft for quick maneuverability. Constructed with high-quality graphite and supporting stable string tension, it offers excellent control and reliable power—ideal for intermediate players seeking dynamic all-around play with a distinctive dragon-themed design.",
-    "base_price": "1850000.00",
-    "base_stock": 7,
-    "is_active": true,
-    "category": 1,
-    "brand": 5,
-    "created_at": "2026-02-11T14:38:12.805Z",
-    "updated_at": "2026-02-11T14:38:12.805Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 19,
-  "fields": {
-    "name": "Li-Ning AYTT001-6 Badminton Shoes",
-    "slug": "li-ning-aytt001-6-badminton-shoes",
-    "image": "products/li-ning-aytt001-6-badminton-shoes.jpg",
-    "description": "Li-Ning AYTT001-6 Badminton Shoes feature a lightweight, breathable design with excellent grip and cushioning, delivering stable support and dynamic agility on court. Built with durable materials and advanced traction technology, they provide superior responsiveness and comfort—ideal for players seeking speed, stability, and all-around performance.",
-    "base_price": "1200000.00",
-    "base_stock": 45,
-    "is_active": true,
-    "category": 2,
-    "brand": 2,
-    "created_at": "2026-02-11T14:43:36.984Z",
-    "updated_at": "2026-02-11T14:43:36.984Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 20,
-  "fields": {
-    "name": "Yonex Velo 300 Badminton Shoes",
-    "slug": "yonex-velo-300-badminton-shoes",
-    "image": "products/yonex-velo-300-badminton-shoes.jpg",
-    "description": "Yonex Velo 300 Badminton Shoes feature a lightweight, breathable upper and responsive cushioning for enhanced comfort and agility on court. Engineered with high-traction sole technology, they deliver excellent grip and stability during fast lateral movements. Ideal for intermediate players seeking speed, support, and all-around performance.",
-    "base_price": "679000.00",
-    "base_stock": 41,
-    "is_active": true,
-    "category": 2,
-    "brand": 1,
-    "created_at": "2026-02-11T14:47:30.839Z",
-    "updated_at": "2026-02-23T04:59:23.825Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 21,
-  "fields": {
-    "name": "Yonex SKSM1898ZMP8 Badminton Socks",
-    "slug": "yonex-sksm1898zmp8-badminton-socks",
-    "image": "products/yonex-sksm1898zmp8-badminton-socks.jpg",
-    "description": "Yonex SKSM1898ZMP8 Badminton Socks are breathable, cushion-enhanced performance socks designed to keep your feet dry and comfortable on court. Made with moisture-wicking fabric and reinforced arch support, they deliver excellent comfort and stability during intense rallies—ideal for badminton players of all levels looking for reliable grip and all-around foot support.",
-    "base_price": "69000.00",
-    "base_stock": 112,
-    "is_active": true,
-    "category": 4,
-    "brand": 1,
-    "created_at": "2026-02-11T14:52:36.349Z",
-    "updated_at": "2026-02-11T14:52:36.349Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 22,
-  "fields": {
-    "name": "Li-Ning AWSU084-2 Badminton Socks",
-    "slug": "li-ning-awsu084-2-badminton-socks",
-    "image": "products/li-ning-awsu084-2-badminton-socks.jpg",
-    "description": "Li-Ning AWSU084-2 Badminton Socks are breathable, moisture-wicking performance socks designed to keep your feet dry and comfortable during intense play. Featuring cushioned padding and arch support for enhanced stability, they offer excellent comfort and reduced fatigue—ideal for badminton players seeking reliable foot support and all-around performance on court.",
-    "base_price": "100000.00",
-    "base_stock": 99,
-    "is_active": true,
-    "category": 4,
-    "brand": 2,
-    "created_at": "2026-02-11T14:54:02.966Z",
-    "updated_at": "2026-02-11T14:54:02.966Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 23,
-  "fields": {
-    "name": "Victor Long Plain Badminton Socks",
-    "slug": "victor-long-plain-badminton-socks",
-    "image": "products/victor-long-plain-badminton-socks.jpg",
-    "description": "Victor Long Plain Badminton Socks are breathable, moisture-wicking performance socks designed for superior comfort and support during intense rallies. Featuring extended length for added protection and cushioned padding at heel and toe, they offer excellent comfort, stability, and reduced foot fatigue—ideal for players seeking reliable foot support and performance on court.",
-    "base_price": "35000.00",
-    "base_stock": 205,
-    "is_active": true,
-    "category": 4,
-    "brand": 3,
-    "created_at": "2026-02-11T14:55:30.375Z",
-    "updated_at": "2026-02-11T14:55:30.375Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 24,
-  "fields": {
-    "name": "VS Sports Sweatband",
-    "slug": "vs-sports-sweatband",
-    "image": "products/vs-sports-sweatband.jpg",
-    "description": "VS Sports Sweatband is designed to effectively absorb sweat and keep your hands and face dry during intense matches. Made from soft, breathable, and stretchable fabric, it provides a comfortable fit and reliable moisture control—ideal for badminton players and other indoor sports activities.",
-    "base_price": "50000.00",
-    "base_stock": 199,
-    "is_active": true,
-    "category": 4,
-    "brand": 5,
-    "created_at": "2026-02-11T14:57:16.657Z",
-    "updated_at": "2026-02-11T14:57:16.657Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 25,
-  "fields": {
-    "name": "Yonex Badminton Head Sweatband",
-    "slug": "yonex-badminton-head-sweatband",
-    "image": "products/yonex-badminton-head-sweatband.jpg",
-    "description": "Yonex Badminton Head Sweatband is a breathable, moisture-wicking headband designed to keep sweat out of your eyes during intense rallies. Made with soft, stretchable fabric and enhanced comfort fit, it provides reliable sweat absorption and secure wear—ideal for badminton players and other court sports.",
-    "base_price": "439000.00",
-    "base_stock": 78,
-    "is_active": true,
-    "category": 4,
-    "brand": 1,
-    "created_at": "2026-02-11T14:58:29.461Z",
-    "updated_at": "2026-02-11T14:58:29.461Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 26,
-  "fields": {
-    "name": "Yonex Badminton Bag",
-    "slug": "yonex-badminton-bag",
-    "image": "products/yonex-badminton-bag.jpg",
-    "description": "Yonex Badminton Bag is a durable, spacious racket bag designed to carry your badminton gear with ease. Featuring multiple compartments for rackets, shoes, shuttlecocks, and accessories, it offers reliable protection and organization. Built with tough, weather-resistant fabric and comfortable straps, it’s ideal for players who need convenient storage and transport for training or competition.",
-    "base_price": "850000.00",
-    "base_stock": 99,
-    "is_active": true,
-    "category": 5,
-    "brand": 1,
-    "created_at": "2026-02-11T15:00:06.206Z",
-    "updated_at": "2026-02-11T15:00:06.206Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 27,
-  "fields": {
-    "name": "Victor BR5043 AM Badminton Backpack – White/Blue",
-    "slug": "victor-br5043-am-badminton-backpack-white-blue",
-    "image": "products/victor-br5043-am-badminton-backpack-white-blue.jpg",
-    "description": "Victor BR5043 AM Badminton Backpack – White/Blue is a spacious and durable badminton bag designed to carry all your gear securely and comfortably. Featuring multiple compartments for rackets, shoes, and accessories, it offers easy organization and quick access. Built with tough, water-resistant materials and padded straps for comfort, it’s ideal for players who need reliable storage for training and competition.",
-    "base_price": "1050000.00",
-    "base_stock": 21,
-    "is_active": true,
-    "category": 5,
-    "brand": 3,
-    "created_at": "2026-02-11T15:01:51.334Z",
-    "updated_at": "2026-02-11T15:01:51.335Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 28,
-  "fields": {
-    "name": "Vina Star Shuttlecock Tube",
-    "slug": "vina-star-shuttlecock-tube",
-    "image": "products/vina-star-shuttlecock-tube.jpg",
-    "description": "Vina Star Shuttlecock Tube is a durable and lightweight container designed to protect and organize badminton shuttlecocks. Made with sturdy materials and a secure cap, it keeps shuttlecocks safe from damage and easy to transport—ideal for players and coaches who need reliable storage and protection on and off the court.",
-    "base_price": "305000.00",
-    "base_stock": 100,
-    "is_active": true,
-    "category": 6,
-    "brand": 6,
-    "created_at": "2026-02-11T15:05:19.620Z",
-    "updated_at": "2026-02-11T15:05:39.153Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 29,
-  "fields": {
-    "name": "Ba Sao ProX Shuttlecock Tube",
-    "slug": "ba-sao-prox-shuttlecock-tube",
-    "image": "products/ba-sao-prox-shuttlecock-tube.jpg",
-    "description": "Ba Sao ProX Shuttlecock Tube is a durable and lightweight container designed to protect and store badminton shuttlecocks. Made from sturdy materials with a secure cap, it keeps shuttlecocks safe from damage and easy to carry to practice or matches—ideal for players and coaches who need reliable shuttlecock protection and storage.",
-    "base_price": "290000.00",
-    "base_stock": 99,
-    "is_active": true,
-    "category": 6,
-    "brand": 6,
-    "created_at": "2026-02-11T15:07:09.133Z",
-    "updated_at": "2026-02-11T15:07:09.133Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 30,
-  "fields": {
-    "name": "Yonex TPM3005 Badminton Shirt – Jet Black",
-    "slug": "yonex-badminton-shirt-jet-black",
-    "image": "products/yonex-tshirt-jet-black.jpg",
-    "description": "Lightweight Yonex TPM3005 badminton shirt in Jet Black, designed for comfort, breathability, and peak performance on court.",
-    "base_price": "289000.00",
-    "base_stock": 89,
-    "is_active": true,
-    "category": 3,
-    "brand": 1,
-    "created_at": "2026-02-20T14:58:44.098Z",
-    "updated_at": "2026-02-20T15:02:03.306Z"
-  }
-},
-{
-  "model": "catalog.product",
-  "pk": 32,
-  "fields": {
-    "name": "Yonex TSI2846 Badminton Skirt – Hemlock",
-    "slug": "yonex-tsi2846-badminton-skirt-hemlock",
-    "image": "products/yonex-tsi2846-badminton-skirt-hemlock_Dm04Dwn.jpg",
-    "description": "Yonex TSI2846 Badminton Skirt – Hemlock is a lightweight, breathable women’s sports skirt with a comfortable fit and moisture-wicking fabric, ideal for training and matches.",
-    "base_price": "279000.00",
-    "base_stock": 99,
-    "is_active": true,
-    "category": 3,
-    "brand": 1,
-    "created_at": "2026-02-22T07:46:43.343Z",
-    "updated_at": "2026-02-22T07:46:43.343Z"
-  }
-}
-]
+[
+  {
+    "model": "catalog.brand",
+    "pk": 1,
+    "fields": {
+      "name": "Yonex",
+      "slug": "yonex",
+      "logo": "",
+      "is_active": true,
+      "created_at": "2026-02-10T14:12:08.808Z",
+      "updated_at": "2026-02-10T14:12:08.808Z"
+    }
+  },
+  {
+    "model": "catalog.brand",
+    "pk": 2,
+    "fields": {
+      "name": "Lining",
+      "slug": "lining",
+      "logo": "",
+      "is_active": true,
+      "created_at": "2026-02-10T14:12:15.212Z",
+      "updated_at": "2026-02-10T14:12:15.212Z"
+    }
+  },
+  {
+    "model": "catalog.brand",
+    "pk": 3,
+    "fields": {
+      "name": "Victor",
+      "slug": "victor",
+      "logo": "",
+      "is_active": true,
+      "created_at": "2026-02-10T14:12:21.769Z",
+      "updated_at": "2026-02-10T14:12:21.769Z"
+    }
+  },
+  {
+    "model": "catalog.brand",
+    "pk": 4,
+    "fields": {
+      "name": "Mizuno",
+      "slug": "mizuno",
+      "logo": "",
+      "is_active": true,
+      "created_at": "2026-02-10T14:12:38.877Z",
+      "updated_at": "2026-02-10T14:12:38.877Z"
+    }
+  },
+  {
+    "model": "catalog.brand",
+    "pk": 5,
+    "fields": {
+      "name": "VS",
+      "slug": "vs",
+      "logo": "",
+      "is_active": true,
+      "created_at": "2026-02-11T14:32:44.514Z",
+      "updated_at": "2026-02-11T14:32:44.514Z"
+    }
+  },
+  {
+    "model": "catalog.brand",
+    "pk": 6,
+    "fields": {
+      "name": "Other",
+      "slug": "other",
+      "logo": "",
+      "is_active": true,
+      "created_at": "2026-02-11T15:05:30.115Z",
+      "updated_at": "2026-02-11T15:05:30.115Z"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+      "name": "Vợt cầu lông Yonex Astrox 22",
+      "slug": "yonex-astrox-22",
+      "image": "products/yonex-astrox-22.jpg",
+      "description": "Yonex Astrox 22 là một cây vợt cầu lông nhẹ với trọng lượng khoảng 78g (5U), có điểm cân bằng nhẹ đầu và thân vợt độ cứng trung bình, giúp tăng tốc độ vung vợt và khả năng kiểm soát tốt. Vợt được chế tạo từ vật liệu graphite chất lượng cao cho cả khung và thân vợt, hỗ trợ mức căng dây lên đến 30 lbs. Đây là lựa chọn phù hợp cho người chơi trình độ trung cấp đến nâng cao, đặc biệt là những ai yêu thích lối chơi linh hoạt, phòng thủ nhanh và điều cầu chính xác.",
+      "base_price": "2818000.0",
+      "base_stock": 30,
+      "is_active": true,
+      "category": 1,
+      "brand": 1,
+      "created_at": "2026-02-09T15:25:02.319000Z",
+      "updated_at": "2026-02-10T14:15:49.168000Z",
+      "tags": "vợt, racket, Yonex, Astrox, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 2,
+    "fields": {
+      "name": "Vợt cầu lông Yonex Nanoflare Junior Cyan",
+      "slug": "yonex-nanoflare-junior-cyan",
+      "image": "products/yonex-nanoflare-junior-cyan.jpg",
+      "description": "Vợt cầu lông Yonex Nanoflare Junior Cyan là mẫu vợt nhẹ được thiết kế đặc biệt dành cho người chơi trẻ tuổi và người mới bắt đầu. Với thiết kế nhẹ đầu và thân vợt dẻo, vợt mang lại khả năng điều khiển dễ dàng, những cú vung vợt mượt mà và độ kiểm soát tốt hơn. Khung và thân vợt được làm từ vật liệu graphite bền bỉ, đảm bảo sự ổn định và thoải mái khi sử dụng, giúp người chơi trẻ phát triển kỹ thuật đúng cách và tự tin hơn trên sân đấu.",
+      "base_price": "1719000.0",
+      "base_stock": 25,
+      "is_active": true,
+      "category": 1,
+      "brand": 1,
+      "created_at": "2026-02-09T15:28:22.802000Z",
+      "updated_at": "2026-02-10T14:15:40.971000Z",
+      "tags": "vợt, racket, Yonex, Nanoflare, cầu lông, badminton, trẻ em, junior"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+      "name": "Giày cầu lông Victor P8500 NitroLite ZSW/DX",
+      "slug": "victor-p8500-nitrolite-zsw-dx",
+      "image": "products/victor-p8500-nitrolite-zsw-dx.jpg",
+      "description": "Giày cầu lông Victor P8500 NitroLite ZSW/DX được thiết kế dành cho những người chơi cầu lông có yêu cầu cao về độ ổn định, sự thoải mái và khả năng di chuyển bùng nổ trên sân. Được trang bị công nghệ đệm NitroLite, đôi giày mang lại khả năng hấp thụ chấn động hiệu quả và hoàn trả năng lượng tốt. Phần thân giày được gia cố chắc chắn cùng cấu trúc đế ổn định giúp tăng cường khả năng nâng đỡ bàn chân trong các pha di chuyển ngang tốc độ cao, trong khi đế cao su không để lại dấu đảm bảo độ bám sân tốt và độ bền cao trên các mặt sân trong nhà.",
+      "base_price": "2680000.0",
+      "base_stock": 15,
+      "is_active": true,
+      "category": 2,
+      "brand": 3,
+      "created_at": "2026-02-09T15:31:46.672000Z",
+      "updated_at": "2026-02-10T14:15:34.893000Z",
+      "tags": "giày, shoes, Victor, NitroLite, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+      "name": "Giày cầu lông Yonex Cascade Drive 3",
+      "slug": "yonex-cascade-drive-3",
+      "image": "products/yonex-cascade-drive-3-peacock.jpg",
+      "description": "Giày cầu lông Yonex Cascade Drive 3 được thiết kế dành cho người chơi tìm kiếm sự thoải mái, ổn định và khả năng di chuyển linh hoạt trên sân. Với kết cấu nhẹ cùng lớp đệm hỗ trợ hiệu quả, đôi giày giúp giảm tác động lên bàn chân trong các pha di chuyển nhanh. Phần thân giày bền bỉ mang lại cảm giác ôm chân chắc chắn, trong khi đế cao su không để lại dấu đảm bảo độ bám sân và khả năng giữ thăng bằng đáng tin cậy trên các mặt sân cầu lông trong nhà. Đây là lựa chọn phù hợp cho cả tập luyện và thi đấu.",
+      "base_price": "2450000.0",
+      "base_stock": 10,
+      "is_active": true,
+      "category": 2,
+      "brand": 1,
+      "created_at": "2026-02-09T15:34:31.739000Z",
+      "updated_at": "2026-02-10T14:15:29.335000Z",
+      "tags": "giày, shoes, Yonex, Cascade Drive, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 5,
+    "fields": {
+      "name": "Áo cầu lông nữ Li-Ning 6613 màu trắng",
+      "slug": "lining-6613-womens-badminton-shirt-white",
+      "image": "products/lining-6613-womens-badminton-shirt-white.jpg",
+      "description": "Áo cầu lông nữ được làm từ chất liệu vải polyester cao cấp, nhẹ và thoáng khí, giúp thấm hút mồ hôi hiệu quả và giữ cơ thể luôn khô ráo trong quá trình vận động. Thiết kế mang lại sự thoải mái, hỗ trợ di chuyển linh hoạt, phù hợp cho cả tập luyện và thi đấu cầu lông.",
+      "base_price": "160000.0",
+      "base_stock": 75,
+      "is_active": true,
+      "category": 3,
+      "brand": 2,
+      "created_at": "2026-02-09T15:36:25.788000Z",
+      "updated_at": "2026-02-10T14:21:19.741000Z",
+      "tags": "áo, shirt, clothes, Li-Ning, LiNing, nữ, women, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 6,
+    "fields": {
+      "name": "Quần cầu lông Yonex TSM2721 màu đen Jet Black",
+      "slug": "yonex-tsm2721-badminton-shorts-jet-black",
+      "image": "products/yonex-tsm2721-badminton-shorts-jet-black.jpg",
+      "description": "Quần cầu lông được làm từ chất liệu vải nhẹ và thoáng khí, giúp mang lại cảm giác thoải mái trong suốt quá trình vận động. Thiết kế linh hoạt hỗ trợ các chuyển động nhanh và không bị gò bó, phù hợp cho cả tập luyện và thi đấu cầu lông.",
+      "base_price": "439000.0",
+      "base_stock": 99,
+      "is_active": true,
+      "category": 3,
+      "brand": 1,
+      "created_at": "2026-02-09T15:38:39.843000Z",
+      "updated_at": "2026-02-10T14:20:24.029000Z",
+      "tags": "quần, shorts, clothes, Yonex, Jet Black, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 7,
+    "fields": {
+      "name": "Vợt cầu lông Victor DriveX 12 WT25",
+      "slug": "victor-drivex-12-wt25",
+      "image": "products/victor-drivex-12-wt25.jpg",
+      "description": "Vợt cầu lông Victor DriveX 12 WT25 sở hữu thiết kế cân bằng, thân vợt có độ dẻo trung bình và trọng lượng khoảng 85g (4U), mang lại sự ổn định cùng khả năng kiểm soát tốt trong thi đấu. Vợt được chế tạo từ vật liệu graphite chất lượng cao, hỗ trợ mức căng dây lên đến 30 lbs, phù hợp với người chơi trình độ trung cấp đến nâng cao ở cả nội dung đánh đơn và đánh đôi.",
+      "base_price": "4449000.0",
+      "base_stock": 105,
+      "is_active": true,
+      "category": 1,
+      "brand": 3,
+      "created_at": "2026-02-09T15:40:48.652000Z",
+      "updated_at": "2026-02-10T14:15:07.896000Z",
+      "tags": "vợt, racket, Victor, DriveX, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 8,
+    "fields": {
+      "name": "Ba lô cầu lông Yonex B1408",
+      "slug": "yonex-b1408-badminton-backpack",
+      "image": "products/yonex-b1408-badminton-backpack.jpg",
+      "description": "Ba lô cầu lông Yonex B1408 có thiết kế gọn nhẹ và thực dụng với các ngăn chứa rộng rãi, giúp đựng vợt, quần áo và các phụ kiện cầu lông một cách thuận tiện. Sản phẩm được làm từ chất liệu bền bỉ, kết hợp với quai đeo vai êm ái, mang lại cảm giác thoải mái khi sử dụng. Đây là lựa chọn phù hợp cho việc tập luyện hằng ngày và di chuyển đến sân cầu lông.",
+      "base_price": "750000.0",
+      "base_stock": 200,
+      "is_active": true,
+      "category": 5,
+      "brand": 1,
+      "created_at": "2026-02-09T15:43:10.572000Z",
+      "updated_at": "2026-02-10T14:15:02.196000Z",
+      "tags": "ba lô, túi, backpack, bag, Yonex, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 9,
+    "fields": {
+      "name": "Vợt cầu lông Li-Ning Halbertec Motor Pro",
+      "slug": "lining-halbertec-motor-pro",
+      "image": "products/lining-halbertec-motor-pro.jpg",
+      "description": "Vợt cầu lông Li-Ning Halbertec Motor Pro sở hữu thiết kế nặng đầu, thân vợt cứng và trọng lượng khoảng 85g (4U), mang lại những cú đập cầu mạnh mẽ cùng khả năng kiểm soát ổn định. Khung và thân vợt được chế tạo từ sợi carbon cao cấp, đảm bảo độ bền và độ ổn định cao trong quá trình sử dụng. Vợt hỗ trợ mức căng dây lên đến 30 lbs, phù hợp với người chơi trình độ trung cấp đến nâng cao ở cả nội dung đánh đơn và đánh đôi.",
+      "base_price": "2100000.0",
+      "base_stock": 50,
+      "is_active": true,
+      "category": 1,
+      "brand": 2,
+      "created_at": "2026-02-09T15:46:27.340000Z",
+      "updated_at": "2026-02-10T14:14:55.668000Z",
+      "tags": "vợt, racket, Li-Ning, LiNing, Halbertec, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 10,
+    "fields": {
+      "name": "Vợt cầu lông Yonex Astrox 88D Pro 2024",
+      "slug": "yonex-astrox-88d-pro-2024",
+      "image": "products/yonex-astrox-88d-pro-2024.jpg",
+      "description": "Vợt cầu lông Yonex Astrox 88D Pro 2024 sở hữu thiết kế nặng đầu, thân vợt cứng và trọng lượng khoảng 85g (4U), được phát triển nhằm tối đa hóa sức mạnh trong các pha tấn công và những cú đập cầu cắm từ cuối sân. Vợt được chế tạo từ graphite mô-đun cao kết hợp với các công nghệ tiên tiến của dòng Astrox, hỗ trợ mức căng dây từ 28–30 lbs, mang lại độ ổn định, khả năng kiểm soát và hiệu suất bùng nổ vượt trội. Đây là lựa chọn lý tưởng cho những người chơi trình độ nâng cao, đặc biệt là các tay vợt thiên về lối đánh tấn công mạnh mẽ ở nội dung đơn và vị trí cuối sân trong đánh đôi.",
+      "base_price": "5039000.0",
+      "base_stock": 7,
+      "is_active": true,
+      "category": 1,
+      "brand": 1,
+      "created_at": "2026-02-09T15:59:26.785000Z",
+      "updated_at": "2026-02-10T14:19:26.856000Z",
+      "tags": "vợt, racket, Yonex, Astrox, 88D Pro, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 11,
+    "fields": {
+      "name": "Vợt cầu lông Mizuno Carbo Pro 835",
+      "slug": "mizuno-carbo-pro-835",
+      "image": "products/mizuno-carbo-pro-835.jpg",
+      "description": "Vợt cầu lông Mizuno Carbo Pro 835 sở hữu thiết kế cân bằng, thân vợt có độ dẻo trung bình và trọng lượng khoảng 83–85g (4U), mang lại sự kết hợp hài hòa giữa khả năng kiểm soát và sức mạnh trong từng cú đánh. Vợt được chế tạo từ vật liệu carbon graphite bền bỉ, hỗ trợ mức căng dây lên đến 28 lbs, giúp duy trì độ ổn định và khả năng xử lý linh hoạt trên sân. Đây là lựa chọn phù hợp cho người chơi trình độ trung cấp đến nâng cao theo đuổi lối đánh toàn diện.",
+      "base_price": "1040000.0",
+      "base_stock": 20,
+      "is_active": true,
+      "category": 1,
+      "brand": 4,
+      "created_at": "2026-02-11T13:22:44.940000Z",
+      "updated_at": "2026-02-11T13:22:44.940000Z",
+      "tags": "vợt, racket, Mizuno, Carbo Pro, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 12,
+    "fields": {
+      "name": "Vợt cầu lông Mizuno Acrospeed 8",
+      "slug": "mizuno-acrospeed-8",
+      "image": "products/mizuno-acrospeed-8.jpg",
+      "description": "Vợt cầu lông Mizuno Acrospeed 8 sở hữu thiết kế nhẹ đầu, thân vợt dẻo and trọng lượng khoảng 83–85g (4U), mang lại tốc độ vung vợt nhanh cùng khả năng xoay trở linh hoạt trên sân. Vợt được chế tạo từ vật liệu carbon graphite chất lượng cao, hỗ trợ mức căng dây lên đến 28 lbs, giúp tạo cảm giác cầu nhạy, khả năng kiểm soát mượt mà và ổn định. Đây là lựa chọn phù hợp cho người chơi trình độ trung cấp yêu thích lối đánh phòng thủ nhanh, phản tạt linh hoạt và xử lý cầu hiệu quả trên lưới.",
+      "base_price": "3150000.0",
+      "base_stock": 15,
+      "is_active": true,
+      "category": 1,
+      "brand": 4,
+      "created_at": "2026-02-11T13:24:05.321000Z",
+      "updated_at": "2026-02-11T13:24:05.321000Z",
+      "tags": "vợt, racket, Mizuno, Acrospeed, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 13,
+    "fields": {
+      "name": "Bộ vợt cầu lông Victor Thruster Goku GB F – Dragon Ball Z 2025",
+      "slug": "victor-thruster-goku-gb-f-ndash-dragonball-z-2025",
+      "image": "products/victor-thruster-goku-gb-f-ndash-dragonball-z-2025.jpg",
+      "description": "Bộ vợt cầu lông Victor Thruster Goku GB F – Dragon Ball Z 2025 sở hữu thiết kế nặng đầu, thân vợt cứng và trọng lượng khoảng 83g (4U), mang lại những cú đập cầu mạnh mẽ và có độ cắm cao. Vợt được chế tạo từ graphite mô-đun cao, hỗ trợ mức căng dây lên đến 30 lbs, giúp tăng độ ổn định và hiệu suất tấn công bùng nổ từ cuối sân. Đây là lựa chọn phù hợp cho người chơi trình độ nâng cao theo đuổi lối đánh tấn công, đồng thời là sản phẩm sưu tầm hấp dẫn dành cho người hâm mộ Dragon Ball Z.",
+      "base_price": "4800000.0",
+      "base_stock": 4,
+      "is_active": true,
+      "category": 1,
+      "brand": 3,
+      "created_at": "2026-02-11T13:28:01.309000Z",
+      "updated_at": "2026-03-22T16:17:13.525858Z",
+      "tags": "vợt, racket, Victor, Goku, Dragon Ball, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 14,
+    "fields": {
+      "name": "Bộ vợt cầu lông Victor Spider-Man Limited Edition",
+      "slug": "victor-spider-man-limited-set",
+      "image": "products/victor-spider-man-limited.jpg",
+      "description": "Bộ vợt cầu lông Victor Spider-Man Limited Edition sở hữu thiết kế cân bằng đến hơi nặng đầu, kết hợp với thân vợt có độ đàn hồi tốt và trọng lượng khoảng 83–85g (4U), mang lại tốc độ vung vợt nhanh cùng sức mạnh ổn định trong các pha tấn công. Vợt được chế tạo từ graphite chất lượng cao, hỗ trợ mức căng dây lên đến 30 lbs, giúp tăng cường độ ổn định, khả năng kiểm soát và hiệu suất thi đấu linh hoạt. Đây là lựa chọn phù hợp cho những người chơi yêu thích lối đánh toàn diện, đồng thời là sản phẩm phiên bản giới hạn dành cho người hâm mộ Spider-Man.",
+      "base_price": "5500000.0",
+      "base_stock": 3,
+      "is_active": true,
+      "category": 1,
+      "brand": 3,
+      "created_at": "2026-02-11T13:30:11.545000Z",
+      "updated_at": "2026-02-11T13:30:11.545000Z",
+      "tags": "vợt, racket, Victor, Spider-Man, Spiderman, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 15,
+    "fields": {
+      "name": "Vợt cầu lông Yonex Nanoflare 001C 2024",
+      "slug": "yonex-nanoflare-001c-2024",
+      "image": "products/yonex-nanoflare-001c-2024.jpg",
+      "description": "Vợt cầu lông Yonex Nanoflare 001C 2024 (5U) sở hữu thiết kế nhẹ đầu cùng trọng lượng siêu nhẹ khoảng 78–80g (5U), mang lại tốc độ vung vợt vượt trội và khả năng xoay trở linh hoạt trên sân. Vợt được chế tạo từ vật liệu graphite chất lượng cao, hỗ trợ mức căng dây ổn định, giúp nâng cao khả năng phòng thủ nhanh và kiểm soát cầu mượt mà. Đây là lựa chọn phù hợp cho người mới bắt đầu và những người chơi ưu tiên tốc độ cùng sự dễ dàng trong quá trình sử dụng.",
+      "base_price": "959000.0",
+      "base_stock": 30,
+      "is_active": true,
+      "category": 1,
+      "brand": 1,
+      "created_at": "2026-02-11T13:33:55.577000Z",
+      "updated_at": "2026-02-11T13:33:55.577000Z",
+      "tags": "vợt, racket, Yonex, Nanoflare, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 16,
+    "fields": {
+      "name": "Bộ vợt cầu lông Li-Ning Halbertec 8000",
+      "slug": "li-ning-halbertec-8000-set",
+      "image": "products/li-ning-halbertec-8000-set.jpg",
+      "description": "Bộ vợt cầu lông Li-Ning Halbertec 8000 sở hữu thiết kế cân bằng đến hơi nặng đầu, thân vợt cứng và trọng lượng khoảng 85–87g (3U/4U), mang lại những cú đập cầu uy lực cùng khả năng điều cầu chính xác. Vợt được chế tạo từ sợi carbon mô-đun cao, hỗ trợ mức căng dây lớn, giúp tăng cường độ ổn định, độ phản hồi và hiệu suất thi đấu. Đây là lựa chọn phù hợp cho những người chơi trình độ nâng cao theo đuổi lối đánh tấn công toàn diện và mạnh mẽ.",
+      "base_price": "5520000.0",
+      "base_stock": 1,
+      "is_active": true,
+      "category": 1,
+      "brand": 2,
+      "created_at": "2026-02-11T14:31:17.869000Z",
+      "updated_at": "2026-03-22T14:41:11.263329Z",
+      "tags": "vợt, racket, Li-Ning, LiNing, Halbertec, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 17,
+    "fields": {
+      "name": "Vợt cầu lông VS Kimetsu no Yaiba 10 – Kamado Tanjiro",
+      "slug": "vs-kimetsu-no-yaiba-10-ndash-kamado-tanjiro",
+      "image": "products/vs-kimetsu-no-yaiba-10-ndash-kamado-tanjiro.jpg",
+      "description": "Vợt cầu lông VS Kimetsu no Yaiba 10 – Kamado Tanjiro sở hữu thiết kế nổi bật lấy cảm hứng từ nhân vật Kamado Tanjiro trong bộ anime Thanh Gươm Diệt Quỷ. Vợt có thiết kế cân bằng cùng thân vợt có độ phản hồi tốt, mang lại khả năng xoay trở linh hoạt và sức mạnh ổn định trong từng cú đánh. Được chế tạo từ vật liệu graphite chất lượng cao và hỗ trợ mức căng dây ổn định, sản phẩm đem đến khả năng kiểm soát tốt cùng hiệu suất thi đấu đa dạng. Đây là lựa chọn phù hợp cho người chơi trình độ trung cấp yêu thích lối đánh linh hoạt, đồng thời muốn sở hữu một cây vợt mang phong cách anime độc đáo.",
+      "base_price": "1250000.0",
+      "base_stock": 4,
+      "is_active": true,
+      "category": 1,
+      "brand": 5,
+      "created_at": "2026-02-11T14:36:13.006000Z",
+      "updated_at": "2026-03-22T10:28:17.180744Z",
+      "tags": "vợt, racket, VS, Kimetsu, Tanjiro, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 18,
+    "fields": {
+      "name": "Bộ vợt cầu lông VS Dragon",
+      "slug": "vs-dragon-set",
+      "image": "products/vs-dragon-set.jpg",
+      "description": "Bộ vợt cầu lông VS Dragon (3U / 4U) mang đến hai lựa chọn trọng lượng phù hợp với nhiều phong cách thi đấu khác nhau: phiên bản 3U dành cho người chơi yêu thích những cú đập cầu mạnh mẽ và các pha tấn công uy lực, trong khi phiên bản 4U nổi bật với tốc độ vung vợt nhanh và khả năng phòng thủ linh hoạt. Cả hai phiên bản đều sở hữu thiết kế cân bằng, thân vợt có độ phản hồi tốt và trọng lượng tối ưu giúp tăng khả năng xoay trở trên sân. Được chế tạo từ vật liệu graphite chất lượng cao và hỗ trợ mức căng dây ổn định, bộ vợt mang lại khả năng kiểm soát chính xác cùng sức mạnh đáng tin cậy. Đây là lựa chọn phù hợp cho người chơi trình độ trung cấp theo đuổi lối đánh toàn diện, đồng thời yêu thích thiết kế họa tiết rồng độc đáo và mạnh mẽ.",
+      "base_price": "1850000.0",
+      "base_stock": 6,
+      "is_active": true,
+      "category": 1,
+      "brand": 5,
+      "created_at": "2026-02-11T14:38:12.805000Z",
+      "updated_at": "2026-03-22T11:15:38.424722Z",
+      "tags": "vợt, racket, VS, Dragon, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 19,
+    "fields": {
+      "name": "Giày cầu lông Li-Ning AYTT001-6",
+      "slug": "li-ning-aytt001-6-badminton-shoes",
+      "image": "products/li-ning-aytt001-6-badminton-shoes.jpg",
+      "description": "Giày cầu lông Li-Ning AYTT001-6 sở hữu thiết kế nhẹ và thoáng khí, mang lại cảm giác thoải mái trong suốt quá trình tập luyện và thi đấu. Giày được trang bị lớp đệm êm ái cùng đế có độ bám cao, giúp tăng khả năng hấp thụ lực, hỗ trợ di chuyển ổn định và linh hoạt trên sân. Được chế tạo từ các vật liệu bền bỉ kết hợp với công nghệ tăng độ bám tiên tiến, sản phẩm mang đến khả năng phản hồi nhanh, độ ổn định cao và hiệu suất toàn diện. Đây là lựa chọn phù hợp cho những người chơi tìm kiếm sự cân bằng giữa tốc độ, sự ổn định và khả năng vận động linh hoạt.",
+      "base_price": "1200000.0",
+      "base_stock": 44,
+      "is_active": true,
+      "category": 2,
+      "brand": 2,
+      "created_at": "2026-02-11T14:43:36.984000Z",
+      "updated_at": "2026-03-22T11:20:24.679645Z",
+      "tags": "giày, shoes, Li-Ning, LiNing, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 20,
+    "fields": {
+      "name": "Giày cầu lông Yonex Velo 300",
+      "slug": "yonex-velo-300-badminton-shoes",
+      "image": "products/yonex-velo-300-badminton-shoes.jpg",
+      "description": "Giày cầu lông Yonex Velo 300 sở hữu phần thân giày nhẹ và thoáng khí, kết hợp with lớp đệm có độ phản hồi tốt, mang lại cảm giác thoải mái và linh hoạt trong quá trình di chuyển trên sân. Được trang bị công nghệ đế có độ bám cao, đôi giày giúp tăng cường khả năng bám sân và giữ ổn định trong các pha di chuyển ngang tốc độ cao. Đây là lựa chọn phù hợp cho người chơi trình độ trung cấp đang tìm kiếm sự cân bằng giữa tốc độ, khả năng hỗ trợ và hiệu suất thi đấu toàn diện.",
+      "base_price": "679000.0",
+      "base_stock": 39,
+      "is_active": true,
+      "category": 2,
+      "brand": 1,
+      "created_at": "2026-02-11T14:47:30.839000Z",
+      "updated_at": "2026-03-22T16:17:13.529222Z",
+      "tags": "giày, shoes, Yonex, Velo, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 21,
+    "fields": {
+      "name": "Tất cầu lông Yonex SKSM1898ZMP8",
+      "slug": "yonex-sksm1898zmp8-badminton-socks",
+      "image": "products/yonex-sksm1898zmp8-badminton-socks.jpg",
+      "description": "Tất cầu lông Yonex SKSM1898ZMP8 là dòng tất thể thao cao cấp với thiết kế thoáng khí và lớp đệm tăng cường, giúp giữ cho đôi chân luôn khô ráo và thoải mái trong suốt quá trình vận động. Sản phẩm được làm từ chất liệu có khả năng thấm hút mồ hôi hiệu quả, kết hợp với phần hỗ trợ vòm bàn chân được gia cố, mang lại cảm giác êm ái, ổn định và giảm áp lực khi di chuyển liên tục. Đây là lựa chọn phù hợp cho người chơi cầu lông ở mọi trình độ, mang đến độ bám tốt cùng khả năng hỗ trợ bàn chân toàn diện trong các trận đấu cường độ cao.",
+      "base_price": "69000.0",
+      "base_stock": 112,
+      "is_active": true,
+      "category": 4,
+      "brand": 1,
+      "created_at": "2026-02-11T14:52:36.349000Z",
+      "updated_at": "2026-02-11T14:52:36.349000Z",
+      "tags": "tất, vớ, socks, Yonex, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 22,
+    "fields": {
+      "name": "Tất cầu lông Li-Ning AWSU084-2",
+      "slug": "li-ning-awsu084-2-badminton-socks",
+      "image": "products/li-ning-awsu084-2-badminton-socks.jpg",
+      "description": "Tất cầu lông Li-Ning AWSU084-2 là dòng tất thể thao được thiết kế với khả năng thoáng khí và thấm hút mồ hôi hiệu quả, giúp đôi chân luôn khô ráo và thoải mái trong suốt quá trình thi đấu. Sản phẩm được trang bị lớp đệm êm ái cùng phần hỗ trợ vòm bàn chân, tăng cường độ ổn định và giảm cảm giác mệt mỏi khi vận động cường độ cao. Với sự kết hợp giữa độ thoải mái, khả năng nâng đỡ và độ bền cao, đây là lựa chọn phù hợp cho người chơi cầu lông mong muốn sự hỗ trợ toàn diện cho đôi chân trên sân.",
+      "base_price": "100000.0",
+      "base_stock": 99,
+      "is_active": true,
+      "category": 4,
+      "brand": 2,
+      "created_at": "2026-02-11T14:54:02.966000Z",
+      "updated_at": "2026-02-11T14:54:02.966000Z",
+      "tags": "tất, vớ, socks, Li-Ning, LiNing, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 23,
+    "fields": {
+      "name": "Tất cầu lông Victor Long Plain",
+      "slug": "victor-long-plain-badminton-socks",
+      "image": "products/victor-long-plain-badminton-socks.jpg",
+      "description": "Tất cầu lông Victor Long Plain là dòng tất thể thao chuyên dụng có độ co giãn và thấm hút tốt, bảo vệ chân tối ưu trong các pha di chuyển cường độ cao. Thiết kế ôm chân êm ái, bền bỉ giúp người chơi thoải mái vận động linh hoạt.",
+      "base_price": "35000.0",
+      "base_stock": 205,
+      "is_active": true,
+      "category": 4,
+      "brand": 3,
+      "created_at": "2026-02-11T14:55:30.375000Z",
+      "updated_at": "2026-02-11T14:55:30.375000Z",
+      "tags": "tất, vớ, socks, Victor, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 24,
+    "fields": {
+      "name": "Băng đeo cổ tay thể thao VS",
+      "slug": "vs-sports-sweatband",
+      "image": "products/vs-sports-sweatband.jpg",
+      "description": "Băng đeo cổ tay thể thao VS được thiết kế để thấm hút mồ hôi hiệu quả, giúp giữ cho tay và khuôn mặt luôn khô ráo trong suốt quá trình vận động cường độ cao. Sản phẩm được làm từ chất liệu mềm mại, thoáng khí và có độ co giãn tốt, mang lại cảm giác đeo thoải mái cùng khả năng kiểm soát độ ẩm đáng tin cậy. Đây là phụ kiện phù hợp cho người chơi cầu lông cũng như nhiều môn thể thao trong nhà khác, hỗ trợ nâng cao sự tập trung và hiệu suất thi đấu.",
+      "base_price": "50000.0",
+      "base_stock": 198,
+      "is_active": true,
+      "category": 4,
+      "brand": 5,
+      "created_at": "2026-02-11T14:57:16.657000Z",
+      "updated_at": "2026-03-22T14:22:30.608153Z",
+      "tags": "băng tay, sweatband, wristband, VS, thể thao, sports, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 25,
+    "fields": {
+      "name": "Băng đô cầu lông Yonex",
+      "slug": "yonex-badminton-head-sweatband",
+      "image": "products/yonex-badminton-head-sweatband.jpg",
+      "description": "Băng chặn mồ hôi trán Yonex cao cấp với khả năng thấm hút mồ hôi cực mạnh, giúp giữ cho mồ hôi không chảy xuống mắt trong khi thi đấu. Chất vải cotton co giãn mềm mại mang lại cảm giác thoải mái tối đa cho người sử dụng.",
+      "base_price": "439000.0",
+      "base_stock": 74,
+      "is_active": true,
+      "category": 4,
+      "brand": 1,
+      "created_at": "2026-02-11T14:58:29.461000Z",
+      "updated_at": "2026-05-29T15:38:24.650686Z",
+      "tags": "băng trán, băng chặn mồ hôi, head sweatband, headband, Yonex, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 26,
+    "fields": {
+      "name": "Túi cầu lông Yonex",
+      "slug": "yonex-badminton-bag",
+      "image": "products/yonex-badminton-bag.jpg",
+      "description": "Túi cầu lông Yonex được thiết kế bền bỉ và rộng rãi, giúp người chơi mang theo đầy đủ dụng cụ cầu lông một cách thuận tiện. Sản phẩm sở hữu nhiều ngăn chứa riêng biệt dành cho vợt, giày, ống cầu và các phụ kiện khác, giúp sắp xếp đồ dùng gọn gàng và bảo vệ hiệu quả trong quá trình di chuyển. Được làm từ chất liệu cao cấp có khả năng chống chịu tốt với điều kiện sử dụng hằng ngày, kết hợp cùng quai đeo chắc chắn và êm ái, túi mang lại sự thoải mái khi mang theo đến sân tập hoặc thi đấu. Đây là lựa chọn phù hợp cho người chơi cầu lông cần không gian lưu trữ rộng rãi và tính tiện dụng cao.",
+      "base_price": "850000.0",
+      "base_stock": 99,
+      "is_active": true,
+      "category": 5,
+      "brand": 1,
+      "created_at": "2026-02-11T15:00:06.206000Z",
+      "updated_at": "2026-02-11T15:00:06.206000Z",
+      "tags": "túi, ba lô, bag, backpack, Yonex, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 27,
+    "fields": {
+      "name": "Ba lô cầu lông Victor BR5043 AM màu trắng/xanh dương",
+      "slug": "victor-br5043-am-badminton-backpack-white-blue",
+      "image": "products/victor-br5043-am-badminton-backpack-white-blue.jpg",
+      "description": "Ba lô cầu lông Victor BR5043 AM màu trắng/xanh dương được thiết kế rộng rãi và bền bỉ, giúp người chơi mang theo đầy đủ dụng cụ cầu lông một cách an toàn và thoải mái. Sản phẩm sở hữu nhiều ngăn chứa riêng biệt dành cho vợt, giày và các phụ kiện cần thiết, hỗ trợ sắp xếp đồ dùng gọn gàng và dễ dàng lấy ra khi cần. Được chế tạo từ chất liệu cao cấp có khả năng chống nước tốt, kết hợp với quai đeo đệm êm ái, ba lô mang lại sự thoải mái trong quá trình di chuyển. Đây là lựa chọn phù hợp cho người chơi cần một giải pháp lưu trữ đáng tin cậy cho cả tập luyện và thi đấu.",
+      "base_price": "1050000.0",
+      "base_stock": 20,
+      "is_active": true,
+      "category": 5,
+      "brand": 3,
+      "created_at": "2026-02-11T15:01:51.334000Z",
+      "updated_at": "2026-03-22T11:13:52.037656Z",
+      "tags": "ba lô, túi, backpack, bag, Victor, trắng xanh, white blue, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 28,
+    "fields": {
+      "name": "Ống cầu lông Vina Star",
+      "slug": "vina-star-shuttlecock-tube",
+      "image": "products/vina-star-shuttlecock-tube.jpg",
+      "description": "Cầu lông Vina Star là dòng cầu được nhiều người chơi lựa chọn nhờ độ bền cao, đường bay ổn định và chất lượng đồng đều. Cầu được sản xuất từ lông vũ tự nhiên kết hợp với đế cầu chắc chắn, giúp duy trì quỹ đạo bay chính xác và cảm giác đánh tốt trong suốt quá trình sử dụng. Với khả năng đáp ứng tốt cho cả tập luyện và thi đấu phong trào, Vina Star là lựa chọn phù hợp cho người chơi ở nhiều trình độ khác nhau.",
+      "base_price": "305000.0",
+      "base_stock": 99,
+      "is_active": true,
+      "category": 6,
+      "brand": 6,
+      "created_at": "2026-02-11T15:05:19.620000Z",
+      "updated_at": "2026-05-29T15:11:56.089967Z",
+      "tags": "cầu, shuttlecock, quả cầu, quả cầu lông, Vina Star, Vinastar, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 29,
+    "fields": {
+      "name": "Ống cầu lông Ba Sao ProX",
+      "slug": "ba-sao-prox-shuttlecock-tube",
+      "image": "products/ba-sao-prox-shuttlecock-tube.jpg",
+      "description": "Cầu lông Ba Sao ProX là dòng cầu chất lượng cao được thiết kế để mang lại độ bền tốt và đường bay ổn định trong quá trình sử dụng. Với lông cầu được tuyển chọn kỹ lưỡng cùng phần đế cầu chắc chắn, sản phẩm giúp duy trì quỹ đạo bay chính xác, cảm giác đánh tốt và hiệu suất ổn định trong các trận đấu. Cầu phù hợp cho cả tập luyện và thi đấu phong trào, đáp ứng nhu cầu của người chơi ở nhiều trình độ khác nhau.",
+      "base_price": "290000.0",
+      "base_stock": 98,
+      "is_active": true,
+      "category": 6,
+      "brand": 6,
+      "created_at": "2026-02-11T15:07:09.133000Z",
+      "updated_at": "2026-03-22T15:55:09.364848Z",
+      "tags": "cầu, shuttlecock, quả cầu, quả cầu lông, Ba Sao, Basao, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 30,
+    "fields": {
+      "name": "Áo cầu lông Yonex TPM3005 màu đen Jet Black",
+      "slug": "yonex-badminton-shirt-jet-black",
+      "image": "products/yonex-tshirt-jet-black.jpg",
+      "description": "Áo cầu lông Yonex TPM3005 màu đen Jet Black được làm từ chất liệu vải polyester nhẹ và thoáng khí, mang lại cảm giác thoải mái trong suốt quá trình vận động. Thiết kế hiện đại cùng khả năng thấm hút mồ hôi hiệu quả giúp cơ thể luôn khô ráo, hỗ trợ người chơi duy trì phong độ tốt trên sân. Sản phẩm phù hợp cho cả tập luyện và thi đấu, đáp ứng nhu cầu về sự linh hoạt, thoải mái và hiệu suất trong môn cầu lông.",
+      "base_price": "289000.0",
+      "base_stock": 89,
+      "is_active": true,
+      "category": 3,
+      "brand": 1,
+      "created_at": "2026-02-20T14:58:44.098000Z",
+      "updated_at": "2026-02-20T15:02:03.306000Z",
+      "tags": "áo, shirt, clothes, Yonex, Jet Black, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 32,
+    "fields": {
+      "name": "Váy cầu lông Yonex TSI2846 màu Hemlock",
+      "slug": "yonex-tsi2846-badminton-skirt-hemlock",
+      "image": "products/yonex-tsi2846-badminton-skirt-hemlock_Dm04Dwn.jpg",
+      "description": "Váy cầu lông Yonex TSI2846 màu Hemlock được thiết kế dành cho nữ với kiểu dáng thể thao năng động, mang lại sự thoải mái và tự tin khi vận động. Sản phẩm được làm từ chất liệu vải nhẹ, thoáng khí và có khả năng thấm hút mồ hôi hiệu quả, giúp cơ thể luôn khô ráo trong suốt quá trình tập luyện và thi đấu. Thiết kế ôm vừa vặn cùng chất liệu co giãn tốt hỗ trợ di chuyển linh hoạt, là lựa chọn phù hợp cho cả luyện tập hằng ngày và các trận đấu cầu lông.",
+      "base_price": "279000.0",
+      "base_stock": 98,
+      "is_active": true,
+      "category": 3,
+      "brand": 1,
+      "created_at": "2026-02-22T07:46:43.343000Z",
+      "updated_at": "2026-03-22T09:31:01.991350Z",
+      "tags": "váy, skirt, clothes, Yonex, nữ, women, Hemlock, cầu lông, badminton"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 33,
+    "fields": {
+      "name": "Áo cầu lông Yonex TRM3222 - Brook Green",
+      "slug": "ao-cau-long-yonex-trm3222-brook-green-chinh-hang",
+      "image": "products/yonex-tsm2721-badminton-shorts-jet-black.jpg",
+      "description": "Áo cầu lông Yonex TRM3222 màu sắc tươi mát Brook Green mang lại phong cách nổi bật trên sân đấu. Chất liệu thun mè thể thao siêu thoáng mát, thấm hút mồ hôi cực đỉnh giúp bạn luôn thoải mái trong suốt trận đấu.",
+      "base_price": "139000.0",
+      "base_stock": 49,
+      "is_active": true,
+      "category": 3,
+      "brand": 1,
+      "created_at": "2026-05-29T14:26:43.152799Z",
+      "updated_at": "2026-05-29T14:26:43.152840Z",
+      "tags": "áo, shirt, clothes, Yonex, Brook Green, cầu lông, badminton"
+    }
+  }
+]
