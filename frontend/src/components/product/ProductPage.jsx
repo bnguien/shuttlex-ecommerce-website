@@ -21,10 +21,18 @@ function ProductPage() {
     sizes: [],
     minPrice: "",
     maxPrice: "",
-    isFlashSale: false,
+    isFlashSale: searchParams.get("is_flash_sale") === "true",
     sort: "newest"
   })
   const pageSize = 12
+
+  useEffect(() => {
+    const isFlashSaleParam = searchParams.get("is_flash_sale") === "true"
+    setFilters(prev => ({
+      ...prev,
+      isFlashSale: isFlashSaleParam
+    }))
+  }, [searchParams])
 
   useEffect(() => {
     if (category) {

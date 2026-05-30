@@ -12,19 +12,22 @@ class Command(BaseCommand):
         # 1. Setup Sizes
         racket_sizes = ["3U", "4U", "5U"]
         clothes_sizes = ["S", "M", "L", "XL", "XXL"]
-        shoes_sizes = ["39", "40", "41", "42", "43", "44"]
+        womens_shoes_sizes = ["36", "37", "38", "39", "40"]
+        mens_shoes_sizes = ["38", "39", "40", "41", "42", "43"]
+        all_shoes_sizes = list(set(womens_shoes_sizes + mens_shoes_sizes))
         
         for name in racket_sizes:
             Size.objects.get_or_create(name=name, type="racket")
         for name in clothes_sizes:
             Size.objects.get_or_create(name=name, type="clothes")
-        for name in shoes_sizes:
+        for name in all_shoes_sizes:
             Size.objects.get_or_create(name=name, type="shoes")
             
         sizes_map = {
             "racket": list(Size.objects.filter(type="racket")),
             "clothes": list(Size.objects.filter(type="clothes")),
-            "shoes": list(Size.objects.filter(type="shoes")),
+            "womens_shoes": list(Size.objects.filter(type="shoes", name__in=womens_shoes_sizes)),
+            "mens_shoes": list(Size.objects.filter(type="shoes", name__in=mens_shoes_sizes)),
         }
         
         # 2. Enrich existing products with variants
@@ -38,7 +41,10 @@ class Command(BaseCommand):
             if p.category_id == 1:
                 sizes_to_add = sizes_map["racket"]
             elif p.category_id == 2:
-                sizes_to_add = sizes_map["shoes"]
+                if "nữ" in p.name.lower() or "women" in p.name.lower() or "women" in p.slug.lower() or p.slug in ["victor-p8500-nitrolite-zsw-dx", "yonex-cascade-drive-3", "lining-ayts016-6-womens-badminton-shoes"]:
+                    sizes_to_add = sizes_map["womens_shoes"]
+                else:
+                    sizes_to_add = sizes_map["mens_shoes"]
             elif p.category_id == 3:
                 sizes_to_add = sizes_map["clothes"]
                 
@@ -88,11 +94,11 @@ class Command(BaseCommand):
                 "desc": "Bộ quần áo thể thao nữ, chất liệu mềm mại, thấm hút tốt."
             },
             {
-                "name": "Giày Cầu Lông Li-Ning Nam Soundwave II",
+                "name": "Giày Cầu Lông Li-Ning Nữ Soundwave II",
                 "slug": "lining-ayts016-6-womens-badminton-shoes",
                 "image": "products/li-ning-ayts016-6-womens-badminton-shoes.jpg",
                 "category_id": 2, "brand_id": 2, "price": 1250000.00,
-                "desc": "Giày cầu lông Soundwave II, bám sân cực tốt, công nghệ đệm êm ái."
+                "desc": "Giày cầu lông Soundwave II dành cho nữ, bám sân cực tốt, công nghệ đệm êm ái."
             },
             {
                 "name": "Áo Thể Thao Li-Ning Nam P-AAYV101-2V",
@@ -258,7 +264,38 @@ class Command(BaseCommand):
         ]
         
         new_product_count = 0
+        tags_map = {
+            1: "vợt, racket, cầu lông, badminton",
+            2: "giày, shoes, cầu lông, badminton",
+            3: "áo, quần, váy, clothes, shirt, shorts, skirt, cầu lông, badminton",
+            4: "phụ kiện, vớ, tất, băng trán, băng tay, accessories, socks, headband, sweatband, cầu lông, badminton",
+            5: "ba lô, túi, backpack, bag, cầu lông, badminton",
+            6: "cầu, shuttlecock, quả cầu, quả cầu lông, cầu lông, badminton",
+        }
         for item in new_items:
+            # Determine tags based on category or name keywords
+            category_tags = tags_map.get(item["category_id"], "")
+            name_lower = item["name"].lower()
+            extra_terms = []
+            if "áo" in name_lower or "shirt" in name_lower:
+                extra_terms.extend(["áo", "shirt", "t-shirt"])
+            if "quần" in name_lower or "shorts" in name_lower:
+                extra_terms.extend(["quần", "shorts"])
+            if "váy" in name_lower or "skirt" in name_lower:
+                extra_terms.extend(["váy", "skirt"])
+            if "vớ" in name_lower or "tất" in name_lower or "socks" in name_lower:
+                extra_terms.extend(["vớ", "tất", "socks"])
+            if "băng" in name_lower or "sweatband" in name_lower or "headband" in name_lower:
+                extra_terms.extend(["băng chặn mồ hôi", "băng tay", "băng trán", "sweatband", "headband"])
+            if "túi" in name_lower or "bag" in name_lower or "ba lô" in name_lower or "backpack" in name_lower:
+                extra_terms.extend(["túi", "ba lô", "bag", "backpack"])
+            if "cầu" in name_lower or "shuttlecock" in name_lower:
+                extra_terms.extend(["cầu", "shuttlecock", "quả cầu"])
+            
+            final_tags = set([x.strip() for x in category_tags.split(",") if x.strip()])
+            final_tags.update(extra_terms)
+            tags_str = ", ".join(sorted(final_tags))
+
             p, created = Product.objects.get_or_create(
                 slug=item["slug"],
                 defaults={
@@ -269,7 +306,8 @@ class Command(BaseCommand):
                     "base_price": item["price"],
                     "description": item["desc"],
                     "base_stock": 0,
-                    "is_active": True
+                    "is_active": True,
+                    "tags": tags_str
                 }
             )
             
@@ -280,7 +318,10 @@ class Command(BaseCommand):
                 if p.category_id == 1:
                     sizes_to_add = sizes_map["racket"]
                 elif p.category_id == 2:
-                    sizes_to_add = sizes_map["shoes"]
+                    if "nữ" in p.name.lower() or "women" in p.name.lower() or "women" in p.slug.lower() or p.slug in ["victor-p8500-nitrolite-zsw-dx", "yonex-cascade-drive-3", "lining-ayts016-6-womens-badminton-shoes"]:
+                        sizes_to_add = sizes_map["womens_shoes"]
+                    else:
+                        sizes_to_add = sizes_map["mens_shoes"]
                 elif p.category_id == 3:
                     sizes_to_add = sizes_map["clothes"]
                     

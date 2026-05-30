@@ -92,7 +92,10 @@ function AuthPage({ initialMode = "login" }) {
       if (isAdmin) {
         navigate("/admin/dashboard", { replace: true });
       } else {
-        const from = location?.state?.from?.pathname || "/";
+        const fromState = location?.state?.from;
+        const from = typeof fromState === "string"
+          ? fromState
+          : fromState?.pathname || "/";
         navigate(from, { replace: true });
       }
     } catch (err) {

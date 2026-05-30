@@ -248,7 +248,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'category',
             'brand',
             'created_at', 
-            'updated_at'
+            'updated_at',
+            'tags'
         ]
 
     def get_is_on_sale(self, obj):
@@ -305,6 +306,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'flash_sale_info',
+            'tags',
         ]
     def get_is_on_sale(self, obj):
         return obj.is_on_sale()
@@ -369,6 +371,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'is_active',
             'category',
             'brand',
+            'tags',
         ]
 
     def validate_name(self, value):

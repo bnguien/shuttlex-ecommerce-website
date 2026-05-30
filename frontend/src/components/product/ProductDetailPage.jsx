@@ -1,15 +1,18 @@
 import RelatedProducts from './RelatedProducts'
 import ProductPagePlaceHolder from './ProductPagePlaceHolder'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { BASE_URL } from '../../api'
 import api from '../../api'
 import { formatCurrencyVND } from '../../utils/format'
 import { useToast } from '../ui/Toast'
+import { useAuthStore } from '../../store/authStore'
 
 function ProductDetailPage({ setNumCartItems }) {
     const { slug } = useParams()
+    const navigate = useNavigate()
     const showToast = useToast()
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated)
     const [product, setProduct] = useState({})
     const [selectedVariant, setSelectedVariant] = useState(null)
     const [quantity, setQuantity] = useState(1)
@@ -88,6 +91,11 @@ function ProductDetailPage({ setNumCartItems }) {
     }, [cartCode, product.id, selectedVariant?.id])
 
     function add_item() {
+        if (!isAuthenticated) {
+            navigate("/login", { state: { from: `/product/${slug}` } })
+            return
+        }
+
         if (!product.id) return
 
         if (product.variants?.length > 0 && !selectedVariant) {
@@ -156,6 +164,7 @@ function ProductDetailPage({ setNumCartItems }) {
                 const now = new Date()
                 const highlights = []
 
+                let flashSaleVariant = null
                 flashSales.forEach((sale) => {
                     const item = (sale.items || []).find(
                         (i) => Number(i.product) === Number(product.id)
@@ -167,6 +176,7 @@ function ProductDetailPage({ setNumCartItems }) {
                             if (v) {
                                 const variantDesc = [v.size?.name, v.color].filter(Boolean).join(" - ")
                                 text = `FLASH SALE: ${sale.name} - giảm ${sale.discount_percent}% cho ${variantDesc}`
+                                flashSaleVariant = v
                             }
                         }
                         highlights.push({
@@ -201,6 +211,12 @@ function ProductDetailPage({ setNumCartItems }) {
                 })
 
                 setPromotionHighlights(highlights.slice(0, 4))
+                if (flashSaleVariant) {
+                    setSelectedVariant(prev => prev || flashSaleVariant)
+                } else if (product.variants?.length > 0) {
+                    const firstAvailable = product.variants.find(v => v.stock > 0) || product.variants[0]
+                    setSelectedVariant(prev => prev || firstAvailable)
+                }
             })
             .catch(() => {
                 if (!cancelled) setPromotionHighlights([])
