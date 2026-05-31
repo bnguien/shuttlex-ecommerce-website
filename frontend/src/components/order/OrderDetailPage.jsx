@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, Link } from "react-router-dom"
 import api from "../../api"
 import { formatCurrencyVND } from "../../utils/format"
 import "./OrderDetailPage.css"
@@ -160,7 +160,18 @@ function OrderDetailPage() {
                         ) : null}
                         <small className="text-muted">Số lượng: {item.quantity}</small>
                       </div>
-                      <strong>{formatCurrencyVND(item.line_total || 0)}</strong>
+                      <div className="text-end d-flex flex-column align-items-end justify-content-between gap-2">
+                        <strong>{formatCurrencyVND(item.line_total || 0)}</strong>
+                        {order.status === "DELIVERED" && item.product_slug && (
+                          <Link
+                            to={`/product/${item.product_slug}#reviews-anchor`}
+                            className="btn btn-sm btn-outline-success rounded-pill px-3 py-1 mt-1 animate-hover-scale"
+                            style={{ fontSize: "0.8rem", fontWeight: "600", whiteSpace: "nowrap" }}
+                          >
+                            Đánh giá ngay
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   ))
                 ) : (

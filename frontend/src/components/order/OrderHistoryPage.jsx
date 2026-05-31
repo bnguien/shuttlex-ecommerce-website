@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import api from "../../api"
 import { formatCurrencyVND } from "../../utils/format"
 import "./OrderHistoryPage.css"
@@ -85,7 +85,7 @@ function OrderHistoryPage() {
                     </div>
                   </div>
 
-                  <div className="order-history-body">
+                  <div className="order-history-body d-flex justify-content-between align-items-center gap-3">
                     {firstItem ? (
                       <div>
                         <h6 className="mb-1">{firstItem.product_name}</h6>
@@ -96,6 +96,15 @@ function OrderHistoryPage() {
                       </div>
                     ) : (
                       <small className="text-muted">Đơn hàng chưa có dòng sản phẩm.</small>
+                    )}
+                    {order.status === "DELIVERED" && firstItem?.product_slug && (
+                      <Link
+                        to={`/product/${firstItem.product_slug}#reviews-anchor`}
+                        className="btn btn-sm btn-outline-success rounded-pill px-3 py-1 animate-hover-scale"
+                        style={{ fontSize: "0.8rem", fontWeight: "600", whiteSpace: "nowrap" }}
+                      >
+                        Đánh giá
+                      </Link>
                     )}
                   </div>
 
