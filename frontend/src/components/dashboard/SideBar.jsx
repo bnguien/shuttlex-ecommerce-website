@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useState } from 'react'
-import { FiBox, FiGrid, FiHome, FiShoppingBag, FiTag, FiUsers, FiChevronDown, FiLayers, FiGift } from 'react-icons/fi'
+import { FiBox, FiGrid, FiHome, FiShoppingBag, FiTag, FiUsers, FiChevronDown, FiLayers, FiGift, FiStar } from 'react-icons/fi'
 import styles from './SideBar.module.css'
 
 function SideBar() {
@@ -133,6 +133,14 @@ function SideBar() {
           }
         >
           <FiUsers /> Người dùng
+        </NavLink>
+        <NavLink
+          to="/admin/reviews"
+          className={({ isActive }) =>
+            `nav-link d-flex align-items-center gap-2 ${styles.sidebarLink} ${isActive ? styles.sidebarLinkActive : ""}`
+          }
+        >
+          <FiStar /> Đánh giá
         </NavLink>
       </nav>
 

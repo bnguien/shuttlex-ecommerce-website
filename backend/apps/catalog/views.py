@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from django.db import models
 from .models import Product, Category, Brand, ProductVariant, Size
 from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, ProductVariantSerializer, ProductVariantWriteSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer, BrandWriteSerializer
 
@@ -73,6 +72,23 @@ def products(request):
               variants__flash_sale_items__flash_sale__start_time__lte=now,
               variants__flash_sale_items__flash_sale__end_time__gte=now)
         ).distinct()
+
+    # Lọc theo rating và số lượng đánh giá
+    rating_filter = request.GET.get("rating")
+    if rating_filter:
+        from django.db.models import Avg, Count
+        qs = qs.annotate(
+            avg_rating=Avg('reviews__rating', filter=Q(reviews__is_approved=True)),
+            total_reviews=Count('reviews', filter=Q(reviews__is_approved=True))
+        )
+        if rating_filter == "has_reviews":
+            qs = qs.filter(total_reviews__gt=0)
+        elif rating_filter == "0-2":
+            qs = qs.filter(total_reviews__gt=0, avg_rating__gte=0, avg_rating__lte=2)
+        elif rating_filter == "3-4":
+            qs = qs.filter(total_reviews__gt=0, avg_rating__gte=3, avg_rating__lte=4)
+        elif rating_filter == "4-5":
+            qs = qs.filter(total_reviews__gt=0, avg_rating__gte=4, avg_rating__lte=5)
 
     #Search by name 
     search_query = request.GET.get("search")

@@ -29,8 +29,21 @@ function HomeCard({ product }) {
                         />
                     </div>
                     <div className={styles.cardBody}>
-                        <h5 className={`${styles.cardTitle} mb-1`}>{product.name}</h5>
-                        <div className="d-flex align-items-center gap-2 justify-content-center">
+                        <h5 className={`${styles.cardTitle} mb-1 text-truncate px-1`}>{product.name}</h5>
+                        
+                        {/* Interactive Stats Badge */}
+                        <div className={`${styles.cardStats} d-flex align-items-center justify-content-center gap-2 mb-2`}>
+                            <div className="d-flex align-items-center text-warning">
+                                <i className="bi-star-fill me-1"></i>
+                                <span className="fw-bold text-dark">{product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}</span>
+                            </div>
+                            <span className="text-muted opacity-50">•</span>
+                            <span className="text-muted">{product.review_count || 0} Đánh giá</span>
+                            <span className="text-muted opacity-50">•</span>
+                            <span className="text-muted">Đã bán {product.sold_count || 0}</span>
+                        </div>
+
+                        <div className="d-flex align-items-center gap-2 justify-content-center mt-1">
                             {product.is_on_sale && (
                                 <span className="text-decoration-line-through text-muted small">
                                     {formatCurrencyVND(product.price_min ?? product.base_price)}

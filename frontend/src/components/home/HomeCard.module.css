@@ -75,3 +75,18 @@
   text-decoration: none;
   color: inherit;
 }
+
+.cardStats {
+  font-size: 0.76rem !important;
+  font-weight: 500;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.cardStats i {
+  font-size: 0.8rem;
+}
+
+.cardStats span {
+  font-size: 0.76rem;
+}

@@ -121,6 +121,100 @@ function FilterSideBar({ category, filters, onChange }) {
       </div>
 
       <div className="mb-4">
+        <h5 className="">Đánh giá</h5>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="ratingFilter"
+            id="ratingAll"
+            checked={!filters.rating}
+            onChange={() => 
+              onChange(prev => ({
+                ...prev,
+                rating: ""
+              }))
+            }
+          />
+          <label className="form-check-label" htmlFor="ratingAll">
+            Tất cả sản phẩm
+          </label>
+        </div>
+        <div className="form-check mt-1">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="ratingFilter"
+            id="ratingHasReviews"
+            checked={filters.rating === "has_reviews"}
+            onChange={() => 
+              onChange(prev => ({
+                ...prev,
+                rating: "has_reviews"
+              }))
+            }
+          />
+          <label className="form-check-label" htmlFor="ratingHasReviews">
+            Có đánh giá
+          </label>
+        </div>
+        <div className="form-check mt-1">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="ratingFilter"
+            id="rating02"
+            checked={filters.rating === "0-2"}
+            onChange={() => 
+              onChange(prev => ({
+                ...prev,
+                rating: "0-2"
+              }))
+            }
+          />
+          <label className="form-check-label" htmlFor="rating02">
+            ⭐ 0 - 2 sao
+          </label>
+        </div>
+        <div className="form-check mt-1">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="ratingFilter"
+            id="rating34"
+            checked={filters.rating === "3-4"}
+            onChange={() => 
+              onChange(prev => ({
+                ...prev,
+                rating: "3-4"
+              }))
+            }
+          />
+          <label className="form-check-label" htmlFor="rating34">
+            ⭐ 3 - 4 sao
+          </label>
+        </div>
+        <div className="form-check mt-1">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="ratingFilter"
+            id="rating45"
+            checked={filters.rating === "4-5"}
+            onChange={() => 
+              onChange(prev => ({
+                ...prev,
+                rating: "4-5"
+              }))
+            }
+          />
+          <label className="form-check-label" htmlFor="rating45">
+            ⭐ 4 - 5 sao
+          </label>
+        </div>
+      </div>
+
+      <div className="mb-4">
         <h5 className="">Thương hiệu</h5>
         {brands.map((brand, index) => {
           const brandValue = brand.slug || brand.name

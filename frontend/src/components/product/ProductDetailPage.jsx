@@ -1,4 +1,5 @@
 import RelatedProducts from './RelatedProducts'
+import ProductReviews from './ProductReviews'
 import ProductPagePlaceHolder from './ProductPagePlaceHolder'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
@@ -244,14 +245,39 @@ function ProductDetailPage({ setNumCartItems }) {
                             />
                         </div>
                         <div className="col-md-6">
-                            <div className="small mb-1 text-muted">
+                            <div className="small mb-2 text-muted">
                                 SKU: 
-                                <span className="text-uppercase fw-bold">
+                                <span className="text-uppercase fw-bold ms-1">
                                     {selectedVariant ? selectedVariant.sku : (product.sku || 'N/A')}
                                 </span>
                             </div>
-                            <h1 className="display-5 fw-bolder">{product.name}</h1>
-                            <div className="fs-5 mb-5">
+                            <h1 className="display-5 fw-bolder mb-2" style={{ color: "#222" }}>{product.name}</h1>
+                            
+                            {/* Top Rating & Sales Statistics Bar */}
+                            <div className="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom text-muted small" style={{ borderBottomColor: "#eaeaea" }}>
+                                <div className="d-flex align-items-center gap-2">
+                                    <span className="fw-bold text-dark fs-5" style={{ lineHeight: 1 }}>{product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}</span>
+                                    <div className="text-warning d-flex align-items-center">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <i 
+                                                key={i} 
+                                                className={`bi-star-fill ${i < Math.round(product.average_rating || 0) ? 'text-warning' : 'text-secondary opacity-25'}`}
+                                                style={{ fontSize: '1.05rem', marginRight: '1px' }}
+                                            ></i>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="border-start ps-3" style={{ borderColor: "#ddd !important" }}>
+                                    <span className="fw-bold text-dark fs-6">{product.review_count || 0}</span>
+                                    <span className="ms-1 text-muted">Đánh giá</span>
+                                </div>
+                                <div className="border-start ps-3" style={{ borderColor: "#ddd !important" }}>
+                                    <span className="fw-bold text-dark fs-6">{product.sold_count || 0}</span>
+                                    <span className="ms-1 text-muted">Đã bán</span>
+                                </div>
+                            </div>
+
+                            <div className="fs-4 mb-4 fw-bold" style={{ color: "#029942" }}>
                                 {getDisplayPrice()}
                             </div>
 
@@ -328,6 +354,7 @@ function ProductDetailPage({ setNumCartItems }) {
                     </div>
                 </div>
             </section>
+            <ProductReviews product={product} />
             <RelatedProducts products={similarProducts} />
         </div>
     )
