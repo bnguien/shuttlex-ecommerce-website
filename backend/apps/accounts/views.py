@@ -2,13 +2,13 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, EmailOrUsernameTokenObtainPairSerializer, UserListSerializer, UserWriteSerializer, UserAddressSerializer
+from .serializers import UserSerializer, EmailOrUsernameTokenObtainPairSerializer, UserListSerializer, UserWriteSerializer, UserAddressSerializer, SystemSettingSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
 from django.core.paginator import Paginator
-from .models import CustomUser
+from .models import CustomUser, SystemSetting
 from django.db.models import Q
 
 class EmailOrUsernameTokenObtainPairView(TokenObtainPairView):
@@ -210,3 +210,25 @@ def set_default_address(request, address_id):
     address.is_default = True
     address.save()
     return Response({"detail": "Đã đặt thành địa chỉ mặc định."})
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_system_settings(request):
+    setting, created = SystemSetting.objects.get_or_create(pk=1)
+    return Response(SystemSettingSerializer(setting).data)
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_system_settings(request):
+    if not request.user.is_staff:
+        return Response(
+            {"detail": "Bạn không có quyền thực hiện hành động này."},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    setting, created = SystemSetting.objects.get_or_create(pk=1)
+    serializer = SystemSettingSerializer(setting, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

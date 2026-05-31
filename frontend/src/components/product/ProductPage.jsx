@@ -21,10 +21,19 @@ function ProductPage() {
     sizes: [],
     minPrice: "",
     maxPrice: "",
-    isFlashSale: false,
+    isFlashSale: searchParams.get("is_flash_sale") === "true",
+    rating: "",
     sort: "newest"
   })
   const pageSize = 12
+
+  useEffect(() => {
+    const isFlashSaleParam = searchParams.get("is_flash_sale") === "true"
+    setFilters(prev => ({
+      ...prev,
+      isFlashSale: isFlashSaleParam
+    }))
+  }, [searchParams])
 
   useEffect(() => {
     if (category) {
@@ -70,6 +79,7 @@ function ProductPage() {
       ...(filters.minPrice ? { min_price: filters.minPrice } : {}),
       ...(filters.maxPrice ? { max_price: filters.maxPrice } : {}),
       ...(filters.isFlashSale ? { is_flash_sale: "true" } : {}),
+      ...(filters.rating ? { rating: filters.rating } : {}),
       ...(apiSort ? { sort: apiSort } : {})
     }
     api.get("products", { params })

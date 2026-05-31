@@ -256,7 +256,7 @@ class FlashSaleWriteSerializer(serializers.ModelSerializer):
             )
             keep_ids.append(item.id)
 
-        flash_sale.flashsaleitem_set.exclude(id__in=keep_ids).delete()
+        flash_sale.items.exclude(id__in=keep_ids).delete()
 
     def create(self, validated_data):
         product_ids = validated_data.pop("product_ids", [])
@@ -276,7 +276,7 @@ class FlashSaleWriteSerializer(serializers.ModelSerializer):
             self._sync_items(instance, product_ids)
         elif discount_changed:
             discount_multiplier = (Decimal("100") - Decimal(str(instance.discount_percent))) / Decimal("100")
-            for item in instance.flashsaleitem_set.select_related("product").all():
+            for item in instance.items.select_related("product").all():
                 item.original_price = item.product.base_price
                 item.sale_price = (item.product.base_price * discount_multiplier).quantize(Decimal("0.01"))
                 item.stock_limit = item.product.get_stock()

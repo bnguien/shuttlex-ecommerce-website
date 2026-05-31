@@ -37,22 +37,13 @@ def order_pre_save(sender, instance: Order, **kwargs):
 @receiver(post_save, sender=Order)
 def order_post_save(sender, instance: Order, created: bool, **kwargs):
      '''
-     - Ghi OrderHistory khi status/payment_status thay đổi
-     - Gửi email & notification
+     - Ghi OrderHistory khi status/payment_status thay đổi (chỉ khi update, KHÔNG khi tạo mới).
+     - Gửi email & notification khi tạo mới hoặc thanh toán thành công.
      '''
      old_status = getattr(instance, "_old_status", "")
      old_payment_status = getattr(instance, "_old_payment_status", "")
 
-     if created:
-          OrderHistory.objects.create(
-               order=instance,
-               from_status="",
-               to_status=instance.status,
-               from_payment_status="",
-               to_payment_status=instance.payment_status,
-               note="Đơn hàng được tạo (qua signal).",
-          )
-     else:
+     if not created:
           if old_status != instance.status or old_payment_status != instance.payment_status:
                OrderHistory.objects.create(
                     order=instance,

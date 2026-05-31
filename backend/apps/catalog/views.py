@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from django.db import models
 from .models import Product, Category, Brand, ProductVariant, Size
 from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, BrandSerializer, ProductVariantSerializer, ProductVariantWriteSerializer, SizeSerializer, ProductWriteSerializer, CategoryWriteSerializer, SizeWriteSerializer, BrandWriteSerializer
 
@@ -74,16 +73,33 @@ def products(request):
               variants__flash_sale_items__flash_sale__end_time__gte=now)
         ).distinct()
 
+    # Lọc theo rating và số lượng đánh giá
+    rating_filter = request.GET.get("rating")
+    if rating_filter:
+        from django.db.models import Avg, Count
+        qs = qs.annotate(
+            avg_rating=Avg('reviews__rating', filter=Q(reviews__is_approved=True)),
+            total_reviews=Count('reviews', filter=Q(reviews__is_approved=True))
+        )
+        if rating_filter == "has_reviews":
+            qs = qs.filter(total_reviews__gt=0)
+        elif rating_filter == "0-2":
+            qs = qs.filter(total_reviews__gt=0, avg_rating__gte=0, avg_rating__lte=2)
+        elif rating_filter == "3-4":
+            qs = qs.filter(total_reviews__gt=0, avg_rating__gte=3, avg_rating__lte=4)
+        elif rating_filter == "4-5":
+            qs = qs.filter(total_reviews__gt=0, avg_rating__gte=4, avg_rating__lte=5)
+
     #Search by name 
     search_query = request.GET.get("search")
     if search_query:
-        exact_qs = qs.filter(name__icontains=search_query)
+        exact_qs = qs.filter(Q(name__icontains=search_query) | Q(tags__icontains=search_query))
         if exact_qs.exists():
             qs = exact_qs
         else:
             terms = search_query.split()
             for term in terms:
-                qs = qs.filter(name__icontains=term)
+                qs = qs.filter(Q(name__icontains=term) | Q(tags__icontains=term))
 
     #Search by status 
     status_filter = request.GET.get("status")
@@ -102,6 +118,27 @@ def products(request):
     else:
         qs = qs.order_by("-created_at")
 
+    if search_query and not sort:
+        def get_relevance_score(p):
+            name_lower = p.name.lower()
+            query_lower = search_query.lower()
+            tags_lower = (p.tags or "").lower()
+            
+            score = 0
+            if name_lower == query_lower:
+                score += 1000
+            if name_lower.startswith(query_lower):
+                score += 500
+            if query_lower in name_lower:
+                score += 200
+            if query_lower in tags_lower:
+                score += 100
+            return score
+            
+        products_list = sorted(list(qs), key=get_relevance_score, reverse=True)
+    else:
+        products_list = list(qs)
+
     page = request.GET.get("page")
     page_size = request.GET.get("page_size")
     if page:
@@ -115,7 +152,7 @@ def products(request):
         except (TypeError, ValueError):
             per_page = 12
 
-        paginator = Paginator(qs, per_page)
+        paginator = Paginator(products_list, per_page)
         if paginator.count == 0:
             return Response({
                 "results": [],
@@ -138,7 +175,7 @@ def products(request):
             "total_pages": paginator.num_pages,
         })
 
-    return Response(ProductSerializer(qs, many=True).data)
+    return Response(ProductSerializer(products_list, many=True).data)
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -148,16 +185,35 @@ def search_suggestions(request):
         return Response([])
     
     qs = Product.objects.filter(is_active=True)
-    exact_qs = qs.filter(name__icontains=q)
+    exact_qs = qs.filter(Q(name__icontains=q) | Q(tags__icontains=q))
     
     if exact_qs.exists():
         qs = exact_qs
     else:
         terms = q.split()
         for term in terms:
-            qs = qs.filter(name__icontains=term)
+            qs = qs.filter(Q(name__icontains=term) | Q(tags__icontains=term))
         
-    products = qs[:8]
+    products_list = list(qs)
+    
+    def get_relevance_score(p):
+        name_lower = p.name.lower()
+        query_lower = q.lower()
+        tags_lower = (p.tags or "").lower()
+        
+        score = 0
+        if name_lower == query_lower:
+            score += 1000
+        if name_lower.startswith(query_lower):
+            score += 500
+        if query_lower in name_lower:
+            score += 200
+        if query_lower in tags_lower:
+            score += 100
+        return score
+        
+    sorted_products = sorted(products_list, key=get_relevance_score, reverse=True)
+    products = sorted_products[:8]
     results = []
     for p in products:
         results.append({
@@ -407,18 +463,15 @@ def delete_size(request, size_id):
         size.delete()
         return Response({"detail": "Size deleted successfully.", "deleted": True}, status=200)
     except ProtectedError:
-        if not size.is_active:
-            return Response({"detail": "Size is already inactive.", "deleted": False}, status=200)
-
-        size.is_active = False
-        size.save(update_fields=["is_active", "updated_at"])
         return Response(
             {
-                "detail": "Size is referenced by other records, so it was archived instead of deleted.",
+                "detail": (
+                    f"Size '{size.name} ({size.type})' đang được sử dụng bởi biến thể sản phẩm "
+                    "và không thể xóa. Hãy xóa hoặc cập nhật các biến thể sản phẩm liên quan trước."
+                ),
                 "deleted": False,
-                "archived": True,
             },
-            status=200,
+            status=409,
         )
 
 @api_view(["GET"])

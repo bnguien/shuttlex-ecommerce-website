@@ -52,6 +52,7 @@ urlpatterns = [
     path("", include("apps.orders.urls")),
     path("", include("apps.promotions.urls")),
     path("", include("apps.notifications.urls")),
+    path("api/reviews/", include("apps.reviews.urls")),
 ]
 
 

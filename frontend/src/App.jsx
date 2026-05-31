@@ -21,6 +21,7 @@ import UsersPage from "./components/admin/users/UsersPage"
 import AdminProfilePage from "./components/admin/AdminProfilePage"
 import AdminOrdersPage from "./components/admin/orders/AdminOrdersPage"
 import AdminOrderDetailPage from "./components/admin/orders/AdminOrderDetailPage"
+import AdminReviewsPage from "./components/admin/reviews/AdminReviewsPage"
 import AdminLayout from "./components/dashboard/AdminLayout"
 import { VouchersPage, FlashSalesPage } from "./components/admin/promotions"
 import { useAuthStore } from "./store/authStore"
@@ -128,6 +129,7 @@ const App = () => {
             <Route path="brands" element={<BrandsPage />} />
             <Route path="sizes" element={<SizesPage />} />
             <Route path="users" element={<UsersPage />} />
+            <Route path="reviews" element={<AdminReviewsPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
             <Route path="vouchers" element={<VouchersPage />} />

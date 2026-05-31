@@ -79,6 +79,12 @@ class Product(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    tags = models.CharField(
+        max_length=512,
+        blank=True,
+        null=True,
+        help_text="Tags for search, separated by commas or spaces"
+    )
 
     class Meta:
         ordering = ["-created_at"]

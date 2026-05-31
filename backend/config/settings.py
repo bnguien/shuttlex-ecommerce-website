@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "apps.orders",
     "apps.promotions",
     "apps.notifications",
+    "apps.reviews",
 
     'django_celery_beat',
 ]
