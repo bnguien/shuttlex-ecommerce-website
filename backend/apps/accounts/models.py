@@ -30,3 +30,20 @@ class UserAddress(models.Model):
         ordering = ['-is_default', '-created_at'] 
     def __str__(self):
         return f"{self.receiver_name} - {self.street_detail}, {self.ward}, {self.province}"
+
+class SystemSetting(models.Model):
+    phone_contact = models.CharField(max_length=20, default="0123456789")
+    zalo_link = models.CharField(
+        max_length=255, 
+        default="https://zalo.me/0123456789",
+        verbose_name="Link Zalo",
+        help_text="Link Zalo để hỗ trợ khách hàng",
+    )
+    facebook_link = models.CharField(max_length=255, default="https://m.me/shuttlex", verbose_name="Link Messenger")
+    email_contact = models.EmailField(default="contact@shuttlex.com", verbose_name="Email liên hệ")
+    address_contact = models.CharField(max_length=255, default="642 đường Tôn Đức Thắng, Phường Hòa Khánh, Thành phố Đà Nẵng", verbose_name="Địa chỉ")
+    class Meta:
+        verbose_name = "Cấu hình hệ thống"
+        verbose_name_plural = "Cấu hình hệ thống"
+    def __str__(self):
+        return "Cấu hình hệ thống ShuttleX"

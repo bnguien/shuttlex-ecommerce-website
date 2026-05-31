@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, UserAddress
+from .models import CustomUser, UserAddress, SystemSetting
 from django.db import IntegrityError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -231,4 +231,7 @@ class UserAddressSerializer(serializers.ModelSerializer):
         validated_data['user'] = user
         return super().create(validated_data)
     
-    
+class SystemSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemSetting
+        fields = ['phone_contact', 'zalo_link', 'facebook_link', 'email_contact', 'address_contact']    
