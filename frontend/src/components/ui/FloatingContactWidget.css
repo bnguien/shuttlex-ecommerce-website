@@ -1,0 +1,265 @@
+/* Floating contact widget container styling */
+.floating-contact-container {
+  position: fixed;
+  right: 30px;
+  z-index: 1050;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.floating-contact-trigger {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #198754, #20c997);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 22px;
+  box-shadow: 0 4px 15px rgba(25, 135, 84, 0.4);
+  cursor: grab;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  touch-action: none; /* Prevent browser scrolling while dragging */
+}
+
+.floating-contact-trigger:active {
+  cursor: grabbing;
+}
+
+.floating-contact-trigger:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(25, 135, 84, 0.6);
+}
+
+/* Pulsing effect around the button */
+.floating-contact-trigger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.6;
+  z-index: -1;
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Expanded Card glassmorphism style */
+.floating-contact-card {
+  position: absolute;
+  bottom: 65px;
+  right: 0;
+  width: 360px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: slide-up-fade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  transform-origin: bottom right;
+}
+
+@keyframes slide-up-fade {
+  from {
+    transform: scale(0.9) translateY(15px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.floating-contact-header {
+  background: linear-gradient(135deg, #198754, #0f5132);
+  color: white;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.floating-contact-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #0f5132;
+  font-size: 15px;
+}
+
+.floating-contact-header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.floating-contact-header-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #d1fae5;
+  text-align: left;
+}
+
+/* Horizontal 3-column grid for channels */
+.floating-contact-body-grid {
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.contact-channel-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 6px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #1e293b;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.contact-channel-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Zalo brand colors */
+.contact-channel-zalo {
+  background: rgba(25, 135, 84, 0.06);
+  border-color: rgba(25, 135, 84, 0.15);
+}
+.contact-channel-zalo:hover {
+  background: #198754;
+  color: white;
+  border-color: #198754;
+}
+
+.contact-channel-zalo .channel-icon {
+  color: #198754;
+}
+.contact-channel-zalo:hover .channel-icon {
+  color: white;
+}
+
+/* Messenger brand colors */
+.contact-channel-messenger {
+  background: rgba(32, 201, 151, 0.06);
+  border-color: rgba(32, 201, 151, 0.15);
+}
+.contact-channel-messenger:hover {
+  background: linear-gradient(135deg, #20c997, #198754);
+  color: white;
+  border-color: #20c997;
+}
+
+.contact-channel-messenger .channel-icon {
+  color: #20c997;
+}
+.contact-channel-messenger:hover .channel-icon {
+  color: white;
+}
+
+/* Hotline colors */
+.contact-channel-hotline {
+  background: rgba(25, 135, 84, 0.08);
+  border-color: rgba(25, 135, 84, 0.2);
+}
+.contact-channel-hotline:hover {
+  background: #198754;
+  color: white;
+  border-color: #198754;
+}
+
+.contact-channel-hotline .channel-icon {
+  color: #198754;
+}
+.contact-channel-hotline:hover .channel-icon {
+  color: white;
+}
+
+.channel-icon {
+  font-size: 22px;
+  transition: color 0.2s ease;
+}
+
+.channel-grid-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* FAQ Accordion Section */
+.floating-contact-faq {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 12px 18px;
+  background: rgba(240, 253, 250, 0.4);
+}
+
+.faq-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #0f5132;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.faq-item {
+  border: none;
+  background: none;
+  width: 100%;
+  padding: 6px 0;
+  text-align: left;
+  font-size: 13px;
+  color: #2c3e50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.faq-item:hover {
+  color: #198754;
+}
+
+.faq-answer {
+  font-size: 12px;
+  color: #4a5568;
+  padding: 4px 0 8px 0;
+  line-height: 1.5;
+  border-bottom: 1px dashed rgba(25, 135, 84, 0.1);
+  text-align: left;
+}

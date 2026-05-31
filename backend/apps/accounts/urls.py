@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (
     UserRegisterView, get_username, get_first_name, get_last_name, get_email, get_user_role,
     list_users, get_user, create_user, update_user, delete_user,
-    user_addresses, user_address_detail, set_default_address
+    user_addresses, user_address_detail, set_default_address,
+    get_system_settings, update_system_settings
 )
 
 urlpatterns = [
@@ -22,4 +23,7 @@ urlpatterns = [
     path('addresses/', user_addresses, name='user-addresses'),
     path('addresses/<int:address_id>/', user_address_detail, name='user-address-detail'),
     path('addresses/<int:address_id>/set-default/', set_default_address, name='set-default-address'),
+
+    path('system/', get_system_settings, name='get-system-settings'),
+    path('system/update/', update_system_settings, name='update-system-settings'),
 ]
