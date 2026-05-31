@@ -22,6 +22,8 @@ class OrderAddressSerializer(serializers.ModelSerializer):
           read_only_fields = ["id"]
 
 class OrderItemReadSerializer(serializers.Serializer):
+     product_id = serializers.IntegerField(source="product.id", read_only=True)
+     product_slug = serializers.CharField(source="product.slug", read_only=True)
      product_name = serializers.CharField(source="product_name_snapshot", allow_null=True, allow_blank=True)
      variant_display = serializers.CharField(source="variant_display_snapshot", allow_null=True, allow_blank=True)
      quantity = serializers.IntegerField()
